@@ -1,0 +1,50 @@
+# A short introduction to OCamlbuild
+
+## The mental model
+
+OCamlbuild's job is to determine the sequence of calls to the
+compiler, with the right set of command-line flags, needed to build
+your OCaml project. It was designed to take into account specificities
+of the OCaml language that make writing good Makefiles difficult. For
+example, if `a.cmi` changed and `b.cmo` depends on it, it needs to be
+recompiled even if the timestamp is recent -- the dreaded "units Foo
+and Bar make inconsistent assumptions about Baz".
+
+The core concepts you should know about are the following. OCamlbuild
+knows about a set of *rules* to build programs, that provide a piece
+of OCaml code to build certain kind of files, named *targets*, from
+some dependencies (statically known or dynamically discovered). The
+user may influence the flags passed to the compiler commands by using
+*tags*.
+
+- *targets* files you, or some dependencies, ask OCamlbuild to
+   build. If you run `ocamlbuild foo.cmo`, the target is `foo.cmo`,
+   and it will in turn try to build a target `foo.ml`, which may be
+   directly present in your source directory or produced, say, from
+   a `foo.mll` or `foo.mly`. OCamlbuild knows about a lot of useful
+   targets that can be used to produce, documentation, create library
+   archives, etc.
+
+- *tags*: tags are an indirection layer on top of compiler
+   command-line flags; 
+
+
+## A simple executable
+
+## Using ocamlfind modules
+
+(Incl. Syntax extensions)
+
+## Documentation, archives...
+
+
+# Reference documentation
+
+## Targets
+
+## Flags
+
+
+# Enriching OCamlbuid through plugins
+
+
