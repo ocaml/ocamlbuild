@@ -278,7 +278,7 @@ in several ways:
   `FOO` during the first run (for plugin compilation), and activate it
   during the second run, when invoking `myocamlbuild`.
 
-- The and `-plugin-tag` and `-plugin-tags` options allow to pass tags
+- The `-plugin-tag` and `-plugin-tags` options allow to pass tags
   that will be used to compile the plugin. For example, if someone
   develops a cool library to help writing OCamlbuild plugins and
   distribute as 'toto.ocamlbuild' in ocamlfind, `-plugin-tag
