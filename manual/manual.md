@@ -85,11 +85,11 @@ file `myprog.ml` that contains the main program code.
 
 You can build your program using either the bytecode compiler, with
 
-    % ocamlbuild foo.byte
+    % ocamlbuild myprog.byte
 
 or the native compiler, with
 
-    % ocamlbuild foo.native
+    % ocamlbuild myprog.native
 
 Let's look at the result of the first command:
 
