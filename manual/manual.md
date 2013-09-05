@@ -183,8 +183,8 @@ source directory. Suppose you would like to distribute an archive file
 `mylib.mllib` listing the name of desired modules -- capitalized, as
 in OCaml source code:
 
-    Lib1
-    Lib2
+    Mod1
+    Mod2
 
 OCamlbuild knows about a rule `"%.mllib -> %.cma", so you can then
 use:
