@@ -38,10 +38,10 @@ process, but not during an initial syntactic preprocessing step
 your program's targets, and it will sort out when to insert the `-g`
 flag or not.
 
-To attach tags to your ocamlbuild targets, you write them in
-a `_tags` file with a simple syntax. Each line is of the form
-`foo: bar`, where `foo` is a predicate matching some targets of your
-projects, and `bar` a list of tags. For example the _tags file
+To attach tags to your ocamlbuild targets, you write them in a `_tags`
+file. Each line is of the form `foo: bar`. `bar` is a list of tags,
+and `foo` is a filter that determines to which targets `bar`
+applies. For example the `_tags` file
 
     true: package(toto), package(tata)
     <foo.*> or <bar.*>: debug
@@ -68,9 +68,8 @@ file, except maybe to specify project-wide configuration options --
 similar to command-line options you would pass to ocamlbuild. But it
 also allows to define new rules and targets (for example to support
 a shiny new preprocessing program), to define new tags or refine the
-associate new command-line flags to existing tags. We will cover these
-use-cases in the more advanced [Plugin section](TODO REF) of the
-manual.
+meaning of existing tags. We will cover these use-cases in the more
+advanced [Plugin section](TODO REF) of the manual.
 
 ## A simple program
 
@@ -91,7 +90,8 @@ or the native compiler, with
 
     % ocamlbuild myprog.native
 
-Let's look at the result of the first command:
+Let's look at the organization of your source directory after this
+compilation command:
 
     _build/
     mod1.ml
@@ -102,7 +102,7 @@ Let's look at the result of the first command:
 
 Ocamlbuild does all its work in a single `_build` directory, to help
 keep your source directory clean. Targets are therefore built inside
-`_build`. It will generally add a symbolic link for the last-built
+`_build`. It will generally add a symbolic link for the requested
 target in the user directory, but if a target does not appear after
 being built, chances are it is in `_build`.
 
@@ -132,15 +132,15 @@ the check globally using the `-no-hygiene` command-line option.
 ### OCamlfind packages
 
 Your project will probably depend on external libraries as well. Let's
-assume they are provided by the ocamlfind packages `lib1` and
-`lib2`. To tell ocamlbuild about them, you should use the tags
-`package(lib1)` and `package(lib2)`. You also need to tell ocamlbuild
+assume they are provided by the ocamlfind packages `tata` and
+`toto`. To tell ocamlbuild about them, you should use the tags
+`package(tata)` and `package(toto)`. You also need to tell ocamlbuild
 to enable support for ocamlfind by passing the `-use-ocamlfind`
 command-line option.
 
 So you will have the following `_tags` file:
 
-    true: package(lib1), package(lib2)
+    true: package(tata), package(toto)
 
 and invoke compilation with
 
@@ -186,7 +186,7 @@ in OCaml source code:
     Mod1
     Mod2
 
-OCamlbuild knows about a rule `"%.mllib -> %.cma", so you can then
+OCamlbuild knows about a rule `"%.mllib -> %.cma"`, so you can then
 use:
 
     ocamlbuild mylib.cma
@@ -210,7 +210,7 @@ which will produce the documentation in the subdirectory
 # Reference documentation
 
 In this chapter, we will try to cover the built-in targets and tags
-provided by OCamlbuild. We will omit feature that are deprecated,
+provided by OCamlbuild. We will omit features that are deprecated,
 because we found they lead to bad practices or were superseded by
 better options. Of course, given that a `myocamlbuild.ml` can add new
 rules and tags, this documentation will always be partial.
@@ -274,9 +274,9 @@ in several ways:
   will try to compile the plugin, which it may not always do, for
   example when you only ask for cleaning or documentation.
 
-- The `-plugin-option FOO` option will ignore the command-line option
-  `FOO` during the first run (for plugin compilation), and activate it
-  during the second run, when invoking `myocamlbuild`.
+- The `-plugin-option FOO` option will pass the command-line option
+  `FOO` to the `myocamlbuild` invocation -- and ignore it during
+  plugin compilation.
 
 - The `-plugin-tag` and `-plugin-tags` options allow to pass tags
   that will be used to compile the plugin. For example, if someone
@@ -328,7 +328,7 @@ the user; its type is `(hook -> unit) -> unit`. The hooks are
 currently defined as
 
     (** Here is the list of hooks that the dispatch function have to handle.
-        Generally one respond to one or two hooks (like After_rules) and do
+        Generally one responds to one or two hooks (like After_rules) and do
         nothing in the default case. *)
     type hook =
       | Before_hygiene
