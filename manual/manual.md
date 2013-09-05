@@ -2,11 +2,10 @@
 
 OCamlbuild's job is to determine the sequence of calls to the
 compiler, with the right set of command-line flags, needed to build
-your OCaml project. It was designed to take into account specifics
-of the OCaml language that make writing good Makefiles difficult. For
-example, if `a.cmi` changed and `b.cmo` depends on it, it needs to be
-recompiled even if the timestamp is recent -- the dreaded "units Foo
-and Bar make inconsistent assumptions about Baz".
+your OCaml project. It was designed to take into account specifics of
+the OCaml language that make writing good Makefiles difficult, such as
+the dreaded "units Foo and Bar make inconsistent assumptions about
+Baz" error.
 
 ## Core concepts
 
@@ -381,7 +380,7 @@ whether byte or native-compilation is happening.
 The `A` constructor stands for "atom(ic)", and is part of a `spec`
 datatype, representing specifications of fragments of command. We will
 not describe its most advanced constructors -- it is again exposed in
-`signatures.mli`, but the most relevant here are as follow:
+`signatures.mli` -- but the most relevant here are as follow:
 
     (** The type for command specifications. That is pieces of command. *)
     and spec =
