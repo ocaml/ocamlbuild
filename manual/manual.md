@@ -152,6 +152,17 @@ probably enable `-use-ocamlfind` by default in future versions of
 OCamlbuild, but in the meantime feel free to define a shell alias for
 convenience.
 
+Note 2: If you have a [`myocamlbuild.ml`](#Enriching OCamlbuild through plugins) file at the root of your ocamlbuild
+project, you can use it to set this option, instead of using one command line parameter. Something like this:
+
+    open Ocamlbuild_plugin
+    let () =
+      dispatch (function
+        | Before_options ->
+          Options.use_ocamlfind := true
+        | _ -> ())
+
+
 ### Syntax extensions
 
 If you use syntax extensions distributed through `ocamlfind`, you can
