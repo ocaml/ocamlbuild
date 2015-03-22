@@ -1,5 +1,5 @@
 This is an effort to replace the [current OCamlbuild
-manual](http://caml.inria.fr/pub/docs/manual-ocaml/manual032.html)
+manual](http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html)
 with something that satisfies users better.
 
 The present documentation is currently only a draft, with parts
