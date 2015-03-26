@@ -30,7 +30,7 @@ section](TODO REF).
 
 *Tags* are an abstraction layer designed to specify command-line flags
 in a declarative style. If you're invoking the compiler directly and
-wish build a program with debug information enabled, you need to pass
+wish to build a program with debug information enabled, you need to pass
 the `-g` flag to the compilation and linking step of the build
 process, but not during an initial syntactic preprocessing step
 (if any), when building `.cma` library archives, or when calling
