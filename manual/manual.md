@@ -34,11 +34,11 @@ wish to build a program with debug information enabled, you need to pass
 the `-g` flag to the compilation and linking step of the build
 process, but not during an initial syntactic preprocessing step
 (if any), when building `.cma` library archives, or when calling
-`ocamldoc`. With ocamlbuild, you can simply add the `debug` tag to
+`ocamldoc`. With OCamlbuild, you can simply add the `debug` tag to
 your program's targets, and it will sort out when to insert the `-g`
 flag or not.
 
-To attach tags to your ocamlbuild targets, you write them in a `_tags`
+To attach tags to your OCamlbuild targets, you write them in a `_tags`
 file. Each line is of the form `foo: bar`. `bar` is a list of tags,
 and `foo` is a filter that determines to which targets `bar`
 applies. For example the `_tags` file
@@ -65,7 +65,7 @@ project will be compiled and executed by `ocamlbuild` upon invocation.
 
 For simple use cases, you should not have to write a `myocamlbuild.ml`
 file, except maybe to specify project-wide configuration options --
-similar to command-line options you would pass to ocamlbuild. But it
+similar to command-line options you would pass to OCamlbuild. But it
 also allows to define new rules and targets (for example to support
 a shiny new preprocessing program), to define new tags or refine the
 meaning of existing tags. We will cover these use-cases in the more
@@ -100,7 +100,7 @@ compilation command:
     myprog.byte -> _build/myprog.byte*
     myprog.ml
 
-Ocamlbuild does all its work in a single `_build` directory, to help
+OCamlbuild does all its work in a single `_build` directory, to help
 keep your source directory clean. Targets are therefore built inside
 `_build`. It will generally add a symbolic link for the requested
 target in the user directory, but if a target does not appear after
@@ -133,8 +133,8 @@ the check globally using the `-no-hygiene` command-line option.
 
 Your project will probably depend on external libraries as well. Let's
 assume they are provided by the ocamlfind packages `tata` and
-`toto`. To tell ocamlbuild about them, you should use the tags
-`package(tata)` and `package(toto)`. You also need to tell ocamlbuild
+`toto`. To tell OCamlbuild about them, you should use the tags
+`package(tata)` and `package(toto)`. You also need to tell OCamlbuild
 to enable support for ocamlfind by passing the `-use-ocamlfind`
 command-line option.
 
@@ -152,7 +152,7 @@ probably enable `-use-ocamlfind` by default in future versions of
 OCamlbuild, but in the meantime feel free to define a shell alias for
 convenience.
 
-Note 2: If you have a [`myocamlbuild.ml`](#Enriching OCamlbuild through plugins) file at the root of your ocamlbuild
+Note 2: If you have a [`myocamlbuild.ml`](#Enriching OCamlbuild through plugins) file at the root of your OCamlbuild
 project, you can use it to set this option, instead of using one command line parameter. Something like this:
 
     open Ocamlbuild_plugin
@@ -173,7 +173,7 @@ use them as any ocamlfind package, but you must also use the
     true: syntax(camlp4o)
     true: package(toto), package(blah.syntax)
 
-In recent versions of ocamlbuild (since OCaml 4.01), you can also
+In recent versions of OCamlbuild (since OCaml 4.01), you can also
 specify this using the `-syntax` command-line option:
 
     ocamlbuild -use-ocamlfind -syntax camlp4o myprog.byte
@@ -187,7 +187,7 @@ that have parentheses.
 
 ### Archives, documentation...
 
-Some ocamlbuild features require you to add new kind of files in your
+Some OCamlbuild features require you to add new kind of files in your
 source directory. Suppose you would like to distribute an archive file
 `mylib.cma` that would contain the compilation unit for your modules
 `mod1.ml` and `mod2.ml`. For this, you should create a file
@@ -242,14 +242,14 @@ TODO
 
 ## How `myocamlbuild.ml` works
 
-If you have a `myocamlbuild.ml` file at the root of your ocamlbuild
+If you have a `myocamlbuild.ml` file at the root of your OCamlbuild
 project, the building process will run in two steps.
 
-First, ocamlbuild will compile that file, linking it with all the
+First, OCamlbuild will compile that file, linking it with all the
 modules that are part of the globally installed `ocamlbuild`
 executable. This will produce a program `_build/myocamlbuild` that
 behaves exactly like `ocamlbuild` itself, except that it also runs the
-code of your `myocamlbuild.ml` file. Immediately after, ocamlbuild
+code of your `myocamlbuild.ml` file. Immediately after, OCamlbuild
 will stop (before doing any work on the targets you gave it) and start
 the `_build/myocamlbuild` program instead, that will handle the rest
 of the job. This is quite close to how, for example, XMonad (a window
@@ -257,16 +257,16 @@ manager whose configuration files are pure Haskell) works.
 
 This means that it is technically possible to do anything in
 `myocamlbuild.ml` that could be done by adding more code to the
-upstream ocamlbuild sources. But in practice, relying on the
-implementation internals would be fragile with respect to ocamlbuild
+upstream OCamlbuild sources. But in practice, relying on the
+implementation internals would be fragile with respect to OCamlbuild
 version changes.
 
-We thus isolated a subset of the ocamlbuild API, exposed by the
+We thus isolated a subset of the OCamlbuild API, exposed by the
 `Ocamlbuild_plugin` module, that defines a stable interface for plugin
 writers. It lets you manipulate command-line options, define new rules
 and targets, add new tags or refine the meaning of existing flags,
 etc. The signature of this module is the `PLUGIN` module type of the
-interface-only `signatures.mli` file of the ocamlbuild
+interface-only `signatures.mli` file of the OCamlbuild
 distribution. It is littered with comments explaining the purpose of
 the exposed values, but this documentation aspect can still be
 improved. We warmly welcome patches to improve this aspect of
@@ -280,8 +280,8 @@ in several ways:
   mean that fancy new rules introduced by `myocamlbuild.ml` will not
   be available.
 
-- The `-just-plugin` option instructs ocamlbuild to stop compilation
-  after having built the plugin; it also guarantees that ocamlbuild
+- The `-just-plugin` option instructs OCamlbuild to stop compilation
+  after having built the plugin; it also guarantees that OCamlbuild
   will try to compile the plugin, which it may not always do, for
   example when you only ask for cleaning or documentation.
 
@@ -305,7 +305,7 @@ compile-time.
 ## Dispatch
 
 Tag and rule declarations, or configuration option manipulation, are
-side-effects that modify a global ocamlbuild state. It would be
+side-effects that modify a global OCamlbuild state. It would be
 fragile to write your `myocamlbuild.ml` with such side-effects
 performed at module initialization time, in the following style
 
@@ -317,14 +317,14 @@ performed at module initialization time, in the following style
 
 The problem is that you have little idea, and absolutely no
 flexibility, of the time at which those actions will be performed with
-respect to all the other actions of ocamlbuild. In this example,
+respect to all the other actions of OCamlbuild. In this example,
 command-line argument parsing will happen after this plugin effect, so
 the changed option would be overridden by command-line options, which
 may or may not be what the plugin writer expects.
 
 To alleviate this side-effect order issue, OCamlbuild lets you
 register actions at hook points, to be called at a well-defined place
-during the ocamlbuild process. If you want your configuration change
+during the OCamlbuild process. If you want your configuration change
 to happen after options have been processed, you should in fact write:
 
     open Ocamlbuild_plugin
@@ -352,7 +352,7 @@ currently defined as
 Note: we give no guarantee on the order in which various hooks will be
 called, except of course that `Before_foo` always happens before
 `After_foo`. In particular, the `hygiene` hooks may be called before
-or after other hooks, or not be called at all if ocamlbuild decides
+or after other hooks, or not be called at all if OCamlbuild decides
 not to check hygiene.
 
 ## Flag declarations
@@ -363,14 +363,14 @@ compilation command if each of the tags are present on the given
 target. 
 
 The following example can be found in `ocaml_specific.ml`, the file of
-the ocamlbuild sources that defines most ocaml-specific tags and rules
-of ocamlbuild:
+the OCamlbuild sources that defines most ocaml-specific tags and rules
+of OCamlbuild:
 
     flag ["ocaml"; "annot"; "compile"] (A "-annot");
 
 This means that the `-annot` command-line option is added to any
 compilation command for which those three tags are present. The tags
-`"ocaml"` and `"compile"` are activated by default by ocamlbuild,
+`"ocaml"` and `"compile"` are activated by default by OCamlbuild,
 `"ocaml"` for any ocaml-related command, and `"compile"` specifically
 for compilation steps -- as opposed to linking, documentation
 generation, etc. The `"annot"` flag is not passed by default, so this
@@ -378,7 +378,7 @@ tag declaration will only take effects on targets that are explicitly
 marked `annot` in the `_tags` file.
 
 This very simple declarative language, mapping sets of tags to
-command-line options, is the way to give meaning to ocamlbuild tags --
+command-line options, is the way to give meaning to OCamlbuild tags --
 either add new ones or overload existing ones. It is very easy, for
 example, to pass a different command-line argument depending on
 whether byte or native-compilation is happening.
@@ -403,9 +403,9 @@ not describe its most advanced constructors -- it is again exposed in
       
 Remark: when introducing new flags, it is sometime difficult to guess
 which combination of tags to use. A hint to find the right combination
-is to have a look at ocamlbuild's log file that is saved in
+is to have a look at OCamlbuild's log file that is saved in
 `_build/_log` each time ocamlbuild is run.  It contains the targets
-ocamlbuild tried to produce, with the associated list of tags and the
+OCamlbuild tried to produce, with the associated list of tags and the
 corresponding command lines.
 
 ### Parametrized tags
@@ -437,7 +437,7 @@ TODO
 
 TODO
 
-## Complete example: ocamlfind support in ocamlbuild
+## Complete example: ocamlfind support in OCamlbuild
 
 TODO
 
@@ -455,6 +455,6 @@ TODO
 
 TODO
 
-# Contributing to ocamlbuild
+# Contributing to OCamlbuild
 
 TODO
