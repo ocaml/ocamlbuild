@@ -129,6 +129,17 @@ It is possible to exclude some files from this hygiene checking by
 tagging them with the `precious` or `not_hygienic` tags, or to disable
 the check globally using the `-no-hygiene` command-line option.
 
+The reason for this check is that leftover intermediate files can
+disrupt the way your build system work. OCamlbuild knows which target
+you need (library archives or program executables), and tries to build
+their dependencies, which first builds the dependencies of those
+dependencies, etc., until it eventually reaches your source files (the
+*inputs* of the build process). Everything present in the source
+directory is considered to be an input; if you keep old `.cmo` files
+in your source repository, OCamlbuild will not try to rebuild them
+from source files, but take them as references to produce the final
+targets, which is not what you want if they are stale.
+
 ### OCamlfind packages
 
 Your project will probably depend on external libraries as well. Let's
