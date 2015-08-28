@@ -518,7 +518,133 @@ menhir-specific builtin rule listed below.
 
 ## Tags
 
-TODO
+### Basic tags
+
+For convenience, we try to have a tag for each setting exported as
+command-line parameters by the OCaml compilers and tools. A builtin
+tag `foo_bar` corresponding to the option `-foo-bar` is in general
+better than trying to pass `-cflags -foo-bar` to the ocamlbuild
+compilation command, as it can enable the `-foo-bar` flag only when it
+make sense, in a more fine-grained way that "during a compilation
+command".
+
+(If you notice that a compiler-provided command-line option is missing
+its tag counterpart, this is a bug that you should report against
+ocamlbuild. Feel free to look at the implementation and send a patch
+adding this tag, it is really easy.)
+
+- compiler options:
+
+    - `absname`
+    - `annot`
+    - `asm` (for ocamlopt's `-S`)
+    - `bin_annot`
+    - `compat_32`
+    - `custom`
+    - `debug` (for `-g`)
+    - `dtypes`
+    - `for-pack(PackModule)`
+    - `inline(5)`
+    - `keep_locs`
+    - `linkall`
+    - `no_alias_deps`
+    - `no_float_const_prop`
+    - `nolabels`
+    - `nopervasives`
+    - `opaque`
+    - `open(MyPervasives)`
+    - `output_obj`
+    - `output_shared` (for `-cclib -shared`, automatically set by `.{byte,native}.{so,dll,dylib}` targets),
+    - `pp(my_pp_preprocessor)`
+    - `ppx(my_ppx_preprocessor)`
+    - `principal`
+    - `profile` (for `-p`)
+    - `rectypes`
+    - `runtime_variant(_pic)`
+    - `short_paths`
+    - `strict_formats`
+    - `strict_sequence`
+    - `thread`
+    - `unsafe_string`
+    - `warn(A@10-28@40-42-45)`
+    - `warn_error(+10+40)`
+
+- camlp4 options: `use_caml4_{,bin}`, `camlp4{rrr,orrr,oof,orf,rf,of,r,o}{,.opt}`
+
+- ocamllex options: `quiet` (`-q`), `generate_ml` (`-ml`)
+
+- menhir options: `only_tokens`, `infer`, explain`, `external_tokens(TokenModule)`
+
+- deprecated: the commands
+  `use_{ocamlbuild,ocamldoc,toplevel,graphics,dbm,nums,bigarray,str,unix,dynlink}`
+  were designed to indicate that the tagged modules depend on the
+  corresponding libraries from the OCaml distributions
+  (`use_{ocamlbuild,ocamldoc,toplevel}` allows to compile against the
+  tools' libraries to build plugins). We now recommend to enable those
+  libraries through their corresponding ocamlfind package.
+
+- ocamlbuild-specific tags:
+
+    - `not_hygienic` and `precious`: explicitly indicate that a file is
+      part of the source directory and should not be warned about by the
+      hygiene-checking tools. This is useful if for some reason you are
+      given, for example, a `.cmi` file to use unchanged in your
+      project.
+
+    - `traverse`: explicitly indicate that ocamlbuild should consider
+      this subdirectory as part of the current project; this flag is
+      set for all subdirectories by default (so OCamlbuild will look
+      in subdirectories recursively to find module dependencies) as
+      soon as the current directory "looks like an OCamlbuild project"
+      (there is either a `myocamlbuild.ml` or `_tags`
+      file present). This tag is usefully used negative,
+      `"foo/": -traverse`, to say that a part of the local directory
+      hierarchy should *not* be considered by ocamlbuild.
+
+    - `include`: explicitly indicate that this subdirectory is part of
+      the current project, and add it to ocamlbuild's internal
+      "include directory", meaning that the modules in this
+      subdirectory can be referred to without using their full
+      path.
+
+        If `subdir/` is `traverse`d, a `foo.mllib` file at the root directory
+        should refer to the module corresponding to `subdir/foo.ml` as
+        `subdir/Foo`. If it is `include`d, `Foo` is enough.
+
+    - global tags: setting `true: use_mehir` in the root `_tags` file
+      is equivalent to passing the `-use-menhir` command-line parameter.
+
+### Advanced (context) tags
+
+These tags are generally not meant to be used directly in `_tags`
+file, but rather to serve as the context part of tag declarations. For
+example, the `link` flag is automatically added thet set of tags of
+linking-related command, allowing tag declarations to add specific
+flags during linking phase only -- but it would make little sense to
+explicitly add the `link` tag to a target in your `_tags` file.
+
+- language context: `c` or `ocaml` indicate whether the compiler
+  invocation are working with OCaml files, or C files (to be passed to
+  the underlying C toolchain). If you wished to use OCamlbuild for
+  a completely different purpose (not necessarily OCaml-related), for
+  example building LaTeX documents, you could use a corresponding
+  `latex` tag
+
+- compilation stage context: `pp` (syntactic preprocessing), `compile`
+  (compilation of source files), `link` (linking of object files), but
+  also `pack` (when packing compiled object files), `library`
+  (when creating library archives), `infer_interface`
+  (producing a `.mli` from the corresponding `.ml`) and `toplevel`
+  (when building custom toplevels)
+
+- byte or native compilation context: `byte` (ocamlc) or `native` (ocamlopt)
+
+- extension tags: when building the target `foo.bar`, a tag
+  `extension:bar` is added to the set of current tags. This is used by
+  the builtin ocamldoc rules to enable either `-latex` or `-dot`
+  depending on the requested target extension.
+
+- tool-specific tags: `menhir`, `ocamlyacc`, `ocamllex`, `doc` (for ocamldoc)
 
 ## The `-documentation` option
 
