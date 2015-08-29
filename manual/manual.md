@@ -231,6 +231,72 @@ you name it `mydoc.odocl` for example, you can then invoke
 which will produce the documentation in the subdirectory
 `mydoc.docdir`, thanks to a rule `"%.odocl -> %.docdir/index.html"`.
 
+### Source and build directories, module paths, include paths
+
+The "source directories" that ocamlbuild will traverse to look for
+rule dependencies are a subset of the subdirectory tree rooted at the
+"root directory", the place where you invoke ocamlbuild. (All the
+paths we will discuss in this section are relative to the root
+directory.)
+
+The build directory contains a copy of the source directories
+hierarchy, with the source file imported and additional targets
+produced during the previous builds. It is traditionally the
+subdirectory `_build` of the root directory, although this can be set
+with the `-build-dir` command-line option. The build directory is not
+part of the source directories considered by OCamlbuild.
+
+A subdirectory of the subdirectory tree is included in the source
+directories if it has the "traverse" tag set. That means that if you
+want to add "foo/bar/" (and its files) as part of the source
+directories and remove "foo/baz/", you can use the following in your
+`_tags` file:
+
+    "foo/bar/": traverse
+    "foo/baz/": -traverse
+
+If the option `-r` (for "recursive") is passed, then by all
+subdirectories (recursively) are considered part of the source
+directories by default -- except the build directory, and directories
+that look like version-control information (`.svn`, `.bzr`, `.hg`,
+`.git`, `_darcs`).
+
+This option is enabled by default *if* the root directory looks like
+an ocamlbuild project: either a `myocamlbuild.ml` or a `_tags` file is
+present. (The reason for this heuristic is that calling `ocamlbuild`
+from your home directory could take a very long time if it recursively
+traverses your subdirectories, to check for hygiene for example.) If
+the root directory does not look like an ocamlbuild project, but you
+still wish to use it as such, you can just add the `-r` option
+explicitly. In the other direction, you can explicitly disable
+recursive traverse with `true: -traverse` in your `_tags` file.
+
+## Module paths and include directories
+
+On many occasions OCamlbuild needs you to indicate compilation units
+(set of source and object files for a given OCaml module) located
+somewhere in the source directories. The syntax to do this is to use
+an OCaml module name (in particular, capitalized), prefixed by the
+relative path from the root directory. For example, `bar/baz/Foo` will
+work with the files `bar/baz/[fF]oo.{ml[i],cm*}`, depending on the
+compilation phase.
+
+For added convenience, it is possible to add a source directory to the
+set of "include paths", that do not have to be explicitly written in
+each module path. If `bar/` is in the include path, you can refer to
+`bar/baz/Foo` as just `baz/Foo`. To add `bar` to the include path, one
+can pass the `-I bar` option to ocamlbuild, or tag `"bar/": include`
+in the `_tags` file.
+
+(I have to come see the use of the same syntax `-I foo` in
+`ocamlbuild` and in OCaml compilers as a mistake, because the
+underlying concepts are rather different. In particular, it is *not*
+the case that passing `-I foo` to ocamlbuild will transfer this
+command-line option to underlying compiler invocation; if `foo` is
+inside the source directories, this should not be needed, and if it is
+outside you are encouraged to rely on ocamlfind packages instead of
+absolute paths.)
+
 # Reference documentation
 
 In this chapter, we will try to cover the built-in targets and tags
@@ -467,12 +533,13 @@ menhir-specific builtin rule listed below.
   module paths) to be linked together (by using the standard
   `ocamlmklib` tool) to produce a `.a` or `.lib` archive
   (for static linking) or a `.so` or `.dll` archive
-  (for dynamic linking). If `foo.o` is listed and OCamlbuild is run
-  from Windows, `foo.obj` will be used instead. The target name
-  includes a `lib` or `dll` prefix, following standard conventions: to
-  build a static library from `foo.clib`, you should require the
-  target `libfoo.{a,lib}`, and to build a dynamic library you should
-  require the target `dllfoo.{so,dll}`.
+  (for dynamic linking). The .clib name should be prefixed by `lib`,
+  and the target name will then a `lib` or `dll` prefix, following
+  standard conventions: to build a static library from `libfoo.clib`,
+  you should require the target `libfoo.{a,lib}`, and to build
+  a dynamic library you should require the target
+  `dllfoo.{so,dll}`. If `foo.o` is listed and OCamlbuild is run from
+  Windows, `foo.obj` will be used instead.
 
 - `.mltop`, `.top`: requesting the build of `foo.top` will look for
   a list of module paths in `foo.mltop`, and build a custom toplevel
@@ -601,15 +668,8 @@ adding this tag, it is really easy.)
       `"foo/": -traverse`, to say that a part of the local directory
       hierarchy should *not* be considered by ocamlbuild.
 
-    - `include`: explicitly indicate that this subdirectory is part of
-      the current project, and add it to ocamlbuild's internal
-      "include directory", meaning that the modules in this
-      subdirectory can be referred to without using their full
-      path.
-
-        If `subdir/` is `traverse`d, a `foo.mllib` file at the root directory
-        should refer to the module corresponding to `subdir/foo.ml` as
-        `subdir/Foo`. If it is `include`d, `Foo` is enough.
+    - `include`, `traverse`: see the section above on source
+      directories and include paths.
 
     - global tags: setting `true: use_mehir` in the root `_tags` file
       is equivalent to passing the `-use-menhir` command-line parameter.
