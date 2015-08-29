@@ -11,10 +11,10 @@ Baz" error.
 
 ### Rules and targets
 
-OCamlbuild knows about a set of *rules* to build programs, that provide
-a piece of OCaml code to build certain kind of files, named *targets*,
-from some dependencies (statically known or
-dynamically discovered). For example, a built-in "%.ml -> %.cmo" rule
+OCamlbuild knows about a set of *rules* to build programs, that
+provide a piece of OCaml code to build certain kind of files, named
+*targets*, from some dependencies (statically known or
+dynamically discovered). For example, a built-in "%.ml -> %.cmo" rule
 describes how to build any `.cmo` compilation unit file from the `.ml`
 of the same name; if you call `ocamlbuild foo.cmo`, it will either use
 `foo.ml` in your source directory or, if it doesn't exist, try to
@@ -487,7 +487,7 @@ menhir-specific builtin rule listed below.
 ### Advanced targets
 
 - `.ml.depends`, `.mli.depends`: call the `ocamldep` tool to compute
-  a conservative sur-approximation of the external dependencies of the
+  a conservative over-approximation of the external dependencies of the
   corresponding source file
 
 - `.inferred.mli`: infer a `.mli` interface from the corresponding
@@ -497,7 +497,7 @@ menhir-specific builtin rule listed below.
   that can be packed as submodules of a `.cmo` or `.cmx` file: if
   `foo.mlpack` exist, asking for the target `foo.cmx` will build the
   modules listed in `foo.mlpack` and pack them together. Note that the
-  native ocaml compiler requires the submodules that will be packed to
+  native OCaml compiler requires the submodules that will be packed to
   be compiled with the `-for-pack Foo` option (where `Foo` is the name
   of the result of packing), and OCamlbuild does not hide this
   semantics from the user: you can use the built-in parametrized flag
@@ -575,7 +575,7 @@ menhir-specific builtin rule listed below.
 - `.pp.ml`: This target produces a pretty-printing (as OCaml
   source code) of the OCaml AST produced by preprocessing the
   corresponding `.ml` file. This does not work properly when using
-  `ocamlfind` to activate camlp4 preprocessors (the now-preferred way
+  `ocamlfind` to activate Camlp4 preprocessors (the now-preferred way
   to enable syntax extensions), because `ocamlfind` does not provide
   a way to obtain the post-processing output, only to preprocess
   during compilation. Note that passing the `-dsource` compilation
