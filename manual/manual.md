@@ -716,7 +716,41 @@ explicitly add the `link` tag to a target in your `_tags` file.
 
 ## The `-documentation` option
 
-TODO
+Invoking `ocamlbuild -documentation` will give a list of rules and
+tags known to OCamlbuild in the current project (including those
+defined in the `myocamlbuild` plugin). This is a good way to quickly
+look for the tag name corresponding to a particular option, and also
+more accurate than the above reference manual, which does cannot
+describe plugin-specific features.
+
+Note that this output is sensitive to the current configuration. For
+example, `ocamlbuild -use-ocamlfind -documentation` and
+`ocamlbuild -no-ocamlfind -documentation` produce different outputs,
+as the latter does not include ocamlfind-specific tags.
+
+Some examples of documentation of rules or flags are the following:
+
+    rule "ocaml: modular menhir (mlypack)"
+      ~deps:[ %.mlypack ]
+      ~prods:[ %.mli; %.ml ]
+      ~doc:"Menhir supports building a parser by composing several .mly files
+            together, containing different parts of the grammar description. To
+            use that feature with ocamlbuild, you should create a .mlypack file
+            with the same syntax as .mllib or .mlpack files: a
+            whitespace-separated list of the capitalized module names of the .mly
+            files you want to combine together."
+      <fun>
+
+Note that rule declaration only indicate the static dependencies of
+rules (those that determine whether or not the rule will
+be tried). Remark that this rule is explicit about the fact that
+invoking `menhir` produces both a `.ml` and `.mli`.
+
+    parametrized flag {. compile, ocaml, ppx(my_ppx) .} "-ppx my_ppx"
+
+    [...]
+
+    flag {. compile, no_alias_deps, ocaml .} "-no-alias-deps"
 
 # Enriching OCamlbuild through plugins
 
