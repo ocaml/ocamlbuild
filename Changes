@@ -10,7 +10,8 @@ OCamlbuild NEXT_RELEASE
   (ygrek)
 - PR#6605, GPR#117: use ocamlfind, if available, to discover camlp4 path
   (Vincent Laporte)
-
+- add -dot and -man-related ocamldoc options
+  (Gabriel Scherer)
 
 
 
