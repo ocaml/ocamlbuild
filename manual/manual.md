@@ -904,8 +904,9 @@ whether byte or native-compilation is happening.
 
 The `A` constructor stands for "atom(ic)", and is part of a `spec`
 datatype, representing specifications of fragments of command. We will
-not describe its most advanced constructors -- it is again exposed in
-`signatures.mli` -- but the most relevant here are as follow:
+not describe its most advanced constructors -- it is again exposed and
+documented in `signatures.mli` -- but the most relevant here are as
+follow:
 
     (** The type for command specifications. That is pieces of command. *)
     and spec =
@@ -942,22 +943,294 @@ specification. Again from the `PLUGIN` module type in `signatures.mli`:
 ## Rule declarations
 
 OCamlbuild let you build your own rules, to teach it how to build new
-kind of targets.
+kind of targets. This is done by calling the `rule` function from
+a plugin, which is declared and documented in the `PLUGIN` module in
+`signatures.mli`. We will not write an exhaustive documentation here
+(for this, have a look at `signatures.mli`), but rather expose the
+most common features through representative examples.
 
-TODO
+Our first example is simple, as it is a rule without dynamic dependencies.
+
+    rule "ocaml dependencies ml"
+      ~prod:"%.ml.depends"
+      ~dep:"%.ml"
+      ~doc:"call ocamldep to compute a syntactic over-approximation \\
+            of the dependencies of the corresponding implementation file"
+      ocamldep_ml_command
+
+The first string parameter is the name of the rule. This rule tells
+OCamlbuild how to build `foo.ml.depends` from its `foo.ml`. The `%`
+character here is a pattern variable: if the target name (for example
+`foo.ml.depends`) matches the pattern of the rule production
+`%.ml.depends`, OCamlbuild will try to build the static dependency of
+the rule, which is the evaluation of `%.ml` in the pattern-matching
+environment `% -> "foo"` (that is, `foo.ml`). If this static
+dependency can be built, then the "action" `ocamldep_ml_command` will
+be invoked to produce the expected result.
+
+The action, of type `PLUGIN.action`, is a function that takes the
+current pattern-matching environment (in our example, mapping the
+pattern variable `%` to `foo`), a builder function, and returns
+a command, the command to execute to produce the final target of this
+rule. The plugin author defining this rule should define the
+`ocamldep_ml_command` as follows:
+
+    let ocamldep_ml_command env _build =
+      let arg = env "%.ml" and out = env "%.ml.depends" in
+      let tags = tags_of_pathname arg ++ "ocaml" ++ "ocamldep" in
+      Cmd(S[A "ocamldep"; T tags; A "-modules"; P arg; Sh ">"; Px out])
+
+The first line in this definition is to use the pattern environment to
+compute the actual name of the input file, to pass in argument to the
+`ocamldep` command, and of the result target name. The environment
+type `PLUGIN.env` is just `string -> string`, it takes a pattern and
+substitutes its pattern variables to return a closed result.
+
+The second line in this definition computes the set of tags to include
+in this command invocation. When OCamlbuild is passed the command
+back, it will use its tag declarations to turn this set of tags in
+additional flags to insert in the command invocation. The call
+`tags_of_pathname arg` looks up in the `_tags` file for any tag
+associated to the `foo.ml` file, and the rule code also adds the two
+contextual tags `ocaml` and `ocamldep` (on which tag declarations
+may depend).
+
+Finally, the command is built:
+
+      Cmd(S[A "ocamldep"; T tags; A "-modules"; P arg; Sh ">"; Px out])
+
+We already mentioned above the constructors `S`, `A` and `P` of the
+`command.spec` type: `S` just builds a sequence by concatenating
+sequent fragments, `A` is used for "atoms" (fragments of text to be
+included as-is, but may be escaped to not break shell syntax), and `P`
+denotes a filesystem path that should be quoted.
+
+The constructor `T` is used to embed tags within a command. Note
+passing `T` twice, one with the tag set `ocaml, ocamldep` and the
+other with the tag `foo`, is not equivalent to passing `ocaml,
+ocamldep, foo` together, as the transformation of tags into flags
+proceeds on each `T` fragment separately.
+
+`Sh` is used for bits of raw shell code that should not be quoted at
+all, here the output redirection `>`. Finally, `Px` indicates
+a filesystem path just as `P`, but it adds the information that this
+filesystem path is the path of the target produced by this rule --
+this information is used by OCamlbuild for logging purposes.
+
+#### Remark
+
+Remark that it is entirely of the rule author's responsibility to
+include tags in the action's command. In particular, it is the code of
+the rule action that decides if the tags taken into account, if any,
+are the tags assigned to the rule dependencies, or productions, or
+both. (Unfortunately the built-in rule themselves are sometimes a bit
+inconsistent on this.)
+
+### Dynamic dependencies
+
+In the action `ocamldep_ml_command` of the previous example, the
+`_build` parameter of type `PLUGIN.builder` was ignored. This is
+because this rule had no dynamic dependencies, no need to build extra
+targets determined during the execution of the rule itself -- the
+static dependency is built by ocamlbuild's resolution engine before
+the action itself is executed.
+
+The following example uses on dynamic depencies:
+
+    let target_list env build =
+        let itarget = env "%.itarget" in
+        let targets =
+          let dir = Pathname.dirname itarget in
+          let files = string_list_of_file itarget in
+          List.map (fun file -> [Pathname.concat dir file]) files
+        in
+        let results = List.map Outcome.good (build targets) in
+        let link_command result =
+          Cmd (S [A "ln"; A "-sf";
+                  P (Pathname.concat !Options.build_dir result);
+                  A Pathname.pwd])
+        in
+        Seq (List.map link_command results)
+
+    rule "target files"
+      ~dep:"%.itarget"
+      ~stamp:"%.otarget"
+      ~doc:"If foo.itarget contains a list of ocamlbuild targets, \
+            asking ocamlbuild to produce foo.otarget will \
+            build each of those targets in turn."
+      target_list
+
+The `string_list_of_file` function reads a file and return the list of
+its lines -- it is used in the various builtin rules for files
+containing file or module paths (`.mllib`, `.odocl`, here `.itarget`).
+
+The function `build` expects a list of lists in argument, to be
+understood as a conjunction of disjunctions. For example, if passed
+the input `[["a/foo.byte"; "b/foo.byte"]; ["a/foo.native";
+"b/foo.native"]]`, it will try to build ((`a/foo.byte` OR
+`b/foo.byte`) AND (`a/foo.native` OR `b/foo.native`)). The disjunctive
+structure (this OR that) is useful because we are often not quite sure
+where a particular target may be (for example the module `Foo` may be
+in any of the subdirectories in the include path). The conjunctive
+structure (this AND that) is essential to parallelizing the build:
+ocamlbuild will try to build all these targets in parallel, whereas
+sequential invocation of the `build` function on each of the
+disjunctions would give sequential builds.
+
+The function `build` returns a list of outcomes (`(string, exn)
+Outcome.t` -- `Outcome.t` is just a disjoint-sum type), that is either
+a `string` (the one of the several possible targets that could
+be built) or an exception value. `Outcome.good` returns the good
+result if it exists, or raises the exception.
 
 ### Stamps
 
-TODO
+In the rule above, the production `"%.otarget"` is not passed as
+`~prod` parameter, but as a `~stamp`. Stamps are special files that
+record the list of digests of the dynamic dependencies of the rule
+that produced them.
 
-### Copy rules
+This is useful to know whether a target should be re-compiled, or
+whether it is already up-to-date from a previous build and can be just
+kept as-is. Imagine that a rule to produce a file `foo.weird` depends
+on the rules listed in the corresponding `foo.itarget` (and then
+performs some build action); when should `foo.weird` be rebuilt, and
+when is it up-to-date? More precisely, after we have built the targets
+of `foo.itarget`, how do we know whether we should re-run the build
+action of `foo.weird`? Obviously, just checking if the `foo.itarget`
+file changed is not enough (the list of targets could be identical and
+yet, if one of the target changed, `foo.weird` must be rebuilt).
 
-TODO
+This is where `foo.otarget` comes in: because it contains a list of
+digests of the dependencies of `foo.itarget`, `foo.weird` can
+statically depend on `foo.otarget` -- and does not need to depend on
+`foo.itarget` directly, and it will transitively depend on it through
+`foo.otarget`. This stamp file will change each time one of the
+`foo.itarget` elements changes, and thus `foo.weird` will be rebuilt
+exactly as necessary.
 
-## Complete example: ocamlfind support in OCamlbuild
+Such stamps should be used each time a rule has no natural file output
+to use as output (the case of `.itarget`), or when this file output
+does not contain enough information for its digest to correctly
+require rebuilding. The latter case occurs in the rule to build
+ocamldoc documentation `%.docdir/index.html`: the `index.html` only
+lists the documented modules, it does not contain their documentation
+which is in other generated files. The rule thus produces a stamp
+`%.docdir/html.stamp`, one which you should depend if you want your
+rule to be re-executed each time the documentation changes.
 
-TODO
+### Pattern variables
 
+Most rules need exactly one pattern variable and use `%` for this
+purpose. One can use any string of the form `%(identifier)` as pattern
+variable, or even `%(identifier:pattern)`, in which case the pattern
+will be only be matched by a string matching the corresponding
+`pattern`. For example, the rule to produce the dynamic library
+archive `dllfoo.so` from the file list `libfoo.clib` starts as follows:
+
+    rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
+      ~prods:(["%(path:<**/>)lib%(libname:<*> and not <*.*>)"-.-ext_lib] @
+              if Ocamlbuild_config.supports_shared_libraries then
+                ["%(path:<**/>)dll%(libname:<*> and not <*.*>)"-.-ext_dll]
+              else
+                [])
+      ~dep:"%(path)lib%(libname).clib"
+
+## Complete example: menhir support in OCamlbuild
+
+    rule "ocaml: modular menhir (mlypack)"
+      ~prods:["%.mli" ; "%.ml"]
+      ~deps:["%.mlypack"]
+      ~doc:"Menhir supports building a parser by composing several .mly files \
+            together, containing different parts of the grammar description. \
+            To use that feature with ocamlbuild, you should create a .mlypack \
+            file with the same syntax as .mllib or .mlpack files: \
+            a whitespace-separated list of the capitalized module names \
+            of the .mly files you want to combine together."
+      (Ocaml_tools.menhir_modular "%" "%.mlypack" "%.mlypack.depends");
+
+    rule "ocaml: menhir modular dependencies"
+      ~prod:"%.mlypack.depends"
+      ~dep:"%.mlypack"
+      (Ocaml_tools.menhir_modular_ocamldep_command "%.mlypack" "%.mlypack.depends");
+
+    rule "ocaml: menhir"
+      ~prods:["%.ml"; "%.mli"]
+      ~deps:["%.mly"; "%.mly.depends"]
+      ~doc:"Invokes menhir to build the .ml and .mli files derived from a .mly \
+            grammar. If you want to use ocamlyacc instead, you must disable the \
+            -use-menhir option that was passed to ocamlbuild."
+      (Ocaml_tools.menhir "%.mly");
+
+    rule "ocaml: menhir dependencies"
+      ~prod:"%.mly.depends"
+      ~dep:"%.mly"
+      (Ocaml_tools.menhir_ocamldep_command "%.mly" "%.mly.depends");
+
+    flag ["ocaml"; "menhir"] (atomize !Options.ocaml_yaccflags);
+
+    flag [ "ocaml" ; "menhir" ; "explain" ] (S[A "--explain"]);
+    flag [ "ocaml" ; "menhir" ; "infer" ] (S[A "--infer"]);
+
+    List.iter begin fun mode ->
+      flag [ mode; "only_tokens" ] (S[A "--only-tokens"]);
+      pflag [ mode ] "external_tokens" (fun name ->
+        S[A "--external-tokens"; A name]);
+    end [ "menhir"; "menhir_ocamldep" ];
+
+where the menhir-specific actions in `Ocaml_tools` are defined as follows:
+
+    let menhir_ocamldep_command' tags ~menhir_spec out =
+      let menhir = if !Options.ocamlyacc = N then V"MENHIR" else !Options.ocamlyacc in
+      Cmd(S[menhir; T tags; A"--raw-depend";
+            A"--ocamldep"; Quote (ocamldep_command' Tags.empty);
+            menhir_spec ; Sh ">"; Px out])
+  
+    let menhir_ocamldep_command arg out env _build =
+      let arg = env arg and out = env out in
+      let tags = tags_of_pathname arg++"ocaml"++"menhir_ocamldep" in
+      menhir_ocamldep_command' tags ~menhir_spec:(P arg) out
+  
+    let import_mlypack build mlypack =
+      let tags1 = tags_of_pathname mlypack in
+      let files = string_list_of_file mlypack in
+      let include_dirs = Pathname.include_dirs_of (Pathname.dirname mlypack) in
+      let files_alternatives =
+        List.map begin fun module_name ->
+          expand_module include_dirs module_name ["mly"]
+        end files
+      in
+      let files = List.map Outcome.good (build files_alternatives) in
+      let tags2 =
+        List.fold_right
+          (fun file -> Tags.union (tags_of_pathname file))
+          files tags1
+      in
+      (tags2, files)
+  
+    let menhir_modular_ocamldep_command mlypack out env build =
+      let mlypack = env mlypack and out = env out in
+      let (tags,files) = import_mlypack build mlypack in
+      let tags = tags++"ocaml"++"menhir_ocamldep" in
+      let menhir_base = Pathname.remove_extensions mlypack in
+      let menhir_spec = S[A "--base" ; P menhir_base ; atomize_paths files] in
+      menhir_ocamldep_command' tags ~menhir_spec out
+  
+    let menhir_modular menhir_base mlypack mlypack_depends env build =
+      let menhir = if !Options.ocamlyacc = N then "menhir" else !Options.ocamlyacc in
+      let menhir_base = env menhir_base in
+      let mlypack = env mlypack in
+      let mlypack_depends = env mlypack_depends in
+      let (tags,files) = import_mlypack build mlypack in
+      let () = List.iter Outcome.ignore_good (build [[mlypack_depends]]) in
+      Ocaml_compiler.prepare_compile build mlypack;
+      let ocamlc_tags = tags++"ocaml"++"byte"++"compile" in
+      let tags = tags++"ocaml"++"parser"++"menhir" in
+      Cmd(S[menhir ;
+            A "--ocamlc"; Quote(S[!Options.ocamlc; T ocamlc_tags; ocaml_include_flags mlypack]);
+            T tags ; A "--base" ; Px menhir_base ; atomize_paths files])
+
+<!--
 # Advanced Examples
 
 ## Complex multi-directory code organization
@@ -971,7 +1244,26 @@ TODO
 ## Using custom preprocessors
 
 TODO
+-->
 
 # Contributing to OCamlbuild
 
-TODO
+Any contribution is warmly welcome.
+
+Bugs should be reported on the Mantis bugtracked of the OCaml
+distribution, <http://http://caml.inria.fr/mantis/>, using the
+ocamlbuild-specific category.
+
+Contributions under the form of patches are most welcome. OCamlbuild
+is free software, licensed under the GNU LGPL, and we do our best to
+review, give feedback, and integrate patches uploaded on Mantis or
+pull requests on the github mirror of the OCaml distribution,
+<https://github.com/ocaml/ocaml/pulls>.
+
+In particular, if you try to understand the implementation or
+documentation, and understanding some part of it requires effort,
+a patch containing implementation or documentation comments to clarify
+it to future readers is an excellent idea.
+
+Any ocamlbuild-related question can be asked on the caml-list
+mailing-list <TODO URL>.
