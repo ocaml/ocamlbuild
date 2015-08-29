@@ -636,11 +636,19 @@ adding this tag, it is really easy.)
     - `warn(A@10-28@40-42-45)`
     - `warn_error(+10+40)`
 
-- camlp4 options: `use_caml4_{,bin}`, `camlp4{rrr,orrr,oof,orf,rf,of,r,o}{,.opt}`
+- ocamlfind options:
+
+    - `package(pkgname)
+    - `linkpkg`
+    - `dontlink(pkgname)`
+    - `predicate(foo)`
+    - `syntax(bar)`
 
 - ocamllex options: `quiet` (`-q`), `generate_ml` (`-ml`)
 
 - menhir options: `only_tokens`, `infer`, explain`, `external_tokens(TokenModule)`
+
+- camlp4 options: `use_caml4_{,bin}`, `camlp4{rrr,orrr,oof,orf,rf,of,r,o}{,.opt}`
 
 - deprecated: the commands
   `use_{ocamlbuild,ocamldoc,toplevel,graphics,dbm,nums,bigarray,str,unix,dynlink}`
