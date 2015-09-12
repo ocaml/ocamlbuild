@@ -1,4 +1,41 @@
-# A short introduction to OCamlbuild
+# Table of contents
+
+- [A short introduction to OCamlbuild](#intro)
+    - [Core concepts](#intro-core-concepts)
+        - [Rules and targets](#concept-rules-targets)
+        - [Tags and the `_tags` file](#concept-tags)
+        - [`myocamlbuild.ml`](#concept-myocamlbuild)
+    - [A simple program](#intro-example)
+    - [Hygiene](#intro-hygiene)
+    - [OCamlfind packages](#intro-ocamlfind)
+    - [Syntax extensions](#intro-preproc)
+    - [Archives, documentation...](#intro-archive-doc)
+        - [Module paths and include directories](#paths-module-include)
+- [Reference documentation](#reference)
+    - [File extensions of the OCaml compiler and common tools](#reference-extensions)
+    - [Targets and rules](#reference-rule)
+        - [Basic targets](#targets-basics)
+        - [ocamldoc targets](#targets-ocamldoc)
+        - [OCamlYacc and Menhir targets](#targets-parsegen)
+        - [Deprecated targets](#targets-deprecated)
+    - [Tags](#reference-tags)
+        - [Basic tags](#tags-basics)
+        - [Advanced (context) tags](#tags-advanced)
+    - [The `-documentation` option](#reference-documentation)
+- [Enriching OCamlbuild through plugins](#plugins)
+    - [How `myocamlbuild.ml` works](#plugins-myocamlbuild-file)
+    - [Dispatch](#plugins-dispatch)
+    - [Flag declarations](#plugins-new-flags)
+        - [Parametrized tags](#flags-parametrized)
+    - [Rule declarations](#plugins-new-rules)
+        - [Dynamic dependencies](#rules-dynamic-deps)
+        - [Stamps](#rules-stamps)
+        - [Pattern variables](#rules-patterns)
+    - [Complete example: menhir support in OCamlbuild](#plugins-example)
+- [Contributing to OCamlbuild](#contributing)
+
+
+# A short introduction to OCamlbuild <a id="intro"></a>
 
 OCamlbuild's job is to determine the sequence of calls to the
 compiler, with the right set of command-line flags, needed to build
@@ -7,9 +44,9 @@ the OCaml language that make writing good Makefiles difficult, such as
 the dreaded "units Foo and Bar make inconsistent assumptions about
 Baz" error.
 
-## Core concepts
+## Core concepts <a id="intro-core-concepts"></a>
 
-### Rules and targets
+### Rules and targets <a id="concept-rules-targets"></a>
 
 OCamlbuild knows about a set of *rules* to build programs, that
 provide a piece of OCaml code to build certain kind of files, named
@@ -26,7 +63,7 @@ byte or native programs (`.byte`, `.native`), library archives
 `.docdir/man`), etc. We will detail those in the [Reference
 section](TODO REF).
 
-### Tags and the `_tags` file
+### Tags and the `_tags` file <a id="concept-tags"></a>
 
 *Tags* are an abstraction layer designed to specify command-line flags
 in a declarative style. If you're invoking the compiler directly and
@@ -54,7 +91,7 @@ with debug information, and pass `-rectypes` when compiling
 predicates, and the set of built-in tags in the [Reference
 section](TODO REF).
 
-### `myocamlbuild.ml`
+### `myocamlbuild.ml` <a id="concept-myocamlbuild"></a>
 
 The `_tags` file provides a convenient but limited interface to tune
 your project. For any more general purpose, we chose to use
@@ -71,7 +108,7 @@ a shiny new preprocessing program), to define new tags or refine the
 meaning of existing tags. We will cover these use-cases in the more
 advanced [Plugin section](TODO REF) of the manual.
 
-## A simple program
+## A simple program <a id="intro-example"></a>
 
 Simple OCaml projects often have a set of `.ml` and `.mli` files that
 provide useful modules depending on each other, and possibly a main
@@ -106,7 +143,7 @@ keep your source directory clean. Targets are therefore built inside
 target in the user directory, but if a target does not appear after
 being built, chances are it is in `_build`.
 
-## Hygiene
+## Hygiene <a id="intro-hygiene"></a>
 
 A more irritating feature is that it will actively complain if some
 compiled files are left in the source directory.
@@ -142,7 +179,7 @@ in your source repository, OCamlbuild will not try to rebuild them
 from source files, but take them as references to produce the final
 targets, which is not what you want if they are stale.
 
-### OCamlfind packages
+## OCamlfind packages <a id="intro-ocamlfind"></a>
 
 Your project will probably depend on external libraries as well. Let's
 assume they are provided by the ocamlfind packages `tata` and
@@ -176,7 +213,7 @@ project, you can use it to set this option, instead of using one command line pa
         | _ -> ())
 
 
-### Syntax extensions
+## Syntax extensions <a id="intro-preproc"></a>
 
 If you use syntax extensions distributed through `ocamlfind`, you can
 use them as any ocamlfind package, but you must also use the
@@ -198,7 +235,10 @@ line. Note that the quoting, `-tag "syntax(camlp4o)"` instead of
 `-tag syntax(camlp4o)`, is necessary for your shell to understand tags
 that have parentheses.
 
-### Archives, documentation...
+If you use `-ppx` preprocessors, you can use the parametrized tag
+`ppx(...)` (`-tag "ppx(...)"`) to specify the preprocessor to use.
+
+## Archives, documentation... <a id="intro-archive-doc"></a>
 
 Some OCamlbuild features require you to add new kind of files in your
 source directory. Suppose you would like to distribute an archive file
@@ -231,7 +271,7 @@ you name it `mydoc.odocl` for example, you can then invoke
 which will produce the documentation in the subdirectory
 `mydoc.docdir`, thanks to a rule `"%.odocl -> %.docdir/index.html"`.
 
-### Source and build directories, module paths, include paths
+## Source and build directories, module paths, include paths <a href="intro-paths"></a>
 
 The "source directories" that ocamlbuild will traverse to look for
 rule dependencies are a subset of the subdirectory tree rooted at the
@@ -271,7 +311,7 @@ still wish to use it as such, you can just add the `-r` option
 explicitly. In the other direction, you can explicitly disable
 recursive traverse with `true: -traverse` in your `_tags` file.
 
-## Module paths and include directories
+### Module paths and include directories <a id="paths-module-include"></a>
 
 On many occasions OCamlbuild needs you to indicate compilation units
 (set of source and object files for a given OCaml module) located
@@ -297,7 +337,7 @@ inside the source directories, this should not be needed, and if it is
 outside you are encouraged to rely on ocamlfind packages instead of
 absolute paths.)
 
-# Reference documentation
+# Reference documentation <a id="reference"></a>
 
 In this chapter, we will try to cover the built-in targets and tags
 provided by OCamlbuild. We will omit features that are deprecated,
@@ -305,7 +345,7 @@ because we found they lead to bad practices or were superseded by
 better options. Of course, given that a `myocamlbuild.ml` can add new
 rules and tags, this documentation will always be partial.
 
-## File extensions of the OCaml compiler and common tools
+## File extensions of the OCaml compiler and common tools <a id="reference-extensions"></a>
 
 A large part of the file extensions in OCamlbuild rules have not been
 designed by OCamlbuild itself, but are standard extensions manipulated
@@ -365,7 +405,7 @@ itself, but are commonly used by OCaml tools:
   "preprocessing" and `4` for Camlp4, an influential
   OCaml preprocessor).
 
-## Targets and rules
+## Targets and rules <a id="reference-rule"></a>
 
 The built-in OCamlbuild for OCaml compilation all rely on file
 extensions to know which rule to use. Note that this is not imposed by
@@ -389,7 +429,7 @@ The target extensions understood by OCamlbuild built-in rules are
 listed in the following subsections. Again, note that `myocamlbuild`
 plugins may add new targets and rules.
 
-### Basic targets
+### Basic targets <a id="targets-basics"></a>
 
 - `.cmi`, `.cmo`, `.cmx`: builds those intermediate files from the
   corresponding source files (`.ml`, and the `.mli` if it exists)
@@ -432,7 +472,7 @@ plugins may add new targets and rules.
   file
 
 
-### ocamldoc targets
+### ocamldoc targets <a id="targets-ocamldoc"></a>
 
 These target will call the documentation generator `ocamldoc`.
 
@@ -460,7 +500,7 @@ These target will call the documentation generator `ocamldoc`.
 - `.docdir/bar.dot`: same as above, but generates a `.dot` graph of
   inter-module dependencies.
 
-### OCamlYacc and Menhir targets
+### OCamlYacc and Menhir targets <a id="targets-parsegen"></a>
 
 OCamlbuild will by default use `ocamlyacc`, a legacy parser generator
 that is included in the OCaml distribution. The third-party parser
@@ -546,7 +586,7 @@ menhir-specific builtin rule listed below.
   with all these modules pre-linked -- by using the standard
   `ocamlmktop` tool.
 
-### Deprecated targets
+### Deprecated targets <a id="targets-deprecated"></a>
 
 - `.p.*`, `.d.*`:
 
@@ -583,9 +623,9 @@ menhir-specific builtin rule listed below.
   post-processing during compilation (as OCaml source code; use
   `-dparsetree` for a tree view of the AST).
 
-## Tags
+## Tags <a id="reference-tags"></a>
 
-### Basic tags
+### Basic tags <a id="tags-basics"></a>
 
 For convenience, we try to have a tag for each setting exported as
 command-line parameters by the OCaml compilers and tools. A builtin
@@ -682,7 +722,7 @@ adding this tag, it is really easy.)
     - global tags: setting `true: use_mehir` in the root `_tags` file
       is equivalent to passing the `-use-menhir` command-line parameter.
 
-### Advanced (context) tags
+### Advanced (context) tags <a id="tags-advanced"></a>
 
 These tags are generally not meant to be used directly in `_tags`
 file, but rather to serve as the context part of tag declarations. For
@@ -714,7 +754,7 @@ explicitly add the `link` tag to a target in your `_tags` file.
 
 - tool-specific tags: `menhir`, `ocamlyacc`, `ocamllex`, `doc` (for ocamldoc)
 
-## The `-documentation` option
+## The `-documentation` option <a id="reference-documentation"></a>
 
 Invoking `ocamlbuild -documentation` will give a list of rules and
 tags known to OCamlbuild in the current project (including those
@@ -752,9 +792,9 @@ invoking `menhir` produces both a `.ml` and `.mli`.
 
     flag {. compile, no_alias_deps, ocaml .} "-no-alias-deps"
 
-# Enriching OCamlbuild through plugins
+# Enriching OCamlbuild through plugins <a id="plugins"></a>
 
-## How `myocamlbuild.ml` works
+## How `myocamlbuild.ml` works <a id="plugins-myocamlbuild-file"></a>
 
 If you have a `myocamlbuild.ml` file at the root of your OCamlbuild
 project, the building process will run in two steps.
@@ -816,7 +856,7 @@ at runtime for the plugin, while a plugin tag is meaningful at
 compile-time.
 
 
-## Dispatch
+## Dispatch <a id="plugins-dispatch"></a>
 
 Tag and rule declarations, or configuration option manipulation, are
 side-effects that modify a global OCamlbuild state. It would be
@@ -869,7 +909,7 @@ called, except of course that `Before_foo` always happens before
 or after other hooks, or not be called at all if OCamlbuild decides
 not to check [hygiene](TODO REF ## Hygiene).
 
-## Flag declarations
+## Flag declarations <a id="plugins-new-flags"></a>
 
 A flag declaration maps a *set of tags* to a list of command-line
 options/flags/arguments. These arguments will be added to a given
@@ -923,7 +963,7 @@ is to have a look at OCamlbuild's log file that is saved in
 OCamlbuild tried to produce, with the associated list of tags and the
 corresponding command lines.
 
-### Parametrized tags
+### Parametrized tags <a id="flags-parametrized"></a>
 
 You can also define families of parametrized tags such as
 `package(foo)` or `inline(30)`. This is done through the `pflag`
@@ -940,7 +980,7 @@ specification. Again from the `PLUGIN` module type in `signatures.mli`:
         when compiling OCaml modules tagged with "inline(42)". *)
     val pflag : Tags.elt list -> Tags.elt -> (string -> Command.spec) -> unit
 
-## Rule declarations
+## Rule declarations <a id="plugins-new-rules"></a>
 
 OCamlbuild let you build your own rules, to teach it how to build new
 kind of targets. This is done by calling the `rule` function from
@@ -1017,7 +1057,7 @@ a filesystem path just as `P`, but it adds the information that this
 filesystem path is the path of the target produced by this rule --
 this information is used by OCamlbuild for logging purposes.
 
-#### Remark
+##### Remark: tags handling in rules
 
 Remark that it is entirely of the rule author's responsibility to
 include tags in the action's command. In particular, it is the code of
@@ -1026,7 +1066,7 @@ are the tags assigned to the rule dependencies, or productions, or
 both. (Unfortunately the built-in rule themselves are sometimes a bit
 inconsistent on this.)
 
-### Dynamic dependencies
+### Dynamic dependencies <a id="rules-dynamic-deps"></a>
 
 In the action `ocamldep_ml_command` of the previous example, the
 `_build` parameter of type `PLUGIN.builder` was ignored. This is
@@ -1083,7 +1123,7 @@ a `string` (the one of the several possible targets that could
 be built) or an exception value. `Outcome.good` returns the good
 result if it exists, or raises the exception.
 
-### Stamps
+### Stamps <a id="rules-stamps"></a>
 
 In the rule above, the production `"%.otarget"` is not passed as
 `~prod` parameter, but as a `~stamp`. Stamps are special files that
@@ -1119,7 +1159,7 @@ which is in other generated files. The rule thus produces a stamp
 `%.docdir/html.stamp`, one which you should depend if you want your
 rule to be re-executed each time the documentation changes.
 
-### Pattern variables
+### Pattern variables <a id="rules-patterns"></id>
 
 Most rules need exactly one pattern variable and use `%` for this
 purpose. One can use any string of the form `%(identifier)` as pattern
@@ -1136,7 +1176,7 @@ archive `dllfoo.so` from the file list `libfoo.clib` starts as follows:
                 [])
       ~dep:"%(path)lib%(libname).clib"
 
-## Complete example: menhir support in OCamlbuild
+## Complete example: menhir support in OCamlbuild <a id="plugins-example"></a>
 
     rule "ocaml: modular menhir (mlypack)"
       ~prods:["%.mli" ; "%.ml"]
@@ -1246,7 +1286,7 @@ TODO
 TODO
 -->
 
-# Contributing to OCamlbuild
+# Contributing to OCamlbuild <a id="contributing"></a>
 
 Any contribution is warmly welcome.
 
