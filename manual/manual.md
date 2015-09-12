@@ -22,6 +22,7 @@
         - [Basic tags](#tags-basics)
         - [Advanced (context) tags](#tags-advanced)
     - [The `-documentation` option](#reference-documentation)
+    - [Syntax of `_tags` file](#reference-tags-file)
 - [Enriching OCamlbuild through plugins](#plugins)
     - [How `myocamlbuild.ml` works](#plugins-myocamlbuild-file)
     - [Dispatch](#plugins-dispatch)
