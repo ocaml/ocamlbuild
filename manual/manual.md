@@ -12,8 +12,8 @@
     - [Archives, documentation...](#intro-archive-doc)
         - [Module paths and include directories](#paths-module-include)
 - [Reference documentation](#reference)
-    - [File extensions of the OCaml compiler and common tools](#reference-extensions)
-    - [Targets and rules](#reference-rule)
+    - [File extensions of the OCaml compiler and common tools](#reference-compiler-extensions)
+    - [Targets and rules](#reference-targets)
         - [Basic targets](#targets-basics)
         - [ocamldoc targets](#targets-ocamldoc)
         - [OCamlYacc and Menhir targets](#targets-parsegen)
@@ -61,7 +61,7 @@ OCamlbuild knows various targets to build all sort of useful things:
 byte or native programs (`.byte`, `.native`), library archives
 (`.cma`, `.cmxa`, `.cmxs`), documentation (`.docdir/index.html`,
 `.docdir/man`), etc. We will detail those in the [Reference
-section](TODO REF).
+section](#reference-targets).
 
 ### Tags and the `_tags` file <a id="concept-tags"></a>
 
@@ -87,9 +87,9 @@ applies. For example the `_tags` file
 will make your whole project (`true` matches anything) depend on the
 ocamlfind packages `toto` and `tata`, compile modules `foo` and `bar`
 with debug information, and pass `-rectypes` when compiling
-`strange.ml` -- but not `strange.mli`. We will detail the syntax of
-predicates, and the set of built-in tags in the [Reference
-section](TODO REF).
+`strange.ml` -- but not `strange.mli`. We will detail the [syntax of
+predicates](#reference-tags-file), and the set of [built-in
+tags](#reference-tags) in the Reference section.
 
 ### `myocamlbuild.ml` <a id="concept-myocamlbuild"></a>
 
@@ -106,7 +106,7 @@ similar to command-line options you would pass to OCamlbuild. But it
 also allows to define new rules and targets (for example to support
 a shiny new preprocessing program), to define new tags or refine the
 meaning of existing tags. We will cover these use-cases in the more
-advanced [Plugin section](TODO REF) of the manual.
+advanced [Plugin section](#plugins) of the manual.
 
 ## A simple program <a id="intro-example"></a>
 
@@ -345,7 +345,7 @@ because we found they lead to bad practices or were superseded by
 better options. Of course, given that a `myocamlbuild.ml` can add new
 rules and tags, this documentation will always be partial.
 
-## File extensions of the OCaml compiler and common tools <a id="reference-extensions"></a>
+## File extensions of the OCaml compiler and common tools <a id="reference-compilre-extensions"></a>
 
 A large part of the file extensions in OCamlbuild rules have not been
 designed by OCamlbuild itself, but are standard extensions manipulated
@@ -405,7 +405,7 @@ itself, but are commonly used by OCaml tools:
   "preprocessing" and `4` for Camlp4, an influential
   OCaml preprocessor).
 
-## Targets and rules <a id="reference-rule"></a>
+## Targets and rules <a id="reference-targets"></a>
 
 The built-in OCamlbuild for OCaml compilation all rely on file
 extensions to know which rule to use. Note that this is not imposed by
@@ -504,11 +504,12 @@ These target will call the documentation generator `ocamldoc`.
 
 OCamlbuild will by default use `ocamlyacc`, a legacy parser generator
 that is included in the OCaml distribution. The third-party parser
-generator [Menhir](TODO URL) is superior in all aspects, so you are
-encouraged to use it instead. To enable the use of Menhir instead of
-ocamlyacc, you should pass the `-use-menhir` option, or have `true:
-use_menhir` in your `_tags` file. OCamlbuild will then activate
-menhir-specific builtin rule listed below.
+generator [Menhir](http://gallium.inria.fr/~fpottier/menhir/) is
+superior in all aspects, so you are encouraged to use it instead. To
+enable the use of Menhir instead of ocamlyacc, you should pass the
+`-use-menhir` option, or have `true: use_menhir` in your `_tags`
+file. OCamlbuild will then activate menhir-specific builtin rule
+listed below.
 
 - `.mly` files are grammar description files. They will be passed to
   OCamlYacc to produce the corresponding `.ml` file, or Menhir if it
@@ -792,6 +793,10 @@ invoking `menhir` produces both a `.ml` and `.mli`.
 
     flag {. compile, no_alias_deps, ocaml .} "-no-alias-deps"
 
+## Syntax of `_tags` file <a id="reference-tags-file"></a>
+
+TODO
+
 # Enriching OCamlbuild through plugins <a id="plugins"></a>
 
 ## How `myocamlbuild.ml` works <a id="plugins-myocamlbuild-file"></a>
@@ -907,7 +912,7 @@ Note: we give no guarantee on the order in which various hooks will be
 called, except of course that `Before_foo` always happens before
 `After_foo`. In particular, the `hygiene` hooks may be called before
 or after other hooks, or not be called at all if OCamlbuild decides
-not to check [hygiene](TODO REF ## Hygiene).
+not to check [hygiene](#intro-hygiene).
 
 ## Flag declarations <a id="plugins-new-flags"></a>
 
@@ -1306,4 +1311,4 @@ a patch containing implementation or documentation comments to clarify
 it to future readers is an excellent idea.
 
 Any ocamlbuild-related question can be asked on the caml-list
-mailing-list <TODO URL>.
+mailing-list: <caml-list@inria.fr>.
