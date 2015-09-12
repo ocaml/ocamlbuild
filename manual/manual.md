@@ -795,7 +795,155 @@ invoking `menhir` produces both a `.ml` and `.mli`.
 
 ## Syntax of `_tags` file <a id="reference-tags-file"></a>
 
-TODO
+A line in the tags file is of the form
+
+    {pattern}: {comma-separated tag list}
+
+The `{pattern}` part is what we call a "glob expression", which is an
+expression built of basic logic connective on top of "glob
+patterns". The syntax of glob expressions is as follows:
+
+<table>
+  <tr>
+    <th>Syntax</th>
+    <th>Example</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td>`<p>`</td>
+    <td>`<foo.*>`</td>
+    <td>paths matching the pattern `p`</td>
+  </tr>
+  <tr>
+    <td>`"s"`</td>
+    <td>`"foo/bar.ml"`</td>
+    <td>The exact string `s`</td>
+  </tr>
+  <tr>
+    <td>`e1 or e2`</td>
+    <td>`<*.ml> or <foo/bar.ml>`</td>
+    <td>Paths matching at least one of the expression `e1` or `e2`</td>
+  </tr>
+  <tr>
+    <td>`e1 and e2`</td>
+    <td>`<*.ml> and <foo_*>`</td>
+    <td>Paths matching both expressions `e1` and `e2`</td>
+  </tr>
+  <tr>
+    <td>`not e`</td>
+    <td>`not <*.mli>`</td>
+    <td>Paths not matching the expression `e`</td>
+  </tr>
+  <tr>
+    <td>`true`</td>
+    <td>`true`</td>
+    <td>All pathnames</td>
+  </tr>
+  <tr>
+    <td>`false`</td>
+    <td>`false`</td>
+    <td>Nothing</td>
+  </tr>
+  <tr>
+    <td>`( e )`</td>
+    <td>`( <*> and not <*.*> )`</td>
+    <td>Same as `e` (useful for composing larger expressoins)</td>
+  </tr>
+</table>
+
+The syntax of glob patterns is as follows:
+
+<table>
+  <tr>
+    <th>Syntax</th>
+    <th>Example</th>
+    <th>Matches</th>
+    <th>Does not match</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td>`s`</td>
+    <td>`foo.ml`</td>
+    <td>`foo.ml`</td>
+    <td>`bar.ml`</td>
+    <td>The exact string `s`</td>
+  </tr>
+  <tr>
+    <td>`*` (wildcard)</td>
+    <td>`*`</td>
+    <td>the empty path, `foo`, `bar`</td>
+    <td>`foo/bar`, `/baz`</td>
+    <td>Any string not containing a slash `/`</td>
+  </tr>
+  <tr>
+    <td>`?` (joker)</td>
+    <td>`?`</td>
+    <td>`a`, `b`, `z`</td>
+    <td>`/`, `bar`</td>
+    <td>Any one-letter string, excluding the slash `/`</td>
+  </tr>
+  <tr>
+    <td>`**/` (prefix inter-directory wildcard)</td>
+    <td>`**/foo.ml`</td>
+    <td>`foo.ml`, `bar/foo.ml`, `bar/baz/foo.ml`</td>
+    <td>`foo/bar`, `/baz`</td>
+    <td>The empty string, or any string ending with a slash `/`</td>
+  </tr>
+  <tr>
+    <td>`/**` (suffix inter-directory wildcard)</td>
+    <td>`foo/**`</td>
+    <td>`foo`, `foo/bar`</td>
+    <td>`bar/foo`</td>
+    <td>The empty string, or any string starting with a slash `/`</td>
+  </tr>
+  <tr>
+    <td>`/**/` (infix inter-directory wildcard)</td>
+    <td>`bar/**/foo.ml`</td>
+    <td>`bar/foo.ml`, `bar/baz/foo.ml`</td>
+    <td>`foo.ml`</td>
+    <td>Any string starting and ending iwth a slash `/`</td>
+  </tr>
+  <tr>
+    <td>`[r1 r2 r3...]` where a `r` is either a single character `c` or a range `c1-c2` (positive character class)</td>
+    <td>`[a-fA-F0-9_.]`</td>
+    <td>`3`, `F`, `.`</td>
+    <td>`z`, `bar`</td>
+    <td>Any one-letter string made of characters from one of the given ranges</td>
+  </tr>
+  <tr>
+    <td>`[^ r1 r2 r3...]` where a `r` is either a single character `c` or a range `c1-c2` (negative character class)</td>
+    <td>`[a-fA-F0-9_.]`</td>
+    <td>`z`, `bar`</td>
+    <td>`3`, `F`, `.`</td>
+    <td>Any one-letter string *not* made of characters from one of the
+    given ranges</td>
+  </tr>
+  <tr>
+    <td>`p1 p2` (concatenation)</td>
+    <td>`foo*`</td>
+    <td>`foo`, `foob`, `foobar`</td>
+    <td>Any string with a (possibly empty) prefix matching the pattern
+    `p1` and the (possibly empty) remainder matching the pattern `p2`.</td>
+  </tr>
+  <tr>
+    <td>`{ p1, p2, ... }` (union)</td>
+    <td>`toto.\{ml,mli\}`</td>
+    <td>`toto.ml`, `toto.mli`</td>
+    <td>`toto.`</td>
+    <td>Any string matching one of the given patterns.</td>
+  </tr>
+</table>
+
+In addition, rule patterns may include pattern variables. `%(foo: p)`
+will match for the pattern `p` and name the result `%(foo)`. For
+example, `%(path: <**/>)foo.ml` is useful. `%(foo)` will match the
+pattern `true` and name the result `%(foo)`, and finally `%` will
+match the pattern `true` and match the result `%`. Consider the
+following examples:
+
+    %.cmx
+    %(dir).docdir/%(file)
+    %(path:<**/>)lib%(libname:<*> and not <*.*>).so
 
 # Enriching OCamlbuild through plugins <a id="plugins"></a>
 
