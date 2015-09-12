@@ -810,44 +810,44 @@ patterns". The syntax of glob expressions is as follows:
     <th>Meaning</th>
   </tr>
   <tr>
-    <td>`<p>`</td>
-    <td>`<foo.*>`</td>
-    <td>paths matching the pattern `p`</td>
+    <td><code>&lt;p&gt;</code></td>
+    <td><code>&lt;foo.*&gt;</code></td>
+    <td>paths matching the pattern <code>p</code></td>
   </tr>
   <tr>
-    <td>`"s"`</td>
-    <td>`"foo/bar.ml"`</td>
-    <td>The exact string `s`</td>
+    <td><code>"s"</code></td>
+    <td><code>"foo/bar.ml"</code></td>
+    <td>The exact string <code>s</code></td>
   </tr>
   <tr>
-    <td>`e1 or e2`</td>
-    <td>`<*.ml> or <foo/bar.ml>`</td>
-    <td>Paths matching at least one of the expression `e1` or `e2`</td>
+    <td><code>e1 or e2</code></td>
+    <td><code>&lt;*.ml&gt; or &lt;foo/bar.ml&gt;</code></td>
+    <td>Paths matching at least one of the expression <code>e1</code> or <code>e2</code></td>
   </tr>
   <tr>
-    <td>`e1 and e2`</td>
-    <td>`<*.ml> and <foo_*>`</td>
-    <td>Paths matching both expressions `e1` and `e2`</td>
+    <td><code>e1 and e2</code></td>
+    <td><code>&lt;*.ml&gt; and &lt;foo_*&gt;</code></td>
+    <td>Paths matching both expressions <code>e1</code> and <code>e2</code></td>
   </tr>
   <tr>
-    <td>`not e`</td>
-    <td>`not <*.mli>`</td>
-    <td>Paths not matching the expression `e`</td>
+    <td><code>not e</code></td>
+    <td><code>not &lt;*.mli&gt;</code></td>
+    <td>Paths not matching the expression <code>e</code></td>
   </tr>
   <tr>
-    <td>`true`</td>
-    <td>`true`</td>
+    <td><code>true</code></td>
+    <td><code>true</code></td>
     <td>All pathnames</td>
   </tr>
   <tr>
-    <td>`false`</td>
-    <td>`false`</td>
+    <td><code>false</code></td>
+    <td><code>false</code></td>
     <td>Nothing</td>
   </tr>
   <tr>
-    <td>`( e )`</td>
-    <td>`( <*> and not <*.*> )`</td>
-    <td>Same as `e` (useful for composing larger expressoins)</td>
+    <td><code>( e )</code></td>
+    <td><code>( &lt;*&gt; and not &lt;*.*&gt; )</code></td>
+    <td>Same as <code>e</code> (useful for composing larger expressoins)</td>
   </tr>
 </table>
 
@@ -862,74 +862,75 @@ The syntax of glob patterns is as follows:
     <th>Meaning</th>
   </tr>
   <tr>
-    <td>`s`</td>
-    <td>`foo.ml`</td>
-    <td>`foo.ml`</td>
-    <td>`bar.ml`</td>
-    <td>The exact string `s`</td>
+    <td><code>s</code></td>
+    <td><code>foo.ml</code></td>
+    <td><code>foo.ml</code></td>
+    <td><code>bar.ml</code></td>
+    <td>The exact string <code>s</code></td>
   </tr>
   <tr>
-    <td>`*` (wildcard)</td>
-    <td>`*`</td>
-    <td>the empty path, `foo`, `bar`</td>
-    <td>`foo/bar`, `/baz`</td>
-    <td>Any string not containing a slash `/`</td>
+    <td><code>*</code> (wildcard)</td>
+    <td><code>*</code></td>
+    <td>the empty path, <code>foo</code>, <code>bar</code></td>
+    <td><code>foo/bar</code>, <code>/baz</code></td>
+    <td>Any string not containing a slash <code>/</code></td>
   </tr>
   <tr>
-    <td>`?` (joker)</td>
-    <td>`?`</td>
-    <td>`a`, `b`, `z`</td>
-    <td>`/`, `bar`</td>
-    <td>Any one-letter string, excluding the slash `/`</td>
+    <td><code>?</code> (joker)</td>
+    <td><code>?</code></td>
+    <td><code>a</code>, <code>b</code>, <code>z</code></td>
+    <td><code>/</code>, <code>bar</code></td>
+    <td>Any one-letter string, excluding the slash <code>/</code></td>
   </tr>
   <tr>
-    <td>`**/` (prefix inter-directory wildcard)</td>
-    <td>`**/foo.ml`</td>
-    <td>`foo.ml`, `bar/foo.ml`, `bar/baz/foo.ml`</td>
-    <td>`foo/bar`, `/baz`</td>
-    <td>The empty string, or any string ending with a slash `/`</td>
+    <td><code>**/</code> (prefix inter-directory wildcard)</td>
+    <td><code>**/foo.ml</code></td>
+    <td><code>foo.ml</code>, <code>bar/foo.ml</code>, <code>bar/baz/foo.ml</code></td>
+    <td><code>foo/bar</code>, <code>/baz</code></td>
+    <td>The empty string, or any string ending with a slash <code>/</code></td>
   </tr>
   <tr>
-    <td>`/**` (suffix inter-directory wildcard)</td>
-    <td>`foo/**`</td>
-    <td>`foo`, `foo/bar`</td>
-    <td>`bar/foo`</td>
-    <td>The empty string, or any string starting with a slash `/`</td>
+    <td><code>/**</code> (suffix inter-directory wildcard)</td>
+    <td><code>foo/**</code></td>
+    <td><code>foo</code>, <code>foo/bar</code></td>
+    <td><code>bar/foo</code></td>
+    <td>The empty string, or any string starting with a slash <code>/</code></td>
   </tr>
   <tr>
-    <td>`/**/` (infix inter-directory wildcard)</td>
-    <td>`bar/**/foo.ml`</td>
-    <td>`bar/foo.ml`, `bar/baz/foo.ml`</td>
-    <td>`foo.ml`</td>
-    <td>Any string starting and ending iwth a slash `/`</td>
+    <td><code>/**/</code> (infix inter-directory wildcard)</td>
+    <td><code>bar/**/foo.ml</code></td>
+    <td><code>bar/foo.ml</code>, <code>bar/baz/foo.ml</code></td>
+    <td><code>foo.ml</code></td>
+    <td>Any string starting and ending iwth a slash <code>/</code></td>
   </tr>
   <tr>
-    <td>`[r1 r2 r3...]` where a `r` is either a single character `c` or a range `c1-c2` (positive character class)</td>
-    <td>`[a-fA-F0-9_.]`</td>
-    <td>`3`, `F`, `.`</td>
-    <td>`z`, `bar`</td>
+    <td><code>[r1 r2 r3...]</code> where a <code>r</code> is either a single character <code>c</code> or a range <code>c1-c2</code> (positive character class)</td>
+    <td><code>[a-fA-F0-9_.]</code></td>
+    <td><code>3</code>, <code>F</code>, <code>.</code></td>
+    <td><code>z</code>, <code>bar</code></td>
     <td>Any one-letter string made of characters from one of the given ranges</td>
   </tr>
   <tr>
-    <td>`[^ r1 r2 r3...]` where a `r` is either a single character `c` or a range `c1-c2` (negative character class)</td>
-    <td>`[a-fA-F0-9_.]`</td>
-    <td>`z`, `bar`</td>
-    <td>`3`, `F`, `.`</td>
+    <td><code>[^ r1 r2 r3...]</code> where a <code>r</code> is either a single character <code>c</code> or a range <code>c1-c2</code> (negative character class)</td>
+    <td><code>[a-fA-F0-9_.]</code></td>
+    <td><code>z</code>, <code>bar</code></td>
+    <td><code>3</code>, <code>F</code>, <code>.</code></td>
     <td>Any one-letter string *not* made of characters from one of the
     given ranges</td>
   </tr>
   <tr>
-    <td>`p1 p2` (concatenation)</td>
-    <td>`foo*`</td>
-    <td>`foo`, `foob`, `foobar`</td>
+    <td><code>p1 p2</code> (concatenation)</td>
+    <td><code>foo*</code></td>
+    <td><code>foo</code>, <code>foob</code>, <code>foobar</code></td>
+    <td><code>fo</code>, <code>bar</td></td>
     <td>Any string with a (possibly empty) prefix matching the pattern
-    `p1` and the (possibly empty) remainder matching the pattern `p2`.</td>
+    <code>p1</code> and the (possibly empty) remainder matching the pattern <code>p2</code>.</td>
   </tr>
   <tr>
-    <td>`{ p1, p2, ... }` (union)</td>
-    <td>`toto.\{ml,mli\}`</td>
-    <td>`toto.ml`, `toto.mli`</td>
-    <td>`toto.`</td>
+    <td><code>{ p1, p2, ... }</code> (union)</td>
+    <td><code>toto.\{ml,mli\}</code></td>
+    <td><code>toto.ml</code>, <code>toto.mli</code></td>
+    <td><code>toto.</code></td>
     <td>Any string matching one of the given patterns.</td>
   </tr>
 </table>
