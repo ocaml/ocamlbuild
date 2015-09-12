@@ -1,4 +1,5 @@
-This is an effort to replace the [current OCamlbuild
+This [manual in progress](manual.md) is an effort to replace the
+[current OCamlbuild
 manual](http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html)
 with something that satisfies users better.
 
