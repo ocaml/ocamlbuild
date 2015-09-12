@@ -796,13 +796,19 @@ invoking `menhir` produces both a `.ml` and `.mli`.
 
 ## Syntax of `_tags` file <a id="reference-tags-file"></a>
 
-A line in the tags file is of the form
+The `_tags` file is a list of items of the form
 
     {pattern}: {comma-separated tag list}
 
+These items are ended by a newline. Comments (starting with `#`) and
+empty lines are ignored, and an escaped line break is considered as
+whitespace (so those items can span multiple lines).
+
 The `{pattern}` part is what we call a "glob expression", which is an
 expression built of basic logic connective on top of "glob
-patterns". The syntax of glob expressions is as follows:
+patterns".
+
+The syntax of glob expressions is as follows:
 
 <table>
   <tr>
