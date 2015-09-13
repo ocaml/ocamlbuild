@@ -680,7 +680,7 @@ adding this tag, it is really easy.)
 
 - ocamlfind options:
 
-    - `package(pkgname)
+    - `package(pkgname)`
     - `linkpkg`
     - `dontlink(pkgname)`
     - `predicate(foo)`
@@ -688,7 +688,7 @@ adding this tag, it is really easy.)
 
 - ocamllex options: `quiet` (`-q`), `generate_ml` (`-ml`)
 
-- menhir options: `only_tokens`, `infer`, explain`, `external_tokens(TokenModule)`
+- menhir options: `only_tokens`, `infer`, `explain`, `external_tokens(TokenModule)`
 
 - camlp4 options: `use_caml4_{,bin}`, `camlp4{rrr,orrr,oof,orf,rf,of,r,o}{,.opt}`
 
