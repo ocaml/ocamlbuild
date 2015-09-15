@@ -874,7 +874,8 @@ example, `ocamlbuild -use-ocamlfind -documentation` and
 `ocamlbuild -no-ocamlfind -documentation` produce different outputs,
 as the latter does not include ocamlfind-specific tags.
 
-Some examples of documentation of rules or flags are the following:
+Some examples of documentation of rules or flags, produced by
+`ocamlbuild -documentation`, are the following:
 
     rule "ocaml: modular menhir (mlypack)"
       ~deps:[ %.mlypack ]
@@ -886,6 +887,9 @@ Some examples of documentation of rules or flags are the following:
             whitespace-separated list of the capitalized module names of the .mly
             files you want to combine together."
       <fun>
+
+This resembles OCaml code (see the documentation of [rule
+declarations](#plugins-new-rules)), but is not valid OCaml code.
 
 Note that rule declaration only indicate the static dependencies of
 rules (those that determine whether or not the rule will
