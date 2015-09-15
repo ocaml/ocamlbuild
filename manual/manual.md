@@ -874,8 +874,8 @@ example, `ocamlbuild -use-ocamlfind -documentation` and
 `ocamlbuild -no-ocamlfind -documentation` produce different outputs,
 as the latter does not include ocamlfind-specific tags.
 
-Some examples of documentation of rules or flags, produced by
-`ocamlbuild -documentation`, are the following:
+Here is an example of rule documentation included in the
+`ocamlbuild -documentation` output:
 
     rule "ocaml: modular menhir (mlypack)"
       ~deps:[ %.mlypack ]
@@ -895,6 +895,9 @@ Note that rule declaration only indicate the static dependencies of
 rules (those that determine whether or not the rule will
 be tried). Remark that this rule is explicit about the fact that
 invoking `menhir` produces both a `.ml` and `.mli`.
+
+Here are example of tag declarations (parametrized tag are documented
+since version 4.03).
 
     parametrized flag {. compile, ocaml, ppx(my_ppx) .} "-ppx my_ppx"
 
