@@ -10,6 +10,7 @@
     - [OCamlfind packages](#intro-ocamlfind)
     - [Syntax extensions](#intro-preproc)
     - [Archives, documentation...](#intro-archive-doc)
+    - [Source and build directories, module paths, include paths](#intro-paths)
         - [Module paths and include directories](#paths-module-include)
 - [Reference documentation](#reference)
     - [File extensions of the OCaml compiler and common tools](#reference-compiler-extensions)
