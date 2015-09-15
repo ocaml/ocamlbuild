@@ -2,6 +2,7 @@
 
 - [A short introduction to OCamlbuild](#intro)
     - [What is OCamlbuild for?](#intro-purpose)
+    - [Pros, Cons, and Alternatives](#intro-pros-cons-alternatives)
     - [Core concepts](#intro-core-concepts)
         - [Rules and targets](#concept-rules-targets)
         - [Tags and the `_tags` file](#concept-tags)
@@ -86,6 +87,69 @@ OCaml-specific), but also to be expressive enough to cover the
 specifics of the OCaml language that make writing good Makefiles
 difficult, such as the dreaded "units Foo and Bar make inconsistent
 assumptions about Baz" error.
+
+## Pros, Cons, and Alternatives <a id="intro-pros-cons-alternatives"></a>
+
+The main strengths of OCamlbuild are the following:
+
+- It "Just Works" for most OCaml projects, with minimal configuration
+  work on your part.
+
+- It is designed from the scratch with dynamic dependencies in
+  mind. Dynamic dependencies are the dependencies that are only
+  determined during the build of the target, eg. the local modules on
+  which a source file depends, and are not explicitly listed in
+  a configuration file. This avoids, for example, the dance of
+  pre-generating or post-generating `.depends` files that is
+  occasionally bothersome with Makefile projects, without requiring
+  you to describe all local dependency relations manually either.
+
+Two weaknesses are the following:
+
+- Instead of a home-grown soon-to-become-turing-complete configuration
+  language, OCamlbuild made the choice of using OCaml as its
+  configuration language, and many users dislike this choice. Most
+  features of OCamlbuild can be controlled through the purely
+  declarative `_tags` file whose structure is explained in detail in
+  this documentation, but for more complex projects you will
+  eventually need to create a `myocamlbuild.ml` to configure the tool
+  through its OCaml library interface. We strive for a simple API and
+  we document it, so that should be more pleasant than you expect.
+
+- OCamlbuild is not the most efficient build system out there, and in
+  particular its support for build parallelization is currently
+  disappointing. This could be solved with more engineering efforts;
+  OCamlbuild is maintained by volunteers, and your contributions are
+  warmly welcome, see the [Contributing](#contributing) section of
+  this document. For now, OCamlbuild's default build rules will not
+  scale to millions-of-lines codebases. It is however used in
+  countless useful libraries and projects where this has not been
+  a limitation.
+
+Some alternatives for building OCaml projects are:
+
+- [OCaml-Makefile](https://github.com/mmottl/ocaml-makefile),
+  a generic set of Makefile rules for OCaml projects. Valuable if you
+  want to build OCaml projects with `make`, without rewriting your own
+  boilerplate from scratch.
+- [OMake](http://omake.metaprl.org/index.html), a generic build system
+  that has been succesfully used by several relatively large OCaml
+  projects.
+- [jenga](https://github.com/janestreet/jenga), a build tool developed
+  internally at Jane Street. The design is interestingly close to
+  OCamlbuild's, but with large engineering efforts oriented towards
+  building their huge internal codebase. There is no easy-to-use
+  frontend layer provided to build OCaml projects
+  (and little documentation), it's more of
+  a build-your-own-build-system toolkit for now.
+- [obuild](https://github.com/ocaml-obuild/obuild) wants to be
+  a really-simple build system with a declarative configuration
+  language that has 80% the features, to cover most simple projects.
+
+The "Real World OCaml" book uses a tool named `corebuild`, which is in
+fact just a simple wrapper on top of `ocamlbuild` provided by the
+OCaml library named `core` -- with some common options for `core`
+projects baked in.
 
 ## Core concepts <a id="intro-core-concepts"></a>
 
