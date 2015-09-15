@@ -1,6 +1,7 @@
 # Table of contents
 
 - [A short introduction to OCamlbuild](#intro)
+    - [What is OCamlbuild for?](#intro-purpose)
     - [Core concepts](#intro-core-concepts)
         - [Rules and targets](#concept-rules-targets)
         - [Tags and the `_tags` file](#concept-tags)
@@ -39,12 +40,52 @@
 
 # A short introduction to OCamlbuild <a id="intro"></a>
 
+## What is OCamlbuild for? <a id="intro-purpose"></a>
+
 OCamlbuild's job is to determine the sequence of calls to the
 compiler, with the right set of command-line flags, needed to build
-your OCaml project. It was designed to take into account specifics of
-the OCaml language that make writing good Makefiles difficult, such as
-the dreaded "units Foo and Bar make inconsistent assumptions about
-Baz" error.
+your OCaml project.
+
+Its strength, compared to most other build systems suitable for OCaml
+projects, is that it is extremely convenient to use for simple
+projects: if you have a small OCaml project (program or library),
+chances are you can directly invoke ocamlbuild to automatically
+discover the various source files and dependencies, and build
+executables, library archives or documentations with one-line
+commands -- in simple cases you don't need to write a configuration
+file at all.
+
+A few examples of quick ocamlbuild commands:
+
+    ocamlbuild foo.byte
+    # builds a bytecode executable out of foo.ml and its local dependencies
+
+    ocamlbuild foo.native
+    # builds a native executable
+
+    ocamlbuild lib.cma
+    # builds a library archive from the modules listed (capitalized) in lib.mllist
+
+    ocamlbuild lib.docdir/index.html
+    # builds OCamldoc documentation from the modules listed in lib.odocl
+
+    ocamlbuild -use-ocamlfind -pkgs lwt,react,yojson,sedlex.ppx -tag debug foo.native
+    # enable a few ocamlfind packages and compile in debug mode
+
+If repeating `-pkgs lwt,react,yojson,sedlex.ppx -tag debug` becomes bothersome,
+you can create a `_tags` file in the project directory with the content:
+
+    true: package(lwt), package(react), package(sedlex), package(yojson), debug
+
+and then just use
+
+     ocamlbuild -use-ocamlfind foo.native
+
+OCamlbuild was designed as a generic build system (it is in fact not
+OCaml-specific), but also to be expressive enough to cover the
+specifics of the OCaml language that make writing good Makefiles
+difficult, such as the dreaded "units Foo and Bar make inconsistent
+assumptions about Baz" error.
 
 ## Core concepts <a id="intro-core-concepts"></a>
 
