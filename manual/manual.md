@@ -63,7 +63,7 @@ A few examples of quick ocamlbuild commands:
     # builds a native executable
 
     ocamlbuild lib.cma
-    # builds a library archive from the modules listed (capitalized) in lib.mllist
+    # builds a library archive from the modules listed (capitalized) in lib.mllib
 
     ocamlbuild lib.docdir/index.html
     # builds OCamldoc documentation from the modules listed in lib.odocl
