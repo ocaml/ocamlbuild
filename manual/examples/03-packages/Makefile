@@ -2,12 +2,11 @@
 # Pure OCaml, package from Opam, two directories
 #
 
-# - bin-annot is required for Merlin and other IDE-like tools
 # - The -I flag introduces sub-directories 
 # - -use-ocamlfind is required to find packages (from Opam)
-# - _tags file introduces packages
+# - _tags file introduces packages, bin_annot flag for tool chain
 
-OCB_FLAGS = -use-ocamlfind -tag bin_annot -I src -I lib
+OCB_FLAGS = -use-ocamlfind -I src -I lib
 OCB = 		ocamlbuild $(OCB_FLAGS)
 
 all: 		native byte # profile debug
