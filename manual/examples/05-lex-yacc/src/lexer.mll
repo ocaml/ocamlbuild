@@ -1,27 +1,22 @@
 {
+    module P = Parser
+
     exception Error of string
     let error fmt = Printf.kprintf (fun msg -> raise (Error msg)) fmt
 
     let get = Lexing.lexeme
 }
 
-rule escape b = parse
-  | '&'             { Buffer.add_string b "&amp;";  escape b lexbuf } 
-  | '"'             { Buffer.add_string b "&quot;"; escape b lexbuf } 
-  | '\''            { Buffer.add_string b "&apos;"; escape b lexbuf }
-  | '>'             { Buffer.add_string b "&gt;";   escape b lexbuf }
-  | '<'             { Buffer.add_string b "&lt;";   escape b lexbuf }
-  | [^'&' '"' '\'' '>' '<']+ 
-                    { Buffer.add_string b @@ get lexbuf
-                    ; escape b lexbuf
-                    }
-  | eof             { let x = Buffer.contents b in Buffer.clear b; x }
-  | _               { error "don't know how to quote: %s" (get lexbuf) }
+rule token = parse
+  | [' ' '\t' '\n']         { token lexbuf }     (* skip blanks *)
+  | ['0'-'9']+ as lxm       { P.INT(int_of_string lxm) }
+  | '+'                     { P.PLUS }
+  | '-'                     { P.MINUS }
+  | '*'                     { P.TIMES }
+  | '/'                     { P.DIV }
+  | '('                     { P.LPAREN }
+  | ')'                     { P.RPAREN }
+  | eof                     { P.EOF }
+  | _  { error "don't know how to handle '%s'" (get lexbuf) }
 
-{
-let html str =
-    let b       = Buffer.create @@ String.length str in
-    let lexbuf  = Lexing.from_string str in 
-        escape b lexbuf
-}
 

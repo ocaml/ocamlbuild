@@ -14,16 +14,23 @@ all: 		native byte # profile debug
 clean:
 			$(OCB) -clean
 
-native: 
+native: 	sanity
 			$(OCB) main.native
 
-byte:
+byte:		sanity
 			$(OCB) main.byte
 
-profile:
+profile: 	sanity
 			$(OCB) -tag profile main.native
 
-debug:
+debug: 		sanity
 			$(OCB) -tag debug main.byte
 
-.PHONY: 	all clean byte native profile debug
+sanity:
+			# check that packages can be found
+			ocamlfind query yojson 
+
+test: 		native
+			echo '[1, 2, "three", {"four": 4}]' | ./main.native 
+
+.PHONY: 	all clean byte native profile debug sanity test

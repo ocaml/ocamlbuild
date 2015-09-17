@@ -1,14 +1,11 @@
 
 let main () =
-  let argv = Array.to_list Sys.argv in
-  let escape strings = 
-    strings
-    |> List.map Lexer.html 
-    |> Util.join 
-    |> print_endline
-  in match List.tl argv with
-  | []   -> escape [ Hello.hello ]
-  | args -> escape args
+  let argv   = Array.to_list Sys.argv in
+  let args   = List.tl argv in
+  let expr   = String.concat " " args in
+  let lexbuf = Lexing.from_string expr in
+  let result = Parser.main Lexer.token lexbuf in
+    Printf.printf "%d\n" result
 
 let () = main ()        
 

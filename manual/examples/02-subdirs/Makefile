@@ -25,4 +25,8 @@ profile:
 debug:
 			$(OCB) -tag debug main.byte
 
-.PHONY: 	all clean byte native profile debug
+test: 		native
+			./main.native "OCaml" "OCamlBuild" "users"
+			
+
+.PHONY: 	all clean byte native profile debug test

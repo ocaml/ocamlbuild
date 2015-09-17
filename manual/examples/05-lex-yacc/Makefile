@@ -6,9 +6,10 @@
 # - -use-ocamlfind is required to find packages (from Opam)
 # - _tags file introduces packages, bin_annot flag for tool chain
 # - using *.mll and *.mly are handled automatically
-# - the code does not contain a *.mly parser, though
+# - we are using menhir, the modern replacement for OCamlYacc
 
-OCB_FLAGS = -use-ocamlfind -I src -I lib
+OCB_FLAGS = -use-ocamlfind             -I src -I lib # uses ocamlyacc
+OCB_FLAGS = -use-ocamlfind -use-menhir -I src -I lib # uses menhir
 OCB = 		ocamlbuild $(OCB_FLAGS)
 
 all: 		native byte # profile debug
@@ -16,16 +17,23 @@ all: 		native byte # profile debug
 clean:
 			$(OCB) -clean
 
-native: 
+native:  	sanity
 			$(OCB) main.native
 
-byte:
+byte: 		sanity
 			$(OCB) main.byte
 
-profile:
+profile: 	sanity
 			$(OCB) -tag profile main.native
 
-debug:
+debug: 		sanity
 			$(OCB) -tag debug main.byte
 
-.PHONY: 	all clean byte native profile debug
+sanity:
+			# check that menhir is installed, use "opam install menhir"
+			type -p menhir
+
+test: 		native
+			./main.native "2 + 3 * 3"
+
+.PHONY: 	all clean byte native profile debug sanity test

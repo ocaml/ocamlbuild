@@ -19,16 +19,22 @@ lib:
 			$(OCB) libdemo.cmxa
 			$(OCB) libdemo.cmxs
 
-native: 
+native:  	sanity
 			$(OCB) main.native
 
-byte:
+byte: 		sanity
 			$(OCB) main.byte
 
-profile:
+profile: 	sanity
 			$(OCB) -tag profile main.native
 
-debug:
+debug: 		sanity
 			$(OCB) -tag debug main.byte
 
-.PHONY: 	all clean byte native profile debug lib
+sanity:
+			ocamlfind query yojson
+			
+test: 		native
+			echo '{"hello": "json"}' | ./main.native 
+
+.PHONY: 	all clean byte native profile debug lib sanity test

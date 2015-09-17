@@ -1,3 +1,3 @@
 
-val html: string -> string
+val token: Lexing.lexbuf -> Parser.token
 
