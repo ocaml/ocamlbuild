@@ -393,12 +393,12 @@ part of the source directories considered by OCamlbuild.
 
 A subdirectory of the subdirectory tree is included in the source
 directories if it has the "traverse" tag set. That means that if you
-want to add "foo/bar/" (and its files) as part of the source
-directories and remove "foo/baz/", you can use the following in your
+want to add "foo/bar" (and its files) as part of the source
+directories and remove "foo/baz", you can use the following in your
 `_tags` file:
 
-    "foo/bar/": traverse
-    "foo/baz/": -traverse
+    "foo/bar": traverse
+    "foo/baz": -traverse
 
 If the option `-r` (for "recursive") is passed, then by all
 subdirectories (recursively) are considered part of the source
@@ -430,7 +430,7 @@ For added convenience, it is possible to add a source directory to the
 set of "include paths", that do not have to be explicitly written in
 each module path. If `bar/` is in the include path, you can refer to
 `bar/baz/Foo` as just `baz/Foo`. To add `bar` to the include path, one
-can pass the `-I bar` option to ocamlbuild, or tag `"bar/": include`
+can pass the `-I bar` option to ocamlbuild, or tag `"bar": include`
 in the `_tags` file.
 
 (I have to come see the use of the same syntax `-I foo` in
@@ -819,7 +819,7 @@ adding this tag, it is really easy.)
       soon as the current directory "looks like an OCamlbuild project"
       (there is either a `myocamlbuild.ml` or `_tags`
       file present). This tag is usefully used negative,
-      `"foo/": -traverse`, to say that a part of the local directory
+      `"foo": -traverse`, to say that a part of the local directory
       hierarchy should *not* be considered by ocamlbuild.
 
     - `include`, `traverse`: see the section above on source
