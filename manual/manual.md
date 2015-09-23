@@ -907,7 +907,13 @@ since version 4.03).
 
 ## Syntax of `_tags` file <a id="reference-tags-file"></a>
 
-The `_tags` file is a list of items of the form
+The `_tags` file associates file name patterns with tags like this:
+
+    # This is a comment
+    true: bin_annot, debug
+    <protocol_*> or <main.*>: package(yojson)
+
+The general syntax is:
 
     {pattern}: {comma-separated tag list}
 
