@@ -10,17 +10,19 @@
 %type <int> main
 
 %%
+
+(* Menhir let us give names to symbol values,
+   instead of having to use $1, $2, $3 as in ocamlyacc *)
 main 
-  : expr EOF                { $1 }
+  : e = expr EOF                { e }
   ;
 
 expr 
-  : INT                     { $1 }
-  | LPAREN expr RPAREN      { $2 }
-  | expr PLUS expr          { $1 + $3 }
-  | expr MINUS expr         { $1 - $3 }
-  | expr TIMES expr         { $1 * $3 }
-  | expr DIV expr           { $1 / $3 }
-  | MINUS expr %prec UMINUS { - $2 }
+  : n = INT                 { n }
+  | LPAREN e = expr RPAREN  { e }
+  | e1=expr PLUS  e2=expr   { e1 + e2 }
+  | e1=expr MINUS e2=expr   { e1 - e2 }
+  | e1=expr TIMES e2=expr   { e1 * e2 }
+  | e1=expr DIV   e2=expr   { e2 / e1 }
+  | MINUS e = expr %prec UMINUS { - e }
   ;
-
