@@ -2,6 +2,7 @@
 
 - [A short introduction to OCamlbuild](#intro)
     - [What is OCamlbuild for?](#intro-purpose)
+    - [Examples](#intro-examples)
     - [Pros, Cons, and Alternatives](#intro-pros-cons-alternatives)
     - [Core concepts](#intro-core-concepts)
         - [Rules and targets](#concept-rules-targets)
@@ -85,6 +86,45 @@ OCaml-specific), but also to be expressive enough to cover the
 specifics of the OCaml language that make writing good Makefiles
 difficult, such as the dreaded "units Foo and Bar make inconsistent
 assumptions about Baz" error.
+
+## Examples <a id="intro-examples"></a>
+
+We have included self-contained examples of projects using various
+OCamlbuild features in the [examples/](examples/) sub-directory of
+this documentation, which may serve as inspiration.
+
+Note that there are many ways to integrate ocamlbuild in your project;
+the examples provided so far use a Makefile on top of of ocamlbuild to
+provide the familiar `make; make install; make clean` interface to
+users, but you should of course feel free to do otherwise.
+
+The examples available are the following:
+
+- [simple](examples/01-simple): a minimal example with self-contained
+  OCaml code in the project directory
+
+- [subdirs](examples/02-subdirs): OCaml code in `lib/` and `src/`
+  subdirectories. See our [Source and build directories, module paths,
+  include paths](#intro-paths) introduction section for more details.
+
+- [packages](examples/03-packages): a simple example of use of an
+  OCamlfind package ([yojson](http://mjambon.com/yojson.html)) in an
+  OCamlbuild project. See our [OCamlfind packages](#intro-ocamlfind)
+  introduction section for more details.
+
+- [library](examples/04-library): a simple example of using a `.mllib`
+  file to easily build library archives (`.cma` in bytecode, `.cmxa`
+  with native compilation). See our [Archives,
+  documentation...](#intro-archive-doc) introduction section for more
+  details.
+
+- [lex-yacc](examples/05-lex-yacc): a simple program using OCamllex to
+  generate a lexer, and
+  [Menhir](http://gallium.inria.fr/~fpottier/menhir/) to generate
+  a parser (ocamlyacc would work as easily, but we recommend using
+  Menhir instead which is just a better parser generator). See our
+  [OCamlYacc and Menhir targets](#targets-parsegen) reference section
+  for all parser-relevant options.
 
 ## Pros, Cons, and Alternatives <a id="intro-pros-cons-alternatives"></a>
 
