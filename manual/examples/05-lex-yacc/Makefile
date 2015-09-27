@@ -31,7 +31,7 @@ debug: 		sanity
 
 sanity:
 			# check that menhir is installed, use "opam install menhir"
-			type -p menhir
+			which menhir
 
 test: 		native
 			./main.native "2 + 3 * 3"
