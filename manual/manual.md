@@ -1092,7 +1092,7 @@ The syntax of glob patterns is as follows:
   </tr>
   <tr>
     <td><code>{ p1, p2, ... }</code> (union)</td>
-    <td><code>toto.\{ml,mli\}</code></td>
+    <td><code>toto.{ml,mli}</code></td>
     <td><code>toto.ml</code>, <code>toto.mli</code></td>
     <td><code>toto.</code></td>
     <td>Any string matching one of the given patterns.</td>
