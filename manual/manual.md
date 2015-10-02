@@ -814,6 +814,7 @@ adding this tag, it is really easy.)
     - `profile` (for `-p`)
     - `rectypes`
     - `runtime_variant(_pic)`
+    - `safe_string`
     - `short_paths`
     - `strict_formats`
     - `strict_sequence`
