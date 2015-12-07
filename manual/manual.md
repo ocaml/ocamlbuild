@@ -220,7 +220,7 @@ process, but not during an initial syntactic preprocessing step
 your program's targets, and it will sort out when to insert the `-g`
 flag or not.
 
-To attach tags to your OCamlbuild targets, you write them in a `_tags`
+To attach tags to your OCamlbuild targets, you write them in an `_tags`
 file. Each line is of the form `foo: bar`. `bar` is a list of tags,
 and `foo` is a filter that determines to which targets `bar`
 applies. For example the `_tags` file
