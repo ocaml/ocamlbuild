@@ -194,7 +194,7 @@ projects baked in.
 ### Rules and targets <a id="concept-rules-targets"></a>
 
 OCamlbuild knows about a set of *rules* to build programs, that
-provide a piece of OCaml code to build certain kind of files, named
+provide a piece of OCaml code to build certain kinds of files, named
 *targets*, from some dependencies (statically known or
 dynamically discovered). For example, a built-in "%.ml -> %.cmo" rule
 describes how to build any `.cmo` compilation unit file from the `.ml`
@@ -202,7 +202,7 @@ of the same name; if you call `ocamlbuild foo.cmo`, it will either use
 `foo.ml` in your source directory or, if it doesn't exist, try to
 build it, for example from `foo.mll` or `foo.mly`.
 
-OCamlbuild knows various targets to build all sort of useful things:
+OCamlbuild knows various targets to build all sorts of useful things:
 byte or native programs (`.byte`, `.native`), library archives
 (`.cma`, `.cmxa`, `.cmxs`), documentation (`.docdir/index.html`,
 `.docdir/man`), etc. We will detail those in the [Reference
