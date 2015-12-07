@@ -184,9 +184,9 @@ Some alternatives for building OCaml projects are:
   a really-simple build system with a declarative configuration
   language that has 80% the features, to cover most simple projects.
 
-The "Real World OCaml" book uses a tool named `corebuild`, which is in
+The "Real World OCaml" book uses a tool named `corebuild`---which is in
 fact just a simple wrapper on top of `ocamlbuild` provided by the
-OCaml library named `core` -- with some common options for `core`
+OCaml library named `core`---with some common options for `core`
 projects baked in.
 
 ## Core concepts <a id="intro-core-concepts"></a>
