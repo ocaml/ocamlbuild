@@ -205,7 +205,7 @@ build it, for example from `foo.mll` or `foo.mly`.
 OCamlbuild knows various targets to build all sorts of useful things:
 byte or native programs (`.byte`, `.native`), library archives
 (`.cma`, `.cmxa`, `.cmxs`), documentation (`.docdir/index.html`,
-`.docdir/man`), etc. We will detail those in the [Reference
+`.docdir/man`), etc. We will detail these in the [Reference
 section](#reference-targets).
 
 ### Tags and the `_tags` file <a id="concept-tags"></a>
