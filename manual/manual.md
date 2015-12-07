@@ -50,7 +50,7 @@ your OCaml project.
 
 OCamlbuild is extremely convenient to use for simple projects: if you
 have a small OCaml project (program or library), chances are you can
-directly invoke ocamlbuild to automatically discover the various
+directly invoke ocamlbuild to automatically discover various
 source files and dependencies, and build executables, library archives
 or documentation with one-line commands -- in simple cases you don't
 need to write a configuration file at all.
