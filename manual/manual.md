@@ -48,11 +48,11 @@ OCamlbuild's job is to determine the sequence of calls to the
 compiler, with the right set of command-line flags, needed to build
 your OCaml project.
 
-OCamlbuild is extremely convenient to use for simple projects: if you
+OCamlbuild is extremely convenient to use for simple projects. If you
 have a small OCaml project (program or library), chances are you can
 directly invoke ocamlbuild to automatically discover various
 source files and dependencies, and build executables, library archives
-or documentation with one-line commands -- in simple cases you don't
+or documentation with one-line commands. In simple cases you don't
 need to write a configuration file at all.
 
 A few examples of quick ocamlbuild commands:
