@@ -94,7 +94,7 @@ OCamlbuild features in the [examples/](examples/) sub-directory of
 this documentation, which may serve as inspiration.
 
 Note that there are many ways to integrate ocamlbuild in your project;
-the examples provided so far use a Makefile on top of of ocamlbuild to
+the examples provided so far use a Makefile on top of ocamlbuild to
 provide the familiar `make; make install; make clean` interface to
 users, but you should of course feel free to do otherwise.
 
