@@ -17,8 +17,8 @@ should be improved, but here is what I heard:
 - there are not enough short examples to reuse/tweak and forget about
 - a clear presentation of the basic mental model of the tool is missing
 - writing a `myocamlbuild.ml` is frightening and little help is
-  provided (though [the
-  wiki](http://brion.inria.fr/gallium/index.php/Ocamlbuild) does
+  provided (though the former
+  wiki, whose content is now on [ocaml.org](http://ocaml.org/learn/tutorials/ocamlbuild/), does
   answer questions)
 
 I would add two points:
@@ -36,15 +36,15 @@ I would add two points:
 
 ## Integrating the wiki content
 
-[The wiki](http://brion.inria.fr/gallium/index.php/Ocamlbuild) has
+The former wiki, whose content is now on [ocaml.org](http://ocaml.org/learn/tutorials/ocamlbuild/), has
 a lot of valuable information, but for a mix of social and technical
 reasons it hasn't evolved into a good alternate documentation that
 I could point beginners to. Hopefully using git will feel cooler than
-wikisyntax to potential contributors -- I even decided to ignore my
+wikisyntax did to potential contributors -- I even decided to ignore my
 worries and go for the priorietary github platform to lower barrier to
 entry.
 
-You can help by integrating wiki content in the present documentation.
+You can help by integrating [ocaml.org](http://ocaml.org/learn/tutorials/ocamlbuild/) content in the present documentation.
 
 
 ## Feedback needed
