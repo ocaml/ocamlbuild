@@ -1,0 +1,27 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#   Nicolas Pouillard, Berke Durak, projet Gallium, INRIA Rocquencourt  #
+#                                                                       #
+#   Copyright 2007 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#  under the terms of the GNU Library General Public License, with      #
+#  the special exception on linking described in file ../LICENSE.       #
+#                                                                       #
+#########################################################################
+
+include $(LIBDIR)/Makefile.config
+
+.PHONY: force
+
+src/ocamlbuild_config.ml: force
+	(echo 'let bindir = "$(BINDIR)"'; \
+	echo 'let libdir = "$(LIBDIR)"'; \
+	echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)';\
+	echo 'let a = "$(A)"'; \
+	echo 'let o = "$(O)"'; \
+	echo 'let so = "$(SO)"'; \
+	echo 'let ext_dll = "$(EXT_DLL)"'; \
+	echo 'let exe = "$(EXE)"'; \
+	) > $@
