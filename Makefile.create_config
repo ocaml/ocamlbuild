@@ -24,4 +24,5 @@ src/ocamlbuild_config.ml: force
 	echo 'let so = "$(SO)"'; \
 	echo 'let ext_dll = "$(EXT_DLL)"'; \
 	echo 'let exe = "$(EXE)"'; \
+	echo 'let version = "$(shell cat VERSION)"'; \
 	) > $@
