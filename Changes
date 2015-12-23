@@ -22,6 +22,11 @@ should not be necessary anymore to have identical
 `foo.{mllib,mldylib}` files, only `foo.mllib` should suffice. See the
 detailed changelog below for details.
 
+- #30: emit a warning if several calls are made to
+   `Ocamlbuild_plugin.dispatch` -- all calls before the last one are
+   ignored, which may not be what users expect.
+  (Gabriel Scherer, review by whitequark)
+
 - #111: added "nostdlib" flag for corresponding ocaml{c,opt} options
   (Thomas Wood)
 
