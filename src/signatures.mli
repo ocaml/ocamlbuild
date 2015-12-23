@@ -172,7 +172,7 @@ module type COMMAND = sig
     | Seq of t list (** A sequence of commands (like the `;' in shell) *)
     | Cmd of spec   (** A command is made of command specifications ([spec]) *)
     | Echo of string list * pathname
-    (** Write the given strings (w/ any formatting) to the given file *)
+    (** Write the given strings as is (newlines are not added) to the given file *)
     | Nop           (** The command that does nothing *)
 
   (** The type for command specifications. That is pieces of command. *)
