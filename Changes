@@ -1,16 +1,26 @@
+We use "MPR#$N" to denote the ticket number $N on the Mantis bugtracker:
+  http://caml.inria.fr/mantis/view.php?id=$N
+and OGPR#$N to denote the github pull issue against the OCaml repository
+  https://github.com/ocaml/ocaml/pull/$N
+
+The form #$N indicates an issue on the github ocamlbuild repository,
+  https://github.com/ocaml/ocamlbuild/issues/$N
+  https://github.com/ocaml/ocamlbuild/pulls/$N
+We also use PR#$N for pull requests.
+
 OCamlbuild NEXT_RELEASE
 -------------
 
-- PR#6794, PR#6809: pass package-specific include flags when building C files
+- MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
-- GPR#208: add "asm" tag to ocamlbuild to enable flag -S
+- OGPR#208: add "asm" tag to ocamlbuild to enable flag -S
   (ygrek)
 - Changed OCamlbuild's license to LGPLv2 with static linking exception.
-- GPR#219: speedup target-already-built builds
+- OGPR#219: speedup target-already-built builds
   (ygrek)
-- PR#6605, GPR#117: use ocamlfind, if available, to discover camlp4 path
+- MPR#6605, OGPR#117: use ocamlfind, if available, to discover camlp4 path
   (Vincent Laporte)
-- add -dot and -man-related ocamldoc options
+- #20: add -dot and -man-related ocamldoc options
   (Gabriel Scherer)
 
 
@@ -29,41 +39,41 @@ OCaml 4.02.2 (17 Jun 2015):
 ---------------------------
 
 OCamlbuild:
-- PR#6237: explicit "infer" tag to control or disable menhir --infer
+- MPR#6237: explicit "infer" tag to control or disable menhir --infer
   (Hugo Heuzard)
-- PR#6625: pass -linkpkg to files built with -output-obj.
+- MPR#6625: pass -linkpkg to files built with -output-obj.
   (whitequark)
-- PR#6702: explicit "linkpkg" and "dontlink(foo)" flags
+- MPR#6702: explicit "linkpkg" and "dontlink(foo)" flags
   (whitequark, Gabriel Scherer)
-- PR#6712: Ignore common VCS directories
+- MPR#6712: Ignore common VCS directories
   (whitequark)
-- PR#6720: pass -g to C compilers when tag 'debug' is set
+- MPR#6720: pass -g to C compilers when tag 'debug' is set
   (whitequark, Gabriel Scherer)
-- PR#6733: add .byte.so and .native.so targets to pass
+- MPR#6733: add .byte.so and .native.so targets to pass
   -output-obj -cclib -shared.
   (whitequark)
-- PR#6733: "runtime_variant(X)" to pass -runtime-variant X option.
+- MPR#6733: "runtime_variant(X)" to pass -runtime-variant X option.
   (whitequark)
-- PR#6774: new menhir-specific flags "only_tokens" and "external_tokens(Foo)"
+- MPR#6774: new menhir-specific flags "only_tokens" and "external_tokens(Foo)"
   (François Pottier)
 
 Bug fixes:
-- PR#6626: ocamlbuild on cygwin cannot find ocamlfind
+- MPR#6626: ocamlbuild on cygwin cannot find ocamlfind
   (Gergely Szilvasy)
-- PR#6640: ocamlbuild: wrong "unused tag" warning on "precious"
+- MPR#6640: ocamlbuild: wrong "unused tag" warning on "precious"
   (report by user 'william')
-- PR#6652: ocamlbuild -clean does not print a newline after output
+- MPR#6652: ocamlbuild -clean does not print a newline after output
   (Damien Doligez, report by Andi McClure)
-- PR#6793: ocamlbuild passes nonsensical "-ocamlc ..." commands to menhir
+- MPR#6793: ocamlbuild passes nonsensical "-ocamlc ..." commands to menhir
   (Gabriel Scherer, report by Damien Doligez)
-- PR#6893: ocamlbuild:  "tag not used" warning when using (p)dep
+- MPR#6893: ocamlbuild:  "tag not used" warning when using (p)dep
   (Gabriel Scherer, report by Christiano Haesbaert)
 
 OCaml 4.02.1 (14 Oct 2014):
 ---------------------------
 
 Bug Fixes:
-- PR#6599: ocamlbuild: add -bin-annot when using -pack
+- MPR#6599: ocamlbuild: add -bin-annot when using -pack
   (Christopher Zimmermann)
 - ocamlbuild: add an -ocamlmklib option to change the ocamlmklib command
   (Jérôme Vouillon)
@@ -72,29 +82,29 @@ OCaml 4.02.0 (29 Aug 2014):
 ---------------------------
 
 Bug fixes:
-- PR#5406 ocamlbuild: "tag 'package' does not expect a parameter"
+- MPR#5406 ocamlbuild: "tag 'package' does not expect a parameter"
   (Gabriel Scherer)
-- PR#6184: ocamlbuild: `ocamlfind ocamldep` does not support -predicate
+- MPR#6184: ocamlbuild: `ocamlfind ocamldep` does not support -predicate
   (Jacques-Pascal Deplaix)
-- PR#6300: ocamlbuild -use-ocamlfind conflicts with -ocamlc
+- MPR#6300: ocamlbuild -use-ocamlfind conflicts with -ocamlc
   (Gabriel Scherer)
-- PR#6482: ocamlbuild fails when _tags file in unhygienic directory
+- MPR#6482: ocamlbuild fails when _tags file in unhygienic directory
   (Gabriel Scherer)
-- PR#6502: ocamlbuild spurious warning on "use_menhir" tag
+- MPR#6502: ocamlbuild spurious warning on "use_menhir" tag
   (Xavier Leroy)
 
 Features wishes:
-- PR#5201: ocamlbuild: add --norc to the bash invocation to help performances
+- MPR#5201: ocamlbuild: add --norc to the bash invocation to help performances
   (Daniel Weil)
-- PR#6087: ocamlbuild, improve _tags parsing of escaped newlines
+- MPR#6087: ocamlbuild, improve _tags parsing of escaped newlines
   (Gabriel Scherer, request by Daniel Bünzli)
-- PR#6109: Typos in ocamlbuild error messages
+- MPR#6109: Typos in ocamlbuild error messages
   (Gabriel Kerneis)
-- PR#6166: document -ocamldoc option of ocamlbuild
+- MPR#6166: document -ocamldoc option of ocamlbuild
   (Xavier Clerc)
-- PR#6187: ocamlbuild: warn when using -plugin-tag(s) without myocamlbuild.ml
+- MPR#6187: ocamlbuild: warn when using -plugin-tag(s) without myocamlbuild.ml
   (Jacques-Pascal Deplaix)
-- PR#6495: ocamlbuild tags 'safe_string', 'unsafe_string'
+- MPR#6495: ocamlbuild tags 'safe_string', 'unsafe_string'
   (Anil Madhavapeddy)
 - make ocamldebug -I auto-detection work with ocamlbuild
   (Josh Watzman)
@@ -103,33 +113,33 @@ OCaml 4.01.0 (12 Sep 2013):
 ---------------------------
 
 Bug fixes:
-- PR#4469: emacs mode: caml-set-compile-command is annoying with ocamlbuild
+- MPR#4469: emacs mode: caml-set-compile-command is annoying with ocamlbuild
   (Daniel Bünzli)
-- PR#4502: ocamlbuild now reliably excludes the build-dir from hygiene check
+- MPR#4502: ocamlbuild now reliably excludes the build-dir from hygiene check
   (Gabriel Scherer, report by Romain Bardou)
-- PR#5102: ocamlbuild fails when using an unbound variable in rule dependency
+- MPR#5102: ocamlbuild fails when using an unbound variable in rule dependency
   (Xavier Clerc, report by Daniel Bünzli)
-- PR#5212: Improve ocamlbuild error messages of _tags parser
+- MPR#5212: Improve ocamlbuild error messages of _tags parser
   (ygrek)
-- PR#5300: ocamlbuild: verbose parameter should implicitly set classic display
+- MPR#5300: ocamlbuild: verbose parameter should implicitly set classic display
   (Xavier Clerc, report by Robert Jakob)
-- PR#5468: ocamlbuild should preserve order of parametric tags
+- MPR#5468: ocamlbuild should preserve order of parametric tags
   (Wojciech Meyer, report by Dario Texeira)
-- PR#5763: ocamlbuild does not give correct flags when running menhir
+- MPR#5763: ocamlbuild does not give correct flags when running menhir
   (Gabriel Scherer, reported by Philippe Veber)
-- PR#5891: ocamlbuild: support rectypes tag for mlpack
+- MPR#5891: ocamlbuild: support rectypes tag for mlpack
   (Khoo Yit Phang)
-- PR#6058: 'ocamlbuild -use-ocamlfind -tag thread -package threads t.cma' fails
+- MPR#6058: 'ocamlbuild -use-ocamlfind -tag thread -package threads t.cma' fails
   (Gabriel Scherer, report by Hezekiah M. Carty)
-- PR#6109: Typos in ocamlbuild error messages
+- MPR#6109: Typos in ocamlbuild error messages
   (Gabriel Kerneis)
 
 Feature wishes:
-- PR#5243: improve the ocamlbuild API documentation in signatures.mli
+- MPR#5243: improve the ocamlbuild API documentation in signatures.mli
   (Christophe Troestler)
-- PR#6059: add -output-obj rules for ocamlbuild
+- MPR#6059: add -output-obj rules for ocamlbuild
   (Anil Madhavapeddy)
-- PR#6060: ocamlbuild tags 'principal', 'strict_sequence' and 'short_paths'
+- MPR#6060: ocamlbuild tags 'principal', 'strict_sequence' and 'short_paths'
   (Anil Madhavapeddy)
 - ocamlbuild tag 'no_alias_deps'
   (Daniel Bünzli)
@@ -147,40 +157,40 @@ OCaml 4.00.1 (5 Oct 2012):
 --------------------------
 
 Bug fixes:
-- PR#5468: ocamlbuild should preserve order of parametric tags
+- MPR#5468: ocamlbuild should preserve order of parametric tags
 
 
 OCaml 4.00.0 (26 Jul 2012):
 ---------------------------
 
 Bug Fixes:
-- PR#5305: prevent ocamlbuild from complaining about links to _build/
-- PR#5356: ocamlbuild handling of 'predicates' for ocamlfind
-- PR#5435: ocamlbuild does not find .opt executables on Windows
-- PR#5503: error when ocamlbuild is passed an absolute path as build directory
-- PR#5531: Allow ocamlbuild to add ocamldoc flags through -docflag
-- PR#5604: fix permissions of files created by ocamlbuild itself
-- PR#5616: move ocamlbuild documentation to the reference manual
-- PR#5655: ocamlbuild doesn't pass cflags when building C stubs
+- MPR#5305: prevent ocamlbuild from complaining about links to _build/
+- MPR#5356: ocamlbuild handling of 'predicates' for ocamlfind
+- MPR#5435: ocamlbuild does not find .opt executables on Windows
+- MPR#5503: error when ocamlbuild is passed an absolute path as build directory
+- MPR#5531: Allow ocamlbuild to add ocamldoc flags through -docflag
+- MPR#5604: fix permissions of files created by ocamlbuild itself
+- MPR#5616: move ocamlbuild documentation to the reference manual
+- MPR#5655: ocamlbuild doesn't pass cflags when building C stubs
 
 
 OCaml 3.12.1 (4 Jul 2011):
 --------------------------
 
 Bug fixes:
-- PR#4380: ocamlbuild should not use tput on windows
-- PR#4552: ocamlbuild does not create symlinks when using '.itarget' file
-- PR#4967: ocamlbuild passes wrong switches to ocamldep through menhir
-- PR#5039: ocamlbuild should use '-linkpkg' only when linking programs
-- PR#5095: ocamlbuild ignores some tags when building bytecode objects
-- PR#5100: ocamlbuild always rebuilds a 'cmxs' file
-- PR#5103: build and install objinfo when building with ocamlbuild
-- PR#5165: ocamlbuild does not pass '-thread' option to ocamlfind
-- PR#5213: ocamlbuild should pass '-rectypes' to ocamldoc when needed
+- MPR#4380: ocamlbuild should not use tput on windows
+- MPR#4552: ocamlbuild does not create symlinks when using '.itarget' file
+- MPR#4967: ocamlbuild passes wrong switches to ocamldep through menhir
+- MPR#5039: ocamlbuild should use '-linkpkg' only when linking programs
+- MPR#5095: ocamlbuild ignores some tags when building bytecode objects
+- MPR#5100: ocamlbuild always rebuilds a 'cmxs' file
+- MPR#5103: build and install objinfo when building with ocamlbuild
+- MPR#5165: ocamlbuild does not pass '-thread' option to ocamlfind
+- MPR#5213: ocamlbuild should pass '-rectypes' to ocamldoc when needed
 
 Feature wishes:
-- PR#5065: added '-ocamldoc' option to ocamlbuild
-- PR#5139: added possibility to add options to ocamlbuild
+- MPR#5065: added '-ocamldoc' option to ocamlbuild
+- MPR#5139: added possibility to add options to ocamlbuild
 - ocamlbuild: allow dependency on file "_oasis"
 
 Other changes:
@@ -196,23 +206,23 @@ Ocamlbuild:
 - Add support for native dynlink.
 
 All tools:
-- PR#4857: add a -vnum option to display the version number and nothing else
+- MPR#4857: add a -vnum option to display the version number and nothing else
 
 Objective Caml 3.11.2 (20 Jan 2010):
 ------------------------------------
 
 Bug fixes:
-- PR#4421: ocamlbuild uses wrong compiler for C files
-- PR#4710, PR#4720: ocamlbuild does not use properly configuration information
-- PR#4856: ocamlbuild uses ocamlrun to execute a native plugin
-- PR#4873: ocamlbuild ignores "thread" tag when building a custom toplevel
-- PR#4890: ocamlbuild tries to use native plugin on bytecode-only arch
-- PR#4896: ocamlbuild should always pass -I to tools for external libraries
-- PR#4922: ocamlbuild recompiles too many files
+- MPR#4421: ocamlbuild uses wrong compiler for C files
+- MPR#4710, MPR#4720: ocamlbuild does not use properly configuration information
+- MPR#4856: ocamlbuild uses ocamlrun to execute a native plugin
+- MPR#4873: ocamlbuild ignores "thread" tag when building a custom toplevel
+- MPR#4890: ocamlbuild tries to use native plugin on bytecode-only arch
+- MPR#4896: ocamlbuild should always pass -I to tools for external libraries
+- MPR#4922: ocamlbuild recompiles too many files
 - Various build problems with ocamlbuild under Windows with msvc
 
 Feature wishes:
-- PR#4723: "clear_rules" function to empty the set of ocamlbuild rules
+- MPR#4723: "clear_rules" function to empty the set of ocamlbuild rules
 
 Objective Caml 3.11.1 (12 Jun 2009):
 ------------------------------------
@@ -229,14 +239,14 @@ Objective Caml 3.10.2 (29 Feb 2008):
 Objective Caml 3.10.1 (11 Jan 2008):
 ------------------------------------
 
-- PR#4286 ocamlbuild: cannot compile under AIX and SunOS
-- PR#4304 ocamlbuild: handle -I correctly
-- PR#4313 ocamlbuild: -log and missing directories
-- PR#4327 ocamlbuild: make emacs look for .annot in _build directory
-- PR#4378 ocamlbuild: typo in plugin.ml
-- PR#4379 ocamlbuild: problem with plugins under Windows
-- PR#4387 ocamlbuild: build directory not used properly
-- PR#4410 ocamlbuild: problem with plugin and -build
+- MPR#4286 ocamlbuild: cannot compile under AIX and SunOS
+- MPR#4304 ocamlbuild: handle -I correctly
+- MPR#4313 ocamlbuild: -log and missing directories
+- MPR#4327 ocamlbuild: make emacs look for .annot in _build directory
+- MPR#4378 ocamlbuild: typo in plugin.ml
+- MPR#4379 ocamlbuild: problem with plugins under Windows
+- MPR#4387 ocamlbuild: build directory not used properly
+- MPR#4410 ocamlbuild: problem with plugin and -build
 
 
 Objective Caml 3.10.0 (18 May 2007):
