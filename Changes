@@ -22,6 +22,8 @@ OCamlbuild NEXT_RELEASE
   (Vincent Laporte)
 - #20: add -dot and -man-related ocamldoc options
   (Gabriel Scherer)
+- #10, PR#21: Fix manpages generation: properly pass the "manpage" tag.
+  (Armaël Guéneau)
 
 
 

@@ -139,7 +139,8 @@ let document_ocaml_implem ml odoc env build =
   Ocaml_compiler.prepare_compile build ml;
   ocamldoc_c (tags_of_pathname ml++"implem") ml odoc
 
-let document_ocaml_project ?(ocamldoc=ocamldoc_l_file) odocl docout docdir env build =
+let document_ocaml_project
+    ?(ocamldoc=ocamldoc_l_file) ?(tags = []) odocl docout docdir env build =
   let odocl = env odocl and docout = env docout and docdir = env docdir in
   let contents = string_list_of_file odocl in
   let include_dirs = Pathname.include_dirs_of (Pathname.dirname odocl) in
@@ -148,7 +149,10 @@ let document_ocaml_project ?(ocamldoc=ocamldoc_l_file) odocl docout docdir env b
       expand_module include_dirs module_name ["odoc"]
     end contents in
   let module_paths = List.map Outcome.good (build to_build) in
-  let tags = (Tags.union (tags_of_pathname docout) (tags_of_pathname docdir))++"ocaml" in
+  let tags =
+    Tags.union
+      ((Tags.of_list tags) ++ "ocaml")
+      (Tags.union (tags_of_pathname docout) (tags_of_pathname docdir)) in
   ocamldoc tags module_paths docout docdir
 
 let camlp4 ?(default=A"camlp4o") tag i o env build =

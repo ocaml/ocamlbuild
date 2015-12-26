@@ -432,6 +432,7 @@ rule "ocamldoc: document ocaml project odocl & *odoc -> docdir (man)"
   ~dep:"%.odocl"
   ?doc:None (* TODO document *)
   (Ocaml_tools.document_ocaml_project
+      ~tags:["manpage"]
       ~ocamldoc:Ocaml_tools.ocamldoc_l_dir "%.odocl" "%.docdir/man" "%.docdir");;
 
 rule "ocamldoc: document ocaml project odocl & *odoc -> man|latex|dot..."
