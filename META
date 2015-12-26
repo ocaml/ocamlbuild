@@ -1,6 +1,6 @@
 # Specification for the "ocamlbuild" library
 requires = "unix"
-version = "[distributed with Ocaml]"
+version = "0.9"
 description = "ocamlbuild support library"
 directory= "^"
 archive(byte) = "ocamlbuildlib.cma"
