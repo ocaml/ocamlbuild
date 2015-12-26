@@ -174,6 +174,9 @@ install:
 installopt:
 	if test -f ocamlbuild.native; then $(MAKE) installopt_really; fi
 
+findlib-install:
+	ocamlfind install ocamlbuild META $(INSTALL_LIB)
+
 installopt_really:
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild$(EXE)
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild.native$(EXE)

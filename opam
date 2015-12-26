@@ -17,8 +17,8 @@ build: [
   [make "ocamlbuild.native"]
 ]
 
-# TODO
-# install: [ ]
+install: [make "findlib-install"]
+remove: ["ocamlfind" "remove" "ocamlbuild"]
 
 doc: [
   "http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html"
@@ -26,3 +26,5 @@ doc: [
 ]
 
 available: [ocaml-version >= "4.03"]
+
+depends: [ "ocamlfind" {build} ]
