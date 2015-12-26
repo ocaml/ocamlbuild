@@ -78,12 +78,11 @@ let pretty_print_flag { tags; flags; deprecated } =
   pretty_print header tags sflag
 
 let pretty_print_pflag (tags, ptag, doc_param, flags) =
-  let apply tag param = Printf.sprintf "%s(%s)" tag param in
   let header = "parametrized flag" in
   let doc_param = match doc_param with
       | None -> "X"
       | Some param -> param in
-  let tags = Tags.of_list (apply ptag doc_param :: tags) in
+  let tags = Tags.of_list (Param_tags.make ptag doc_param :: tags) in
   let sflag =
     try Command.string_of_command_spec (flags doc_param)
     with exn ->

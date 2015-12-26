@@ -13,7 +13,23 @@
 
 
 (* Original author: Nicolas Pouillard *)
-include Set.Make(String)
+
+let compare_tags str1 str2 =
+  let len1, len2 = String.length str1, String.length str2 in
+  if len1 = 0 || len2 = 0 then String.compare str1 str2
+  else
+    (* if the last character is ')', the tag is an applied
+       parametrized tag; place it first for visibility *)
+    begin match str1.[len1 - 1] = ')', str2.[len2 - 1] = ')' with
+      | true, false -> -1
+      | false, true -> 1
+      | true, true | false, false -> String.compare str1 str2
+    end
+
+include Set.Make(struct
+    type t = string
+    let compare = compare_tags
+  end)
 
 (**
   does_match {foo, bar, baz} {foo} => ok

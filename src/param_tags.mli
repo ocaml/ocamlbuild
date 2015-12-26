@@ -49,3 +49,7 @@ val make: Tags.elt -> string -> Tags.elt
   (** Make a parameterized tag instance.
 
 Example: [make "package" "unix"]: return the tag ["package(unix)"] *)
+
+val is_applied: Tags.elt -> bool
+(** [is_applied tag] is [true] when the tag is the result of the
+    application of a parametrized tag. *)
