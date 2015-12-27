@@ -61,3 +61,7 @@ let init () =
   List.iter really_acknowledge (My_std.List.ordered_unique !acknowledged_tags)
 
 let make = Printf.sprintf "%s(%s)"
+
+let is_applied tag =
+  let len = String.length tag in
+  len > 0 && tag.[len - 1] = ')'

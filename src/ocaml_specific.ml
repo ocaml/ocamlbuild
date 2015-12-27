@@ -270,9 +270,11 @@ rule "ocaml: mllib & cmo* -> cma"
   ~prod:"%.cma"
   ~dep:"%.mllib"
   ~doc:"Build a .cma archive file (bytecode library) containing \
-        the list of modules given in the .mllib file of the same name. \
+        the list of modules (`Foo`, `subdir/Bar`) given in the .mllib file \
+        of the same name, one per line. \
         Note that the .cma archive will contain exactly the modules listed, \
         so it may not be self-contained if some dependencies are missing."
+
   (Ocaml_compiler.byte_library_link_mllib "%.mllib" "%.cma");;
 
 rule "ocaml: d.cmo* -> d.cma"
@@ -296,7 +298,15 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
           else
 	    [])
   ~dep:"%(path)lib%(libname).clib"
-  ?doc:None (* TODO document *)
+  ~doc:"OCamlbuild can create a C library by calling ocamlmklib \
+        with the file paths listed (one per line) in libfoo.clib. \
+        To build a static library from libfoo.clib, you should \
+        request libfoo.a (or libfoo.lib on Windows), and to build \
+        a dynamic library you should request libfoo.so (or libfoo.dll \
+        on Windows). Finally, any file listed in the .clib \
+        with name 'bar/baz.o' will link 'bar/baz.obj' instead on Windows. \
+        This means that using the .o extension will give portable clib files, \
+        even if it is not the object file extension on your system."
   (C_tools.link_C_library "%(path)lib%(libname).clib" ("%(path)lib%(libname)"-.-ext_lib) "%(path)%(libname)");;
 
 rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxa & p.a"
@@ -419,9 +429,9 @@ rule "ocamldoc: document ocaml project odocl & *odoc -> docdir (html)"
   ~prod:"%.docdir/index.html"
   ~stamp:"%.docdir/html.stamp"
   ~dep:"%.odocl"
-  ~doc:"If you put a list of capitalized module names in a foo.odocl file, \
-        the target foo.docdir/index.html will call ocamldoc to produce \
-        the html documentation for these modules. \
+  ~doc:"the target foo.docdir/index.html will call ocamldoc to produce \
+        the html documentation for the module paths listed
+        in foo.odocl, one per line. \
         See also the max|latex|doc target below."
   (Ocaml_tools.document_ocaml_project
       ~ocamldoc:Ocaml_tools.ocamldoc_l_dir "%.odocl" "%.docdir/index.html" "%.docdir");;
@@ -430,15 +440,21 @@ rule "ocamldoc: document ocaml project odocl & *odoc -> docdir (man)"
   ~prod:"%.docdir/man"
   ~stamp:"%.docdir/man.stamp"
   ~dep:"%.odocl"
-  ?doc:None (* TODO document *)
+  ~doc:"The target foo.docdir/man will call ocamldoc to produce
+        documentation, in man format, for the module paths
+        listed in foo.odocl, one per line."
   (Ocaml_tools.document_ocaml_project
       ~tags:["manpage"]
       ~ocamldoc:Ocaml_tools.ocamldoc_l_dir "%.odocl" "%.docdir/man" "%.docdir");;
 
-rule "ocamldoc: document ocaml project odocl & *odoc -> man|latex|dot..."
+rule "ocamldoc: document ocaml project odocl & *odoc -> latex|dot..."
   ~prod:"%(dir).docdir/%(file)"
   ~dep:"%(dir).odocl"
-  ?doc:None (* TODO document *)
+  ~doc:"The target foo.docdir/bar.tex (or bar.ltx) will call ocamldoc
+        to produce documentation, in LaTeX format, for the module paths
+        listed in foo.odocl, one per line. \
+        The target foo.docdir/bar.dot will generate a dot graph of module \
+        dependencies."
   (Ocaml_tools.document_ocaml_project
       ~ocamldoc:Ocaml_tools.ocamldoc_l_file "%(dir).odocl" "%(dir).docdir/%(file)" "%(dir).docdir");;
 
@@ -490,7 +506,10 @@ end else
 rule "ocaml C stubs: c -> o"
   ~prod:x_o
   ~dep:"%.c"
-  ?doc:None (* TODO document *)
+  ~doc:"The OCaml compiler can be passed .c files and will call \
+        the underlying C toolchain to produce corresponding .o files. \
+        ocamlc or ocamlopt will be used depending on whether \
+        the 'native' flag is set on the .c file."
   begin fun env _build ->
     let c = env "%.c" in
     let o = env x_o in
@@ -508,7 +527,9 @@ rule "ocaml: ml & ml.depends & *cmi -> .inferred.mli"
 rule "ocaml: mltop -> top"
   ~prod:"%.top"
   ~dep:"%.mltop"
-  ?doc:None (* TODO document *)
+  ~doc:"If foo.mltop contains a list of module paths, then building foo.top \
+        will call the ocamlmktop tool to build a custom toplevel with those \
+        modules pre-linked."
   (Ocaml_compiler.byte_toplevel_link_mltop "%.mltop" "%.top");;
 
 rule "preprocess: ml -> pp.ml"
@@ -561,7 +582,7 @@ flag [ "ocaml" ; "menhir" ; "infer" ] (S[A "--infer"]);;
 let () =
   List.iter begin fun mode ->
     flag [ mode; "only_tokens" ] (S[A "--only-tokens"]);
-    pflag [ mode ] "external_tokens" (fun name ->
+    pflag [ mode ] "external_tokens" ~doc_param:"TokenModule" (fun name ->
       S[A "--external-tokens"; A name]);
   end [ "menhir"; "menhir_ocamldep" ];;
 
@@ -587,6 +608,8 @@ end;;
 (* findlib *)
 let () =
   if !Options.use_ocamlfind then begin
+    let doc_param = "my_package" in
+
     (* Ocamlfind will link the archives for us. *)
     flag ["ocaml"; "link"; "program"] & A"-linkpkg";
     flag ["ocaml"; "link"; "toplevel"] & A"-linkpkg";
@@ -598,7 +621,8 @@ let () =
        (.cma and .cmxa); the "linkpkg" flag allows user to request it
        explicitly. *)
     flag ["ocaml"; "link"; "linkpkg"] & A"-linkpkg";
-    pflag ["ocaml"; "link"] "dontlink" (fun pkg -> S[A"-dontlink"; A pkg]);
+    pflag ["ocaml"; "link"] "dontlink" ~doc_param
+          (fun pkg -> S[A"-dontlink"; A pkg]);
 
     let all_tags = [
       ["ocaml"; "byte"; "compile"];
@@ -615,12 +639,13 @@ let () =
 
     (* tags package(X), predicate(X) and syntax(X) *)
     List.iter begin fun tags ->
-      pflag tags "package" (fun pkg -> S [A "-package"; A pkg]);
+      pflag tags "package" ~doc_param (fun pkg -> S [A "-package"; A pkg]);
       if not (List.mem "ocamldep" tags) then
         (* PR#6184: 'ocamlfind ocamldep' does not support -predicate *)
-        pflag tags "predicate" (fun pkg -> S [A "-predicates"; A pkg]);
+        pflag tags "predicate" ~doc_param:"archive"
+              (fun pkg -> S [A "-predicates"; A pkg]);
       if List.mem "ocaml" tags then
-        pflag tags "syntax" (fun pkg -> S [A "-syntax"; A pkg])
+        pflag tags "syntax" ~doc_param:"camlp4o" (fun pkg -> S [A "-syntax"; A pkg])
     end all_tags
   end else begin
     try
@@ -638,32 +663,33 @@ let () =
 
 (* parameterized tags *)
 let () =
-  pflag ["ocaml"; "native"; "compile"] "for-pack"
+  pflag ["ocaml"; "native"; "compile"] "for-pack" ~doc_param:"PackModule"
     (fun param -> S [A "-for-pack"; A param]);
-  pflag ["ocaml"; "native"; "pack"] "for-pack"
+  pflag ["ocaml"; "native"; "pack"] "for-pack" ~doc_param:"PackModule"
     (fun param -> S [A "-for-pack"; A param]);
-  pflag ["ocaml"; "native"; "compile"] "inline"
+  pflag ["ocaml"; "native"; "compile"] "inline" ~doc_param:"5"
     (fun param -> S [A "-inline"; A param]);
   pflag ["ocaml"; "compile"] "color" (fun setting -> S[A "-color"; A setting]);
   List.iter (fun pp ->
-    pflag ["ocaml"; "compile"] pp
+    let doc_param = "my_" ^ pp in
+    pflag ["ocaml"; "compile"] pp ~doc_param
       (fun param -> S [A ("-" ^ pp); A param]);
-    pflag ["ocaml"; "ocamldep"] pp
+    pflag ["ocaml"; "ocamldep"] pp ~doc_param
       (fun param -> S [A ("-" ^ pp); A param]);
-    pflag ["ocaml"; "doc"] pp
+    pflag ["ocaml"; "doc"] pp ~doc_param
       (fun param -> S [A ("-" ^ pp); A param]);
-    pflag ["ocaml"; "infer_interface"] pp
+    pflag ["ocaml"; "infer_interface"] pp ~doc_param
       (fun param -> S [A ("-" ^ pp); A param])
   ) ["pp"; "ppx"];
-  pflag ["ocaml";"compile";] "warn"
+  pflag ["ocaml";"compile";] "warn" ~doc_param:"A@10-28@40-42-45"
     (fun param -> S [A "-w"; A param]);
-  pflag ["ocaml";"compile";] "warn_error"
+  pflag ["ocaml";"compile";] "warn_error" ~doc_param:"+10+40"
     (fun param -> S [A "-warn-error"; A param]);
-  pflag ["ocaml"; "ocamldep"] "open"
+  pflag ["ocaml"; "ocamldep"] "open" ~doc_param:"MyPervasives"
     (fun param -> S [A "-open"; A param]);
-  pflag ["ocaml"; "compile"] "open"
+  pflag ["ocaml"; "compile"] "open" ~doc_param:"MyPervasives"
     (fun param -> S [A "-open"; A param]);
-  pflag ["ocaml"; "link"] "runtime_variant"
+  pflag ["ocaml"; "link"] "runtime_variant" ~doc_param:"_pic"
     (fun param -> S [A "-runtime-variant"; A param]);
   ()
 
