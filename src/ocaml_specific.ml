@@ -430,33 +430,55 @@ rule "ocamldoc: document ocaml project odocl & *odoc -> docdir (html)"
   ~stamp:"%.docdir/html.stamp"
   ~dep:"%.odocl"
   ~doc:"the target foo.docdir/index.html will call ocamldoc to produce \
-        the html documentation for the module paths listed
+        the html documentation for the module paths listed \
         in foo.odocl, one per line. \
-        See also the max|latex|doc target below."
+        See also the man|latex|texinfo|dot target below."
   (Ocaml_tools.document_ocaml_project
+      ~tags:["html"]
       ~ocamldoc:Ocaml_tools.ocamldoc_l_dir "%.odocl" "%.docdir/index.html" "%.docdir");;
 
 rule "ocamldoc: document ocaml project odocl & *odoc -> docdir (man)"
   ~prod:"%.docdir/man"
   ~stamp:"%.docdir/man.stamp"
   ~dep:"%.odocl"
-  ~doc:"The target foo.docdir/man will call ocamldoc to produce
-        documentation, in man format, for the module paths
+  ~doc:"The target foo.docdir/man will call ocamldoc to produce \
+        documentation, in man format, for the module paths \
         listed in foo.odocl, one per line."
   (Ocaml_tools.document_ocaml_project
-      ~tags:["manpage"]
+      ~tags:["man"]
       ~ocamldoc:Ocaml_tools.ocamldoc_l_dir "%.odocl" "%.docdir/man" "%.docdir");;
 
-rule "ocamldoc: document ocaml project odocl & *odoc -> latex|dot..."
-  ~prod:"%(dir).docdir/%(file)"
+rule "ocamldoc: document ocaml project odocl & *odoc -> latex"
+  ~prod:"%(dir).docdir/%(file).%(ext:\"tex\" or \"ltx\")"
   ~dep:"%(dir).odocl"
-  ~doc:"The target foo.docdir/bar.tex (or bar.ltx) will call ocamldoc
-        to produce documentation, in LaTeX format, for the module paths
-        listed in foo.odocl, one per line. \
-        The target foo.docdir/bar.dot will generate a dot graph of module \
+  ~doc:"The target foo.docdir/bar.tex (or bar.ltx) will call ocamldoc \
+        to produce documentation, in LaTeX format, for the module paths \
+        listed in foo.odocl, one per line."
+  (Ocaml_tools.document_ocaml_project
+      ~tags:["tex"]
+      ~ocamldoc:Ocaml_tools.ocamldoc_l_file
+        "%(dir).odocl" "%(dir).docdir/%(file).%(ext)" "%(dir).docdir");;
+
+rule "ocamldoc: document ocaml project odocl & *odoc -> texinfo"
+  ~prod:"%(dir).docdir/%(file).texi"
+  ~dep:"%(dir).odocl"
+  ~doc:"The target foo.docdir/bar.texi will call ocamldoc to produce \
+        documentation, in TeXinfo format, for the module paths \
+        listed in foo.odocl, one per line."
+  (Ocaml_tools.document_ocaml_project
+      ~tags:["texi"]
+      ~ocamldoc:Ocaml_tools.ocamldoc_l_file
+      "%(dir).odocl" "%(dir).docdir/%(file).texi" "%(dir).docdir");;
+
+rule "ocamldoc: document ocaml project odocl & *odoc -> dot"
+  ~prod:"%(dir).docdir/%(file).dot"
+  ~dep:"%(dir).odocl"
+  ~doc:"The target foo.docdir/bar.dot will generate a dot graph of module \
         dependencies."
   (Ocaml_tools.document_ocaml_project
-      ~ocamldoc:Ocaml_tools.ocamldoc_l_file "%(dir).odocl" "%(dir).docdir/%(file)" "%(dir).docdir");;
+      ~tags:["dot"]
+      ~ocamldoc:Ocaml_tools.ocamldoc_l_file
+      "%(dir).odocl" "%(dir).docdir/%(file).dot" "%(dir).docdir");;
 
 (* To use menhir give the -use-menhir option at command line,
    Or put true: use_menhir in your tag file. *)
@@ -830,23 +852,25 @@ flag ~deprecated:true
   ["ocaml"; "compile"; "strict-sequence"] (A "-strict-sequence");;
 flag ["ocaml"; "compile"; "strict_sequence"] (A "-strict-sequence");;
 
-flag ["ocaml"; "doc"; "docdir"; "extension:html"] (A"-html");;
+flag ["ocaml"; "doc"; "docdir"; "html"] (A"-html");;
+flag ["ocaml"; "doc"; "docdir"; "man"] (A"-man");;
+flag ["ocaml"; "doc"; "docfile"; "dot"] (A"-dot");;
+flag ["ocaml"; "doc"; "docfile"; "tex"] (A"-latex");;
+flag ["ocaml"; "doc"; "docfile"; "texi"] (A"-texi");;
+
+(* Kept for backward compatibility. *)
 flag ["ocaml"; "doc"; "docdir"; "manpage"] (A"-man");;
-flag ["ocaml"; "doc"; "docfile"; "extension:dot"] (A"-dot");;
-flag ["ocaml"; "doc"; "docfile"; "extension:tex"] (A"-latex");;
-flag ["ocaml"; "doc"; "docfile"; "extension:ltx"] (A"-latex");;
-flag ["ocaml"; "doc"; "docfile"; "extension:texi"] (A"-texi");;
 
-pflag ["ocaml"; "doc"; "extension:dot"] "dot_colors"
+pflag ["ocaml"; "doc"; "dot"] "dot_colors"
   (fun param -> S [A "-dot-colors"; A param]);;
-flag ["ocaml"; "doc"; "extension:dot"; "dot_include_all"] (A"-dot-include-all");;
-flag ["ocaml"; "doc"; "extension:dot"; "dot_reduce"] (A"-dot-reduce");;
-flag ["ocaml"; "doc"; "extension:dot"; "dot_types"] (A"-dot-types");;
+flag ["ocaml"; "doc"; "dot"; "dot_include_all"] (A"-dot-include-all");;
+flag ["ocaml"; "doc"; "dot"; "dot_reduce"] (A"-dot-reduce");;
+flag ["ocaml"; "doc"; "dot"; "dot_types"] (A"-dot-types");;
 
-flag ["ocaml"; "doc"; "manpage"; "man_mini"] (A"-man-mini");;
-pflag ["ocaml"; "doc"; "manpage"] "man_suffix"
+flag ["ocaml"; "doc"; "man"; "man_mini"] (A"-man-mini");;
+pflag ["ocaml"; "doc"; "man"] "man_suffix"
   (fun param -> S [A "-man-suffix"; A param]);;
-pflag ["ocaml"; "doc"; "manpage"] "man_section"
+pflag ["ocaml"; "doc"; "man"] "man_section"
   (fun param -> S [A "-man-section"; A param]);;
 
 ocaml_lib "ocamlbuildlib";;

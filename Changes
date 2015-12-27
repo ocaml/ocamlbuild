@@ -26,6 +26,8 @@ OCamlbuild NEXT_RELEASE
   (Armaël Guéneau)
 - #20: add -documentation support for parametrized flag
   (Gabriel Scherer, review by Rudi Grinberg and François Bobot)
+- #10, #35: Use extension-independent tags for ocamldoc rules.
+  (Armaël Guéneau)
 
 
 
