@@ -309,7 +309,10 @@ let execute
       begin
         let (rfds, wfds, xfds) = compute_fds () in
         ticker ();
-        let (chrfds, chwfds, chxfds) = select rfds wfds xfds period in
+        let rec select_non_intr r w x p =
+          try select r w x p
+          with Unix_error (EINTR, _, _) -> select_non_intr r w x p in
+        let (chrfds, chwfds, chxfds) = select_non_intr rfds wfds xfds period in
         List.iter
           begin fun (fdlist, hook) ->
             List.iter
