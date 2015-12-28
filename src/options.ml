@@ -14,8 +14,6 @@
 
 (* Original author: Nicolas Pouillard *)
 
-let version = "ocamlbuild "^(Sys.ocaml_version);;
-
 type command_spec = Command.spec
 
 open My_std
@@ -161,11 +159,16 @@ let set_build_dir s =
   else
     build_dir := s
 let spec = ref (
+    let print_version () =
+      Printf.printf "ocamlbuild %s\n%!" Ocamlbuild_config.version; raise Exit_OK
+    in
+    let print_vnum () = print_endline Ocamlbuild_config.version; raise Exit_OK in
   Arg.align
   [
-   "-version", Unit (fun () -> print_endline version; raise Exit_OK), " Display the version";
-   "-vnum", Unit (fun () -> print_endline Sys.ocaml_version; raise Exit_OK),
-            " Display the version number";
+   "-version", Unit print_version , " Display the version";
+   "--version", Unit print_version, " same as -version";
+   "-vnum", Unit print_vnum, " Display the version number";
+   "--vnum", Unit print_vnum, " same as -vnum";
    "-quiet", Unit (fun () -> Log.level := 0), " Make as quiet as possible";
    "-verbose", Int (fun i -> Log.classic_display := true; Log.level := i + 2), "<level> Set the verbosity level";
    "-documentation", Set show_documentation, " Show rules and flags";

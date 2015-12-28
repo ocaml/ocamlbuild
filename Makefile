@@ -151,7 +151,7 @@ beforedepend:: src/glob_lexer.ml
 
 # The config file
 
-src/ocamlbuild_config.ml: Makefile.create_config
+src/ocamlbuild_config.ml: Makefile.create_config VERSION
 	make -f Makefile.create_config "LIBDIR=$(LIBDIR)" src/ocamlbuild_config.ml
 clean::
 	rm -f src/ocamlbuild_config.ml
