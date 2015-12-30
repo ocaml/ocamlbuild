@@ -93,9 +93,14 @@ INSTALL_LIB_OPT=\
 INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)/ocamlbuild
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
 
-all: ocamlbuild.byte ocamlbuildlib.cma
+byte: ocamlbuild.byte ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
-allopt: ocamlbuild.native ocamlbuildlib.cmxa
+native: ocamlbuild.native ocamlbuildlib.cmxa
+
+all: byte native
+
+# compatibility alias
+allopt: all
 
 # The executables
 
