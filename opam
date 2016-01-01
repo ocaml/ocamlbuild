@@ -23,3 +23,5 @@ doc: [
 
 available: [ocaml-version >= "4.03"]
 depends: [ ]
+
+version: "dev"
