@@ -13,12 +13,11 @@ homepage: "https://github.com/ocaml/ocamlbuild/"
 bug-reports: "https://github.com/ocaml/ocamlbuild/issues"
 
 build: [
-  [make]
-  [make "ocamlbuild.native"]
+  [make "NATIVE=%{ocaml-native}%" "all"]
 ]
 
-install: [make "findlib-install"]
-remove: ["ocamlfind" "remove" "ocamlbuild"]
+install: [make "NATIVE=%{ocaml-native}%" "install"]
+remove: [make "NATIVE=%{ocaml-native}%" "uninstall"]
 
 doc: [
   "http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html"
@@ -26,5 +25,4 @@ doc: [
 ]
 
 available: [ocaml-version >= "4.03"]
-
-depends: [ "ocamlfind" {build} ]
+depends: [ ]

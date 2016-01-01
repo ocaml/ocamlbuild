@@ -11,7 +11,7 @@
 #                                                                       #
 #########################################################################
 
-include $(LIBDIR)/Makefile.config
+include $(shell ocamlc -where)/Makefile.config
 
 .PHONY: force
 

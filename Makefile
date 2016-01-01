@@ -11,16 +11,28 @@
 #                                                                       #
 #########################################################################
 
-OCAMLC    = ocamlc
-OCAMLOPT  = ocamlopt
-OCAMLDEP  = ocamldep
-OCAMLLEX  = ocamllex
-CP        = cp
-COMPFLAGS = -w L -w R -w Z -I src -I +unix -safe-string
-LINKFLAGS = -I +unix -I src
+OCAMLC    ?= ocamlc
+OCAMLOPT  ?= ocamlopt
+OCAMLDEP  ?= ocamldep
+OCAMLLEX  ?= ocamllex
+CP        ?= cp
+COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
+LINKFLAGS ?= -I +unix -I src
 
-LIBDIR=$(shell ocamlc -where)
-BINDIR?=/usr/local/bin
+LIBDIR ?= $(shell ocamlc -where)/..
+BINDIR ?= /usr/local/bin
+
+OCAMLBUILD_LIBDIR:=$(LIBDIR)
+OCAMLBUILD_BINDIR:=$(BINDIR)
+
+# this include overwrites LIBDIR and BINDIR variables, and a bunch of
+# other variables, but it is necessary to get the O and EXE variables
+# that we use to decide target names.
+include $(shell ocamlc -where)/Makefile.config
+
+LIBDIR:=$(OCAMLBUILD_LIBDIR)
+BINDIR:=$(OCAMLBUILD_BINDIR)
+
 
 PACK_CMO= $(addprefix src/,\
   const.cmo \
@@ -90,17 +102,27 @@ INSTALL_LIB_OPT=\
   ocamlbuild_pack.cmx \
   $(EXTRA_CMO:.cmo=.cmx) $(EXTRA_CMO:.cmo=.$(O))
 
-INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)/ocamlbuild
+INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
+
+# NATIVE should be set to 'true' when ocamlopt is available
+NATIVE?=true
+
+all:
+	@case $(NATIVE) in\
+	  "false")\
+	    $(MAKE) byte;;\
+	  "true")\
+	    $(MAKE) byte native;;\
+	esac
 
 byte: ocamlbuild.byte ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
 native: ocamlbuild.native ocamlbuildlib.cmxa
 
-all: byte native
+allopt: # compatibility alias
+	$(MAKE) byte native
 
-# compatibility alias
-allopt: all
 
 # The executables
 
@@ -157,31 +179,92 @@ beforedepend:: src/glob_lexer.ml
 # The config file
 
 src/ocamlbuild_config.ml: Makefile.create_config VERSION
-	make -f Makefile.create_config "LIBDIR=$(LIBDIR)" src/ocamlbuild_config.ml
+	make -f Makefile.create_config src/ocamlbuild_config.ml
 clean::
 	rm -f src/ocamlbuild_config.ml
 beforedepend:: src/ocamlbuild_config.ml
 
 # Installation
 
-install:
+install-bin-byte:
 	mkdir -p $(INSTALL_BINDIR)
-	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE)
 	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)
-	mkdir -p $(INSTALL_LIBDIR)
-	$(CP) $(INSTALL_LIB) $(INSTALL_LIBDIR)/
+	if test "$(NATIVE)" = "false"; then\
+	  $(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE);\
+	fi
 
-installopt:
-	if test -f ocamlbuild.native; then $(MAKE) installopt_really; fi
-
-findlib-install:
-	ocamlfind install ocamlbuild META $(INSTALL_LIB)
-
-installopt_really:
+install-bin-native:
+	mkdir -p $(INSTALL_BINDIR)
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild$(EXE)
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild.native$(EXE)
-	mkdir -p $(INSTALL_LIBDIR)
-	$(CP) $(INSTALL_LIB_OPT) $(INSTALL_LIBDIR)/
+
+install-bin:
+	$(MAKE) install-bin-byte
+	if test "$(NATIVE)" = "true"; then\
+	  $(MAKE) install-bin-native;\
+	fi
+
+install-lib-basics:
+	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-byte:
+	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) $(INSTALL_LIB) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-native:
+	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) $(INSTALL_LIB_OPT) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib:
+	$(MAKE) install-lib-basics install-lib-byte
+	if test "$(NATIVE)" = "true"; then\
+	  $(MAKE) install-lib-native;\
+	fi
+
+install-findlib:
+	case "$(NATIVE)" in\
+	  "false")\
+	    ocamlfind install ocamlbuild \
+	      META src/signatures.mli $(INSTALL_LIB);;\
+	  "true")\
+	    ocamlfind install ocamlbuild \
+	      META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT);;\
+	esac
+
+uninstall-bin:
+	rm $(BINDIR)/ocamlbuild
+	rm $(BINDIR)/ocamlbuild.byte
+	if test "$(NATIVE)" = "true"; then rm $(BINDIR)/ocamlbuild.native; fi
+
+uninstall-lib-basics:
+	rm $(LIBDIR)/ocamlbuild/META $(LIBDIR)/ocamlbuild/signatures.mli
+
+uninstall-lib-byte:
+	for lib in $(INSTALL_LIB); do\
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
+
+uninstall-lib-native:
+	for lib in $(INSTALL_LIB_OPT); do\
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
+
+uninstall-lib:
+	$(MAKE) uninstall-lib-basics uninstall-lib-byte
+	if test "$(NATIVE)" = "true"; then\
+	  $(MAKE) uninstall-lib-native;\
+	fi
+	rmdir $(LIBDIR)/ocamlbuild
+
+uninstall-findlib:
+	ocamlfind remove ocamlbuild
+
+install: install-bin install-lib
+uninstall: uninstall-bin uninstall-lib
+
+findlib-install: install-bin install-findlib
+findlib-uninstall: uninstall-bin uninstall-findlib
 
 # The generic rules
 
