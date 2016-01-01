@@ -19,8 +19,8 @@ CP        ?= cp
 COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
 LINKFLAGS ?= -I +unix -I src
 
-LIBDIR ?= $(shell ocamlc -where)/..
-BINDIR ?= /usr/local/bin
+LIBDIR ?= $(shell opam config var lib)
+BINDIR ?= $(shell opam config var bin)
 
 OCAMLBUILD_LIBDIR:=$(LIBDIR)
 OCAMLBUILD_BINDIR:=$(BINDIR)
@@ -186,6 +186,20 @@ beforedepend:: src/ocamlbuild_config.ml
 
 # Installation
 
+# The binaries go in BINDIR. We copy ocamlbuild.byte and
+# ocamlbuild.native (if available), and also copy the best available
+# binary as BINDIR/ocamlbuild.
+
+# The library is put in LIBDIR/ocamlbuild. We copy
+# - the META file (for ocamlfind)
+# - src/signatures.mli (user documentation)
+# - the files in INSTALL_LIB and INSTALL_LIB_OPT (if available)
+
+# We support three installation methods:
+# - standard {install,uninstall} targets
+# - findlib-{install,uninstall} that uses findlib for the library install
+# - producing an OPAM .install file and not actually installing anything
+
 install-bin-byte:
 	mkdir -p $(INSTALL_BINDIR)
 	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)
@@ -204,17 +218,44 @@ install-bin:
 	  $(MAKE) install-bin-native;\
 	fi
 
+install-bin-opam:
+	echo "bin: [" >> ocamlbuild.install
+	echo "  \"ocamlbuild.byte\" {\"ocamlbuild.byte\"}" >> ocamlbuild.install
+	case $(NATIVE) in\
+	  "false")\
+	    echo "  \"ocamlbuild.byte\" {\"ocamlbuild\"}" >> ocamlbuild.install;;\
+	  "true")\
+	    echo "  \"ocamlbuild.native\" {\"ocamlbuild.native\"}" >> ocamlbuild.install;\
+	    echo "  \"ocamlbuild.native\" {\"ocamlbuild\"}" >> ocamlbuild.install;;\
+	esac
+	echo "]" >> ocamlbuild.install
+	echo >> ocamlbuild.install
+
 install-lib-basics:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-basics-opam:
+	echo "  \"META\"" >> ocamlbuild.install
+	echo "  \"src/signatures.mli\" {\"signatures.mli\"}" >> ocamlbuild.install
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) $(INSTALL_LIB) $(INSTALL_LIBDIR)/ocamlbuild
 
+install-lib-byte-opam:
+	for lib in $(INSTALL_LIB); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
+
 install-lib-native:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) $(INSTALL_LIB_OPT) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-native-opam:
+	for lib in $(INSTALL_LIB_OPT); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
 
 install-lib:
 	$(MAKE) install-lib-basics install-lib-byte
@@ -222,7 +263,7 @@ install-lib:
 	  $(MAKE) install-lib-native;\
 	fi
 
-install-findlib:
+install-lib-findlib:
 	case "$(NATIVE)" in\
 	  "false")\
 	    ocamlfind install ocamlbuild \
@@ -231,6 +272,16 @@ install-findlib:
 	    ocamlfind install ocamlbuild \
 	      META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT);;\
 	esac
+
+install-lib-opam:
+	echo "lib: [" >> ocamlbuild.install
+	$(MAKE) install-lib-basics-opam
+	$(MAKE) install-lib-byte-opam
+	if test "$(NATIVE)" = "true"; then\
+	  $(MAKE) install-lib-native-opam;\
+	fi
+	echo "]" >> ocamlbuild.install
+	echo >> ocamlbuild.install
 
 uninstall-bin:
 	rm $(BINDIR)/ocamlbuild
@@ -255,16 +306,25 @@ uninstall-lib:
 	if test "$(NATIVE)" = "true"; then\
 	  $(MAKE) uninstall-lib-native;\
 	fi
+	ls $(LIBDIR)/ocamlbuild
 	rmdir $(LIBDIR)/ocamlbuild
 
-uninstall-findlib:
+uninstall-lib-findlib:
 	ocamlfind remove ocamlbuild
 
 install: install-bin install-lib
 uninstall: uninstall-bin uninstall-lib
 
-findlib-install: install-bin install-findlib
-findlib-uninstall: uninstall-bin uninstall-findlib
+findlib-install: install-bin install-lib-findlib
+findlib-uninstall: uninstall-bin uninstall-lib-findlib
+
+opam-install: ocamlbuild.install
+
+ocamlbuild.install:
+	rm -f ocamlbuild.install
+	touch ocamlbuild.install
+	$(MAKE) install-bin-opam
+	$(MAKE) install-lib-opam
 
 # The generic rules
 
@@ -283,6 +343,7 @@ clean::
 	rm -f src/*.cm? src/*.$(O) *.cm* *.$(O) *.$(A)
 	rm -f *.byte *.native
 	rm -f test/test2/vivi.ml
+	rm -f ocamlbuild.install
 
 # The dependencies
 

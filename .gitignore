@@ -18,6 +18,8 @@
 *.out
 *.out.dSYM
 
+ocamlbuild.install
+
 /src/ocamlbuild_config.ml
 /src/lexers.ml
 /src/glob_lexer.ml

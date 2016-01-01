@@ -13,11 +13,8 @@ homepage: "https://github.com/ocaml/ocamlbuild/"
 bug-reports: "https://github.com/ocaml/ocamlbuild/issues"
 
 build: [
-  [make "NATIVE=%{ocaml-native}%" "all"]
+  [make "NATIVE=%{ocaml-native}%" "BINDIR=%{bin}%" "LIBDIR=%{lib}%" "all" "opam-install"]
 ]
-
-install: [make "NATIVE=%{ocaml-native}%" "install"]
-remove: [make "NATIVE=%{ocaml-native}%" "uninstall"]
 
 doc: [
   "http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html"
