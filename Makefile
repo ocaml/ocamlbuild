@@ -197,7 +197,7 @@ installopt_really:
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
-	rm -f src/*.cm? *.$(O) *.cm* *.$(A)
+	rm -f src/*.cm? src/*.$(O) *.cm* *.$(O) *.$(A)
 	rm -f *.byte *.native
 	rm -f test/test2/vivi.ml
 
