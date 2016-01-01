@@ -16,7 +16,7 @@ OCAMLOPT  = ocamlopt
 OCAMLDEP  = ocamldep
 OCAMLLEX  = ocamllex
 CP        = cp
-COMPFLAGS= -warn-error A -w L -w R -w Z -I src -I +unix -safe-string
+COMPFLAGS= -w L -w R -w Z -I src -I +unix -safe-string
 LINKFLAGS= -I +unix -I src
 
 LIBDIR=$(shell ocamlc -where)
