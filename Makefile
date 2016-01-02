@@ -22,6 +22,9 @@ LINKFLAGS ?= -I +unix -I src
 LIBDIR ?= $(shell opam config var lib)
 BINDIR ?= $(shell opam config var bin)
 
+# see 'check-if-preinstalled' target
+CHECK_IF_PREINSTALLED ?= true
+
 OCAMLBUILD_LIBDIR:=$(LIBDIR)
 OCAMLBUILD_BINDIR:=$(BINDIR)
 
@@ -312,19 +315,33 @@ uninstall-lib:
 uninstall-lib-findlib:
 	ocamlfind remove ocamlbuild
 
-install: install-bin install-lib
+install: check-if-preinstalled
+	$(MAKE) install-bin install-lib
 uninstall: uninstall-bin uninstall-lib
 
-findlib-install: install-bin install-lib-findlib
+findlib-install: check-if-preinstalled
+	$(MAKE) install-bin install-lib-findlib
 findlib-uninstall: uninstall-bin uninstall-lib-findlib
 
-opam-install: ocamlbuild.install
+opam-install: check-if-preinstalled
+	$(MAKE) ocamlbuild.install
 
 ocamlbuild.install:
 	rm -f ocamlbuild.install
 	touch ocamlbuild.install
 	$(MAKE) install-bin-opam
 	$(MAKE) install-lib-opam
+
+check-if-preinstalled:
+	@if test "$(CHECK_IF_PREINSTALLED)" = "true"; then\
+	  if test -d $(shell ocamlc -where)/ocamlbuild; then\
+	    >&2 echo "ERROR: Preinstalled ocamlbuild detected at"\
+	         "$(shell ocamlc -where)/ocamlbuild";\
+	    >&2 echo "Installation aborted; if you want to bypass this"\
+	          "safety check, pass CHECK_IF_PREINSTALLED=false to make";\
+	    exit 2;\
+	  fi;\
+	fi
 
 # The generic rules
 

@@ -13,7 +13,8 @@ homepage: "https://github.com/ocaml/ocamlbuild/"
 bug-reports: "https://github.com/ocaml/ocamlbuild/issues"
 
 build: [
-  [make "NATIVE=%{ocaml-native}%" "BINDIR=%{bin}%" "LIBDIR=%{lib}%" "all" "opam-install"]
+  [make "NATIVE=%{ocaml-native}%" "BINDIR=%{bin}%" "LIBDIR=%{lib}%"
+        "check-if-preinstalled" "all" "opam-install"]
 ]
 
 doc: [
