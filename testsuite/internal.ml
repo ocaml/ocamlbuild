@@ -362,4 +362,22 @@ let () = test "ForPackEverything"
           T.f "test.ml"  ~content:"let x = 123"; ]
   ~targets:("test.cmo", []) ();;
 
+let () = test "CLibFromCObj"
+  ~description:"Build a C library from a C object file"
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~tree:[
+    T.f "test.c" ~content:{|
+#include <stdio.h>
+#include <caml/mlvalues.h>
+#include <caml/memory.h>
+CAMLprim value hello_world(value unit)
+{
+  CAMLparam1 (unit);
+  printf("Hello World!\n");
+  CAMLreturn (Val_unit);
+}
+|};
+  ]
+  ~targets:("libtest.a", []) ();;
+
 run ~root:"_test_internal";;

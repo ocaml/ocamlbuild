@@ -20,6 +20,8 @@ NEXT_RELEASE:
   The most current version of the manual can thus be accessed at
     https://github.com/ocaml/ocamlbuild/tree/master/manual/manual.adoc
   (Gabriel Scherer)
+- new ".o -> .clib" rule to build libraries out of single C stubs
+  (Gabriel Scherer, request by whitequark)
 
 0.9.2 (1 May 2016):
 -------------------
