@@ -11,10 +11,10 @@
 #                                                                       #
 #########################################################################
 
-OCAMLC    ?= ocamlc
-OCAMLOPT  ?= ocamlopt
-OCAMLDEP  ?= ocamldep
-OCAMLLEX  ?= ocamllex
+OCAMLC    ?= ocamlc.opt
+OCAMLOPT  ?= ocamlopt.opt
+OCAMLDEP  ?= ocamldep.opt
+OCAMLLEX  ?= ocamllex.opt
 CP        ?= cp
 COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
 LINKFLAGS ?= -I +unix -I src
