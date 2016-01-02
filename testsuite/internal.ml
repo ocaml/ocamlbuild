@@ -321,4 +321,25 @@ let () = test "OpenDependencies"
   ~matching:[M.f "b.byte"]
   ~targets:("b.byte",[]) ();;
 
+let () = test "LinkCStubs"
+  ~description:"Build a simple project that links with C stubs"
+  ~options:[`no_ocamlfind]
+  ~tree:[
+    T.f "a.ml" ~content: "external hello_world : unit -> unit = \"hello_world\";; let () = hello_world ();;";
+    T.f "b.c" ~content:{|
+#include <stdio.h>
+#include <caml/mlvalues.h>
+#include <caml/memory.h>
+CAMLprim value hello_world(value unit)
+{
+  CAMLparam1 (unit);
+  printf("Hello World!\n");
+  CAMLreturn (Val_unit);
+}
+|};
+    T.f "_tags" ~content:{|"a.byte": link_dep(b.o),custom|};
+  ]
+  ~matching:[M.f "a.byte"]
+  ~targets:("a.byte", []) ();;
+
 run ~root:"_test_internal";;

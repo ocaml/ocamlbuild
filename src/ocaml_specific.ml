@@ -811,7 +811,6 @@ flag ["ocaml"; "absname"; "infer_interface"] (A "-absname");;
 flag ["ocaml"; "byte"; "compile"; "compat_32";] (A "-compat-32");;
 flag ["ocaml";"compile";"native";"asm"] & S [A "-S"];;
 
-
 (* threads, with or without findlib *)
 flag ["ocaml"; "compile"; "thread"] (A "-thread");;
 flag ["ocaml"; "link"; "thread"] (A "-thread");;
@@ -875,5 +874,8 @@ pflag ["ocaml"; "doc"; "man"] "man_section"
 
 ocaml_lib "ocamlbuildlib";;
 ocaml_lib "ocamlbuildlightlib";;
+
+(* generic dependency rules *)
+pdep ["link"; "link_with"] "link_dep" (fun param -> [param]);;
 
 end in ()
