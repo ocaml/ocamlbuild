@@ -11,31 +11,30 @@
 #                                                                       #
 #########################################################################
 
-OCAMLC    ?= ocamlc.opt
-OCAMLOPT  ?= ocamlopt.opt
-OCAMLDEP  ?= ocamldep.opt
-OCAMLLEX  ?= ocamllex.opt
-CP        ?= cp
-COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
-LINKFLAGS ?= -I +unix -I src
-
-LIBDIR ?= $(shell opam config var lib)
-BINDIR ?= $(shell opam config var bin)
-
 # see 'check-if-preinstalled' target
 CHECK_IF_PREINSTALLED ?= true
 
 OCAMLBUILD_LIBDIR:=$(LIBDIR)
 OCAMLBUILD_BINDIR:=$(BINDIR)
 
-# this include overwrites LIBDIR and BINDIR variables, and a bunch of
-# other variables, but it is necessary to get the O and EXE variables
-# that we use to decide target names.
-include $(shell ocamlc -where)/Makefile.config
+# this configuration file is generated from configure.make
+include Makefile.config
 
-LIBDIR:=$(OCAMLBUILD_LIBDIR)
-BINDIR:=$(OCAMLBUILD_BINDIR)
+ifeq ($(OCAML_NATIVE_TOOLS), true)
+OCAMLC    ?= ocamlc.opt
+OCAMLOPT  ?= ocamlopt.opt
+OCAMLDEP  ?= ocamldep.opt
+OCAMLLEX  ?= ocamllex.opt
+else
+OCAMLC    ?= ocamlc
+OCAMLOPT  ?= ocamlopt
+OCAMLDEP  ?= ocamldep
+OCAMLLEX  ?= ocamllex
+endif
 
+CP        ?= cp
+COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
+LINKFLAGS ?= -I +unix -I src
 
 PACK_CMO= $(addprefix src/,\
   const.cmo \
@@ -100,32 +99,25 @@ INSTALL_LIB=\
   $(EXTRA_CMO:.cmo=.cmi)
 
 INSTALL_LIB_OPT=\
-  ocamlbuildlib.cmxa ocamlbuildlib.$(A) \
-  src/ocamlbuild.cmx src/ocamlbuild.$(O) \
+  ocamlbuildlib.cmxa ocamlbuildlib$(EXT_LIB) \
+  src/ocamlbuild.cmx src/ocamlbuild$(EXT_OBJ) \
   ocamlbuild_pack.cmx \
-  $(EXTRA_CMO:.cmo=.cmx) $(EXTRA_CMO:.cmo=.$(O))
+  $(EXTRA_CMO:.cmo=.cmx) $(EXTRA_CMO:.cmo=$(EXT_OBJ))
 
 INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
 
-# NATIVE should be set to 'true' when ocamlopt is available
-NATIVE?=true
-
-all:
-	@case $(NATIVE) in\
-	  "false")\
-	    $(MAKE) byte;;\
-	  "true")\
-	    $(MAKE) byte native;;\
-	esac
+ifeq ($(OCAML_NATIVE), true)
+all: byte native
+else
+all: byte
+endif
 
 byte: ocamlbuild.byte ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
 native: ocamlbuild.native ocamlbuildlib.cmxa
 
-allopt: # compatibility alias
-	$(MAKE) byte native
-
+allopt: byte alias # compatibility alias
 
 # The executables
 
@@ -181,10 +173,14 @@ beforedepend:: src/glob_lexer.ml
 
 # The config file
 
-src/ocamlbuild_config.ml: Makefile.create_config VERSION
-	make -f Makefile.create_config src/ocamlbuild_config.ml
+configure: Makefile.config src/ocamlbuild_config.ml
+
+Makefile.config src/ocamlbuild_config.ml:
+	$(MAKE) -f configure.make $@
+
 clean::
-	rm -f src/ocamlbuild_config.ml
+	rm -f Makefile.config src/ocamlbuild_config.ml
+
 beforedepend:: src/ocamlbuild_config.ml
 
 # Installation
@@ -206,31 +202,30 @@ beforedepend:: src/ocamlbuild_config.ml
 install-bin-byte:
 	mkdir -p $(INSTALL_BINDIR)
 	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)
-	if test "$(NATIVE)" = "false"; then\
-	  $(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE);\
-	fi
+ifeq ($(OCAML_NATIVE), true)
+	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE)
+endif
 
 install-bin-native:
 	mkdir -p $(INSTALL_BINDIR)
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild$(EXE)
 	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild.native$(EXE)
 
-install-bin:
-	$(MAKE) install-bin-byte
-	if test "$(NATIVE)" = "true"; then\
-	  $(MAKE) install-bin-native;\
-	fi
+ifeq ($(OCAML_NATIVE), true)
+install-bin: install-bin-byte install-bin-native
+else
+install-bin: install-bin-byte
+endif
 
 install-bin-opam:
 	echo "bin: [" >> ocamlbuild.install
 	echo "  \"ocamlbuild.byte\" {\"ocamlbuild.byte\"}" >> ocamlbuild.install
-	case $(NATIVE) in\
-	  "false")\
-	    echo "  \"ocamlbuild.byte\" {\"ocamlbuild\"}" >> ocamlbuild.install;;\
-	  "true")\
-	    echo "  \"ocamlbuild.native\" {\"ocamlbuild.native\"}" >> ocamlbuild.install;\
-	    echo "  \"ocamlbuild.native\" {\"ocamlbuild\"}" >> ocamlbuild.install;;\
-	esac
+ifeq ($(OCAML_NATIVE), true)
+	echo "  \"ocamlbuild.native\" {\"ocamlbuild.native\"}" >> ocamlbuild.install
+	echo "  \"ocamlbuild.native\" {\"ocamlbuild\"}" >> ocamlbuild.install
+else
+	echo "  \"ocamlbuild.byte\" {\"ocamlbuild\"}" >> ocamlbuild.install
+endif
 	echo "]" >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
@@ -260,36 +255,37 @@ install-lib-native-opam:
 	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
 	done
 
-install-lib:
-	$(MAKE) install-lib-basics install-lib-byte
-	if test "$(NATIVE)" = "true"; then\
-	  $(MAKE) install-lib-native;\
-	fi
+ifeq ($(OCAML_NATIVE), true)
+install-lib: install-lib-basics install-lib-byte install-lib-native
+else
+install-lib: install-lib-basics install-lib-byte
+endif
 
 install-lib-findlib:
-	case "$(NATIVE)" in\
-	  "false")\
-	    ocamlfind install ocamlbuild \
-	      META src/signatures.mli $(INSTALL_LIB);;\
-	  "true")\
-	    ocamlfind install ocamlbuild \
-	      META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT);;\
-	esac
+ifeq ($(OCAML_NATIVE), true)
+	ocamlfind install ocamlbuild \
+	  META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT)
+else
+	ocamlfind install ocamlbuild \
+	  META src/signatures.mli $(INSTALL_LIB)
+endif
 
 install-lib-opam:
 	echo "lib: [" >> ocamlbuild.install
 	$(MAKE) install-lib-basics-opam
 	$(MAKE) install-lib-byte-opam
-	if test "$(NATIVE)" = "true"; then\
-	  $(MAKE) install-lib-native-opam;\
-	fi
+ifeq ($(OCAML_NATIVE), true)
+	$(MAKE) install-lib-native-opam
+endif
 	echo "]" >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
 uninstall-bin:
 	rm $(BINDIR)/ocamlbuild
 	rm $(BINDIR)/ocamlbuild.byte
-	if test "$(NATIVE)" = "true"; then rm $(BINDIR)/ocamlbuild.native; fi
+ifeq ($(OCAML_NATIVE), true)
+	rm $(BINDIR)/ocamlbuild.native
+endif
 
 uninstall-lib-basics:
 	rm $(LIBDIR)/ocamlbuild/META $(LIBDIR)/ocamlbuild/signatures.mli
@@ -306,9 +302,9 @@ uninstall-lib-native:
 
 uninstall-lib:
 	$(MAKE) uninstall-lib-basics uninstall-lib-byte
-	if test "$(NATIVE)" = "true"; then\
-	  $(MAKE) uninstall-lib-native;\
-	fi
+ifeq ($(OCAML_NATIVE), true)
+	$(MAKE) uninstall-lib-native
+endif
 	ls $(LIBDIR)/ocamlbuild
 	rmdir $(LIBDIR)/ocamlbuild
 
@@ -333,15 +329,15 @@ ocamlbuild.install:
 	$(MAKE) install-lib-opam
 
 check-if-preinstalled:
-	@if test "$(CHECK_IF_PREINSTALLED)" = "true"; then\
-	  if test -d $(shell ocamlc -where)/ocamlbuild; then\
-	    >&2 echo "ERROR: Preinstalled ocamlbuild detected at"\
-	         "$(shell ocamlc -where)/ocamlbuild";\
-	    >&2 echo "Installation aborted; if you want to bypass this"\
-	          "safety check, pass CHECK_IF_PREINSTALLED=false to make";\
-	    exit 2;\
-	  fi;\
+ifeq ($(CHECK_IF_PREINSTALLED), true)
+	if test -d $(shell ocamlc -where)/ocamlbuild; then\
+	  >&2 echo "ERROR: Preinstalled ocamlbuild detected at"\
+	       "$(shell ocamlc -where)/ocamlbuild";\
+	  >&2 echo "Installation aborted; if you want to bypass this"\
+	        "safety check, pass CHECK_IF_PREINSTALLED=false to make";\
+	  exit 2;\
 	fi
+endif
 
 # The generic rules
 
@@ -357,7 +353,7 @@ check-if-preinstalled:
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
-	rm -f src/*.cm? src/*.$(O) *.cm* *.$(O) *.$(A)
+	rm -f src/*.cm? src/*$(EXT_OBJ) *.cm* *$(EXT_OBJ) *$(EXT_LIB)
 	rm -f *.byte *.native
 	rm -f test/test2/vivi.ml
 	rm -f ocamlbuild.install
