@@ -18,8 +18,8 @@ OCamlbuild NEXT_RELEASE
 - Changed OCamlbuild's license to LGPLv2 with static linking exception.
 - OGPR#219: speedup target-already-built builds
   (ygrek)
-- MPR#6605, OGPR#117: use ocamlfind, if available, to discover camlp4 path
-  (Vincent Laporte)
+- MPR#6605, OGPR#117: un-hardcode camlp4 library path
+  (Vincent Laporte and Gabriel Scherer)
 - #20: add -dot and -man-related ocamldoc options
   (Gabriel Scherer)
 - #10, PR#21: Fix manpages generation: properly pass the "manpage" tag.

@@ -748,14 +748,13 @@ ocaml_lib ~extern:true ~dir:"+ocamldoc" "ocamldoc";;
 ocaml_lib ~extern:true ~dir:"+ocamlbuild" ~tag_name:"use_ocamlbuild" "ocamlbuildlib";;
 
 let camlp4dir =
-  Findlib.(
-    try
-      if sys_command "sh -c 'ocamlfind list >/dev/null' 2>/dev/null" != 0
-      then raise (Findlib_error Cannot_run_ocamlfind);
-      (query "camlp4").location
-    with Findlib_error _ ->
-      "+camlp4"
-  );;
+  let where cmd =
+    (* may raise a Failure exception *)
+    String.chomp
+      (My_unix.run_and_read
+         (cmd ^ " -where 2>/dev/null")) in
+  try where "camlp4" with _ -> "+camlp4"
+;;
 
 ocaml_lib ~extern:true ~dir:camlp4dir ~tag_name:"use_camlp4" "camlp4lib";;
 ocaml_lib ~extern:true ~dir:camlp4dir ~tag_name:"use_old_camlp4" "camlp4";;
