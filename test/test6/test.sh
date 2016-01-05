@@ -35,3 +35,5 @@ if $BUILD1; then
 else
   echo FAIL
 fi
+$OCB -clean
+rm {b,d}.mli

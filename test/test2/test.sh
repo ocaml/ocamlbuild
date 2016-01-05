@@ -28,3 +28,5 @@ $BUILD2
 cp vivi3.ml vivi.ml
 $BUILD1
 $BUILD2
+$OCB -clean
+rm vivi.ml

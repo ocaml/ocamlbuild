@@ -21,3 +21,4 @@ BUILD2="$BUILD -verbose 0 -nothing-should-be-rebuilt $CMDOPTS"
 rm -rf _build
 $BUILD1
 $BUILD2
+$OCB -clean

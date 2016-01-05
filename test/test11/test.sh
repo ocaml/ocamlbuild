@@ -23,3 +23,4 @@ $BUILD1
 echo looks if libs are there
 ls _build/b/libb.cma _build/b/libb.cmxa _build/b/libb.a
 $BUILD2
+$OCB -clean

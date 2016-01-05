@@ -13,6 +13,7 @@
 
 (* Testglob *)
 
+open Ocamlbuild_pack;;
 open Bool;;
 open Glob;;
 

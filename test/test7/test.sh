@@ -28,3 +28,5 @@ $BUILD2
 cp bb3.ml bb.ml
 $BUILD1 -verbose 0
 $BUILD2
+$OCB -clean
+rm bb.ml
