@@ -17,8 +17,13 @@ OCAML_LIBDIR = $(LIBDIR)
 # OCAMLBUILD_* variables.
 
 OCAMLBUILD_PREFIX ?= $(PREFIX)
-OCAMLBUILD_BINDIR ?= $(PREFIX)/bin
-OCAMLBUILD_LIBDIR ?= $(PREFIX)/lib
+OCAMLBUILD_BINDIR ?= \
+  $(or $(shell opam config var bin 2>/dev/null),\
+       $(PREFIX)/bin)
+OCAMLBUILD_LIBDIR ?= \
+  $(or $(shell opam config var lib 2>/dev/null),\
+       $(shell ocamlfind printconf destdir 2>/dev/null),\
+       $(LIBDIR))
 
 # It is important to distinguish OCAML_LIBDIR, which points to the
 # directory of the ocaml compiler distribution, and OCAMLBUILD_LIBDIR,
