@@ -218,15 +218,15 @@ install-bin: install-bin-byte
 endif
 
 install-bin-opam:
-	echo "bin: [" >> ocamlbuild.install
-	echo "  \"ocamlbuild.byte\" {\"ocamlbuild.byte\"}" >> ocamlbuild.install
+	echo 'bin: [' >> ocamlbuild.install
+	echo '  "ocamlbuild.byte" {"ocamlbuild.byte"}' >> ocamlbuild.install
 ifeq ($(OCAML_NATIVE), true)
-	echo "  \"ocamlbuild.native\" {\"ocamlbuild.native\"}" >> ocamlbuild.install
-	echo "  \"ocamlbuild.native\" {\"ocamlbuild\"}" >> ocamlbuild.install
+	echo '  "ocamlbuild.native" {"ocamlbuild.native"}' >> ocamlbuild.install
+	echo '  "ocamlbuild.native" {"ocamlbuild"}' >> ocamlbuild.install
 else
-	echo "  \"ocamlbuild.byte\" {\"ocamlbuild\"}" >> ocamlbuild.install
+	echo '  "ocamlbuild.byte" {"ocamlbuild"}' >> ocamlbuild.install
 endif
-	echo "]" >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
 install-lib-basics:
@@ -234,8 +234,8 @@ install-lib-basics:
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
 
 install-lib-basics-opam:
-	echo "  \"META\"" >> ocamlbuild.install
-	echo "  \"src/signatures.mli\" {\"signatures.mli\"}" >> ocamlbuild.install
+	echo '  "META"' >> ocamlbuild.install
+	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -271,13 +271,13 @@ else
 endif
 
 install-lib-opam:
-	echo "lib: [" >> ocamlbuild.install
+	echo 'lib: [' >> ocamlbuild.install
 	$(MAKE) install-lib-basics-opam
 	$(MAKE) install-lib-byte-opam
 ifeq ($(OCAML_NATIVE), true)
 	$(MAKE) install-lib-native-opam
 endif
-	echo "]" >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
 uninstall-bin:
