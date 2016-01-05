@@ -305,7 +305,7 @@ uninstall-lib:
 ifeq ($(OCAML_NATIVE), true)
 	$(MAKE) uninstall-lib-native
 endif
-	ls $(LIBDIR)/ocamlbuild
+	ls $(LIBDIR)/ocamlbuild # for easier debugging if rmdir fails
 	rmdir $(LIBDIR)/ocamlbuild
 
 uninstall-lib-findlib:
