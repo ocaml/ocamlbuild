@@ -1339,20 +1339,20 @@ rule. The plugin author defining this rule should define the
       let tags = tags_of_pathname arg ++ "ocaml" ++ "ocamldep" in
       Cmd(S[A "ocamldep"; T tags; A "-modules"; P arg; Sh ">"; Px out])
 
-The first line in this definition is to use the pattern environment to
-compute the actual name of the input file, to pass in argument to the
-`ocamldep` command, and of the result target name. The environment
-type `PLUGIN.env` is just `string -> string`, it takes a pattern and
-substitutes its pattern variables to return a closed result.
+The first line in this definition uses the pattern environment to
+compute the actual name of the input and output files. These are then
+passed in as arguments to the `ocamldep` command and shell redirect,
+respectively, on the third line.
+The environment type `PLUGIN.env` is just `string -> string`, it takes
+a pattern and substitutes its pattern variables to return a closed result.
 
-The second line in this definition computes the set of tags to include
-in this command invocation. When OCamlbuild is passed the command
-back, it will use its tag declarations to turn this set of tags in
-additional flags to insert in the command invocation. The call
-`tags_of_pathname arg` looks up in the `_tags` file for any tag
-associated to the `foo.ml` file, and the rule code also adds the two
-contextual tags `ocaml` and `ocamldep` (on which tag declarations
-may depend).
+The second line in this definition computes the tags to include in the
+command invocation. When OCamlbuild is passed back the command, it uses
+the tag declarations to determine which, if any, additional flags to
+insert into the command invocation. The call `tags_of_pathname arg`
+looks up in the `_tags` file any tags associated with file `foo.ml`.
+To these tags the rule code also adds the two contextual tags `ocaml`
+and `ocamldep` (on which flag declarations may depend).
 
 Finally, the command is built:
 
@@ -1378,12 +1378,11 @@ this information is used by OCamlbuild for logging purposes.
 
 ##### Remark: tags handling in rules
 
-Remark that it is entirely of the rule author's responsibility to
-include tags in the action's command. In particular, it is the code of
-the rule action that decides if the tags taken into account, if any,
-are the tags assigned to the rule dependencies, or productions, or
-both. (Unfortunately the built-in rule themselves are sometimes a bit
-inconsistent on this.)
+It is entirely the rule author's responsibility to include tags in the
+action's command. In particular, it is the code of the rule's action
+that decides which, if any, tags are taken into account and if they come
+from the rule dependencies, products or both. (Unfortunately, the built-in
+rules themselves are sometimes a bit inconsistent on this.)
 
 ### Dynamic dependencies <a id="rules-dynamic-deps"></a>
 
