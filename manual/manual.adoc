@@ -1150,6 +1150,8 @@ OCamlbuild let you build your own rules, to teach it how to build new kind of ta
 This is done by calling the `rule` function from a plugin, which is declared and documented in the `PLUGIN` module in `signatures.mli`.
 We will not write an exhaustive documentation here (for this, have a look at `signatures.mli`), but rather expose the most common features through representative examples.
 
+=== A simple rule
+
 Our first example is simple, as it is a rule without dynamic dependencies:
 
 [source,ocaml]
@@ -1301,6 +1303,22 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
             [])
     ~dep:"%(path)lib%(libname).clib"
 ----
+
+==== Rule ordering and `~insert`
+
+One cannot define a rule if there already exists a built-in rule of the same name.
+Directly including the rule `"ocaml dependencies ml"` used above in your plugin would result in a failure when loading the plugin:
+
+[source]
+----
+  Rule.Exit_rule_error("Rule.add_rule: already exists: (ocaml dependencies ml)").
+----
+
+Even if you pick another name for the rule, you may find out that the rule you are defining is not used.
+OCamlbuild orders rule definitions, and the new rule needs to come _before_ the rule that it is replacing.
+
+Use the `~insert` argument to `rule` to either (suggested) place it before the built in rule (`~insert:(`before "ocaml dependencies ml)`) or at the top (`~insert:(`top)`).
+The default behavior, in absence of `~insert` argument, is to place custom rules at the bottom; this is fine when defining rules for new targets, but not when overriding built-in rules.
 
 === Complete example: Menhir support in OCamlbuild
 
