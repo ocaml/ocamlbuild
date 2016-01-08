@@ -468,7 +468,7 @@ But it is always the filename of the target that determines which rules to apply
 In consequence, OCamlbuild adds specific file extensions to the one listed above (or variations of them), that are the user-interface to use its rules providing certain features.
 For example, `.inferred.mli` is not a standard extension in the OCaml compiler, but it is understood by a built-in rule of OCamlbuild to ask for the `.mli` that the compiler can auto-generate by typing a `.ml` file without an explicit interface: running `ocamlbuild foo.inferred.mli` will first build `foo.ml` (or find it in the source directory), then generate `foo.inferred.mli` from it. You are expected to then inspect `foo.inferred.mli`, ideally add documentation, and then move it to `foo.mli` by themselves.
 
-The target extensions understood by OCamlbuild built-in rules are listed in the following subsections.
+The target extensions understood by the built-in OCamlbuild rules are listed in the following subsections.
 Again, note that `myocamlbuild` plugins may add new targets and rules.
 
 ==== Basic targets
