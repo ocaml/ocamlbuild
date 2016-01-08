@@ -469,7 +469,7 @@ In consequence, OCamlbuild adds specific file extensions to the one listed above
 For example, `.inferred.mli` is not a standard extension in the OCaml compiler, but it is understood by a built-in rule of OCamlbuild to ask for the `.mli` that the compiler can auto-generate by typing a `.ml` file without an explicit interface: running `ocamlbuild foo.inferred.mli` will first build `foo.ml` (or find it in the source directory), then generate `foo.inferred.mli` from it. You are expected to then inspect `foo.inferred.mli`, ideally add documentation, and then move it to `foo.mli` by themselves.
 
 The target extensions understood by the built-in OCamlbuild rules are listed in the following subsections.
-Again, note that `myocamlbuild` plugins may add new targets and rules.
+Again, note that `myocamlbuild` plugins may add new targets and rules. To see them programmatically, see <<Sec_dynamic_documentation>>.
 
 ==== Basic targets
 
@@ -768,6 +768,7 @@ For example, the `link` flag is automatically added thet set of tags of linking-
  This is used by the builtin `ocamldoc` rules to enable either `-latex` or `-dot` depending on the requested target extension.
 * tool-specific tags: `menhir`, `ocamlyacc`, `ocamllex`, `doc` (for `ocamldoc`)
 
+[[Sec_dynamic_documentation]]
 === The `-documentation` option
 
 Invoking `ocamlbuild -documentation` will give a list of rules and tags known to OCamlbuild in the current project (including those defined in the `myocamlbuild` plugin).
