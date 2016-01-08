@@ -1387,13 +1387,13 @@ rules themselves are sometimes a bit inconsistent on this.)
 ### Dynamic dependencies <a id="rules-dynamic-deps"></a>
 
 In the action `ocamldep_ml_command` of the previous example, the
-`_build` parameter of type `PLUGIN.builder` was ignored. This is
-because this rule had no dynamic dependencies, no need to build extra
-targets determined during the execution of the rule itself -- the
-static dependency is built by ocamlbuild's resolution engine before
-the action itself is executed.
+`_build` parameter (of type `PLUGIN.builder`) was ignored, because the
+rule had no dynamic dependencies; no need to build extra targets
+determined during the execution of the rule itself. The static
+dependency is built by ocamlbuild's resolution engine before the
+action executed.
 
-The following example uses on dynamic depencies:
+The following example demonstrates dynamic depencies:
 
     let target_list env build =
         let itarget = env "%.itarget" in
@@ -1418,28 +1418,29 @@ The following example uses on dynamic depencies:
             build each of those targets in turn."
       target_list
 
-The `string_list_of_file` function reads a file and return the list of
+The `string_list_of_file` function reads a file and returns the list of
 its lines -- it is used in the various builtin rules for files
-containing file or module paths (`.mllib`, `.odocl`, here `.itarget`).
+containing other file or module paths
+(e.g. `.mllib`, `.odocl` or here `.itarget`).
 
-The function `build` expects a list of lists in argument, to be
+The function `build` takes as argument a list of lists, to be
 understood as a conjunction of disjunctions. For example, if passed
 the input `[["a/foo.byte"; "b/foo.byte"]; ["a/foo.native";
-"b/foo.native"]]`, it will try to build ((`a/foo.byte` OR
-`b/foo.byte`) AND (`a/foo.native` OR `b/foo.native`)). The disjunctive
-structure (this OR that) is useful because we are often not quite sure
-where a particular target may be (for example the module `Foo` may be
-in any of the subdirectories in the include path). The conjunctive
-structure (this AND that) is essential to parallelizing the build:
-ocamlbuild will try to build all these targets in parallel, whereas
-sequential invocation of the `build` function on each of the
-disjunctions would give sequential builds.
+"b/foo.native"]]`, it tries to build ((`a/foo.byte` OR `b/foo.byte`)
+AND (`a/foo.native` OR `b/foo.native`)). The disjunctive structure
+(this OR that) is useful because we are often not quite sure where a
+particular target may be (for example the module Foo may be in any of
+the subdirectories in the include path). The conjunctive structure
+(this AND that) is essential to parallelizing the build: ocamlbuild
+tries to build all these targets in parallel, whereas sequential
+invocation of the build function on each of the disjunctions would
+give sequential builds.
 
 The function `build` returns a list of outcomes (`(string, exn)
 Outcome.t` -- `Outcome.t` is just a disjoint-sum type), that is either
-a `string` (the one of the several possible targets that could
-be built) or an exception value. `Outcome.good` returns the good
-result if it exists, or raises the exception.
+a `string` (the possible target that could be built) or an exception.
+`Outcome.good` returns the good result if it exists, or raises the
+exception.
 
 ### Stamps <a id="rules-stamps"></a>
 
