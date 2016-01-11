@@ -18,6 +18,9 @@
 *.out
 *.out.dSYM
 
+ocamlbuild.install
+Makefile.config
+
 /src/ocamlbuild_config.ml
 /src/lexers.ml
 /src/glob_lexer.ml
