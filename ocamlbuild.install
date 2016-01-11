@@ -1,0 +1,4 @@
+bin: [
+  "?ocamlbuild.native" {"ocamlbuild"}
+  "ocamlbuild.byte" {"ocamlbuild.byte"}
+]
