@@ -136,6 +136,22 @@ module List = struct
     in
     List.rev lst
 
+  let index_of x l =
+    let rec aux x n = function
+      | [] -> None
+      | a::_ when a = x -> Some n
+      | _::l -> aux x (n+1) l
+    in
+    aux x 0 l
+
+  let rec split_at n l =
+    let rec aux n acc = function
+      | l when n <= 0 -> List.rev acc, l
+      | [] -> List.rev acc, []
+      | a::l -> aux (n-1) (a::acc) l
+    in
+    aux n [] l
+
 end
 
 module String = struct
