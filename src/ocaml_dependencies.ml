@@ -197,19 +197,14 @@ module Make (I : INPUT) = struct
 
     let needed_in_order = ref [] in
     let needed = ref Resources.empty in
-    let seen = ref Resources.empty in
     let rec aux on_the_go fn =
       if sys_file_exists fn && not (Resources.mem fn !needed) then begin
-        if Resources.mem fn !seen then begin
-          begin match List.index_of fn on_the_go with
-            | None -> assert false;
-              (* [on_the_go] is exactly [!seen] without [!needed] *)
-            | Some n ->
-              raise (Circular_dependencies(fst (List.split_at (n+1) on_the_go),
-                                           fn))
-          end;
+        begin match List.index_of fn on_the_go with
+          | None -> () (* good no cycle *)
+          | Some n ->
+            raise (Circular_dependencies(fst (List.split_at (n+1) on_the_go),
+                                         fn))
         end;
-        seen := Resources.add fn !seen;
         let on_the_go = fn::on_the_go in
         Resources.iter begin fun f ->
           if sys_file_exists f then
