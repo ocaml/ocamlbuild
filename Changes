@@ -8,8 +8,8 @@ The form #$N indicates an issue on the github ocamlbuild repository,
   https://github.com/ocaml/ocamlbuild/pulls/$N
 We also use PR#$N for pull requests.
 
-OCamlbuild NEXT_RELEASE
--------------
+OCamlbuild 0.9.0 (19 Jan 2016):
+-------------------------------
 
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
