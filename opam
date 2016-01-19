@@ -29,5 +29,6 @@ doc: [
 
 available: [ocaml-version >= "4.03"]
 depends: [ ]
+conflicts: [ "base-ocamlbuild" ]
 
 version: "dev"
