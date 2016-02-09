@@ -321,4 +321,16 @@ let () = test "OpenDependencies"
   ~matching:[M.f "b.byte"]
   ~targets:("b.byte",[]) ();;
 
+let () = test "TargetsStartingWithUnderscore"
+  ~description:"Build targets whose name starts with '_'"
+(*
+  requested by Daniel Bünzli on the caml-list:
+     Subject: [Caml-list] ocamlbuild, build a source that starts with _
+     Date: Tue, 9 Feb 2016 14:35:06 +0100
+     https://sympa.inria.fr/sympa/arc/caml-list/2016-02/msg00033.html
+*)
+  ~options:[`no_ocamlfind]
+  ~tree:[ T.f "_a.c" ~content:"" ]
+  ~targets:("_a.o", []) ();;
+
 run ~root:"_test_internal";;

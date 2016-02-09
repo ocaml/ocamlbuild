@@ -21,3 +21,7 @@ true: debug
 "ocamlbuildlight.byte": -use_unix, nopervasives
 <**/*.cmx>: for-pack(Ocamlbuild_pack)
 <**/{ocamlbuild_{pack,unix_plugin,plugin,executor},ppcache}{,.p}.cmx>: -for-pack(Ocamlbuild_pack)
+
+# we have several build stages using different build directories,
+# so each build must ignore each other's build dir.
+<_build*>: -traverse

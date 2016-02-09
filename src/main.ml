@@ -147,8 +147,7 @@ let proceed () =
           ignore (Configuration.parse_file ?dir tags_path);
         end;
 
-        (List.mem name ["_oasis"] || (String.length name > 0 && name.[0] <> '_'))
-        && (name <> !Options.build_dir && not (List.mem name !Options.exclude_dirs))
+        (name <> !Options.build_dir && not (List.mem name !Options.exclude_dirs))
         && begin
           not (path_name <> Filename.current_dir_name && Pathname.is_directory path_name)
           || begin
