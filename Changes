@@ -8,6 +8,12 @@ The form #$N indicates an issue on the github ocamlbuild repository,
   https://github.com/ocaml/ocamlbuild/pulls/$N
 We also use PR#$N for pull requests.
 
+NEXT_RELASE:
+------------
+
+- Do not exclude files whose name starts with '_' from the source tree
+  (Gabriel Scherer, report by Daniel Bünzli on the caml-list)
+
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
 
