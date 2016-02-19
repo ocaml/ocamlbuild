@@ -34,6 +34,8 @@ OCamlbuild 0.9.0 is an experimental release designed to help testing
 OCaml software in preparation for the 4.03 release -- the first one to
 not include ocamlbuild.
 
+- #44: When ocamlbuild discover a cycle in the dependencies, the
+   displayed problematic path is now refined to the actual cycle (François Bobot)
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
 - OGPR#208: add "asm" tag to ocamlbuild to enable flag -S
