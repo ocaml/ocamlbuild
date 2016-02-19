@@ -8,17 +8,18 @@ The form #$N indicates an issue on the github ocamlbuild repository,
   https://github.com/ocaml/ocamlbuild/pulls/$N
 We also use PR#$N for pull requests.
 
-NEXT_RELASE:
+NEXT_RELEASE:
 ------------
 
+- #44: When ocamlbuild discover a cycle in the dependencies, the
+   displayed problematic path is now refined to the actual cycle
+  (François Bobot, review by Armaël Géneau)
 - Do not exclude files whose name starts with '_' from the source tree
   (Gabriel Scherer, report by Daniel Bünzli on the caml-list)
 
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
 
-- #44: When ocamlbuild discover a cycle in the dependencies, the
-   displayed problematic path is now refined to the actual cycle (François Bobot)
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
 - OGPR#208: add "asm" tag to ocamlbuild to enable flag -S
