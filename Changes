@@ -17,6 +17,8 @@ NEXT_RELASE:
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
 
+- #44: When ocamlbuild discover a cycle in the dependencies, the
+   displayed problematic path is now refined to the actual cycle (François Bobot)
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
 - OGPR#208: add "asm" tag to ocamlbuild to enable flag -S
