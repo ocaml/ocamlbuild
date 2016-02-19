@@ -36,6 +36,10 @@ module type LIST = sig
   val filter_opt : ('a -> 'b option) -> 'a list -> 'b list
   val union : 'a list -> 'a list -> 'a list
   val ordered_unique : 'a list -> 'a list
+  val index_of: 'a -> 'a list -> int option
+  (** give the offset of an element (0 for the first element) *)
+  val split_at: int -> 'a list -> 'a list * 'a list
+  (** split the list before the element at the given offset *)
   (* Original functions *)
   include module type of List
 end
