@@ -8,6 +8,9 @@ The form #$N indicates an issue on the github ocamlbuild repository,
   https://github.com/ocaml/ocamlbuild/pulls/$N
 We also use PR#$N for pull requests.
 
+Changes breaking compatibility are marked with a "* " bullet instead
+of the usual "- ".
+
 NEXT_RELEASE:
 ------------
 
@@ -276,6 +279,10 @@ New tools:
 The content below corresponds to the old Changelog, before ocamlbuild was
 included in the OCaml distribution. The version control history of those changes
 is unfortunately lost, but the log below is kept for historical purposes.
+
+(The use of a "* " bullet below does not indicate
+a compatibility-breaking change, it was just the standard format for
+this Changelog.)
 -------------------------------------------------------------------------
 
 
