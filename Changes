@@ -14,14 +14,20 @@ of the usual "- ".
 NEXT_RELEASE:
 ------------
 
-- #44: When ocamlbuild discover a cycle in the dependencies, the
-   displayed problematic path is now refined to the actual cycle
-  (François Bobot, review by Armaël Géneau)
 - Do not exclude files whose name starts with '_' from the source tree
   (Gabriel Scherer, report by Daniel Bünzli on the caml-list)
+- #44: When ocamlbuild discovers a cycle in the dependencies, the
+   displayed problematic path is now refined to the actual cycle
+  (François Bobot, review by Armaël Géneau)
+- #51: synchronize handling of -o flag for C files with upstream OCaml
+  (whitequark)
 
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
+
+OCamlbuild 0.9.0 is an experimental release designed to help testing
+OCaml software in preparation for the 4.03 release -- the first one to
+not include ocamlbuild.
 
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
