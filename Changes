@@ -14,6 +14,11 @@ of the usual "- ".
 NEXT_RELEASE:
 ------------
 
+OCamlbuild NEXT_RELEASE synchronizes the behavior of ocamlbuild with
+changes in the OCaml compiler that are present in the 4.03 release
+branch; this version that should be usable for testing packages using
+4.03 before its release.
+
 - Do not exclude files whose name starts with '_' from the source tree
   (Gabriel Scherer, report by Daniel Bünzli on the caml-list)
 - #44: When ocamlbuild discovers a cycle in the dependencies, the
