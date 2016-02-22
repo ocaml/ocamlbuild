@@ -93,21 +93,11 @@ release number, so any occurence of +NEXT_RELEASE+ in the development
 repository should be replaced by this version number. There is at
 least one such occurence in the 'Changes' file.
 
-Furthermore, the version coded is hardcoded in some parts of the
-codebase and needs to be updated:
-
-- the 'VERSION' file contains the current version number, with no
-  ending newline
-
-- the 'META' file contains the current version number to inform ocamlfind
-
-You can use +git grep+ to look for all occurrences of +NEXT_RELEASE+
-and a given version number, from the root of the repository:
-
-----
-git grep NEXT_RELEASE
-git grep -F "0.9"
-----
+Furthermore, the version number is written in the 'VERSION' file (no
+ending newline), and it is used to derive the version number at
+installation time -- for example ocamlfind's 'META' file is generated
+from the 'META.in' template. This 'VERSION' file should thus be
+updated.
 
 == Doing the release ==
 

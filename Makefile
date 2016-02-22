@@ -229,13 +229,21 @@ endif
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
-install-lib-basics:
+install-lib-basics: META
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
 
-install-lib-basics-opam:
+install-lib-basics-opam: META
 	echo '  "META"' >> ocamlbuild.install
 	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
+
+# %%FOO%% are configuration variables (only %%VERSION%% currently),
+# and #%% comments are removed before installation
+META: META.in VERSION
+	@cat META.in \
+	| sed s/%%VERSION%%/$$(cat VERSION)/ META.in \
+	| grep -v "#%%.*" \
+	> META
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -261,7 +269,7 @@ else
 install-lib: install-lib-basics install-lib-byte
 endif
 
-install-lib-findlib:
+install-lib-findlib: META
 ifeq ($(OCAML_NATIVE), true)
 	ocamlfind install ocamlbuild \
 	  META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT)
