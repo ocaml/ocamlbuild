@@ -360,6 +360,36 @@ ifeq ($(CHECK_IF_PREINSTALLED), true)
 	fi
 endif
 
+check-release:
+	@echo "This Makefile rule checks that:"
+	@echo "- the VERSION and 'git describe' values are consistent"
+	@echo "- NEXT_RELEASE does not appear in the sources anymore"
+	@echo "For any more serious release checking, see howto/release.adoc."
+	@echo "(We only add output below when a check fails.)"
+	@echo
+	@$(MAKE) --silent check-release-VERSION-git-describe
+	@$(MAKE) --silent check-release-NEXT_RELEASE
+
+check-release-VERSION-git-describe:
+ifeq ($(shell echo $(shell cat VERSION)), $(shell git describe --always --dirty))
+else
+	@echo "Bad: VERSION ($(shell cat VERSION)) and "\
+		"'git describe' ($(shell git describe --always --dirty))"\
+		"disagree. You should probably update the VERSION file."
+endif
+
+
+NEXT_RELEASE_EXCLUDE="(Makefile|howto)"
+NEXT_RELEASE_FILES=$(shell git grep --files-with-matches "NEXT_RELEASE" \
+  | grep -v -E $(NEXT_RELEASE_EXCLUDE))
+check-release-NEXT_RELEASE:
+ifeq ($(strip $(NEXT_RELEASE_FILES)),)
+else
+	@echo "The following occurrences of NEXT_RELEASE"\
+		"should probably be fixed:"
+	@git grep "NEXT_RELEASE" -- $(NEXT_RELEASE_FILES)
+endif
+
 # The generic rules
 
 .SUFFIXES: .ml .mli .cmo .cmi .cmx
