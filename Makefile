@@ -175,7 +175,7 @@ beforedepend:: src/glob_lexer.ml
 
 configure: Makefile.config src/ocamlbuild_config.ml
 
-Makefile.config src/ocamlbuild_config.ml:
+Makefile.config src/ocamlbuild_config.ml: configure.make
 	$(MAKE) -f configure.make $@
 
 clean::

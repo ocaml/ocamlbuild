@@ -45,6 +45,13 @@ OCAMLBUILD_LIBDIR ?= \
 # OCAMLBUILD_{PREFIX,BINDIR,LIBDIR}, which are the ones that should
 # generally be used, as the shorted names {PREFIX,BINDIR,LIBDIR}.
 
+# if run from a git development repository,
+# prefer $(git describe --always --dirty)
+# to the VERSION file. This trick comes from Daniel Bünzli.
+VERSION ?= \
+  $(or $(shell git describe --always --dirty 2>/dev/null),\
+       $(shell ocaml scripts/cat.ml VERSION))
+
 ifeq ($(ARCH), none)
 OCAML_NATIVE ?= false
 else
@@ -87,5 +94,5 @@ src/ocamlbuild_config.ml:
 	echo 'let so = "$(SO)"'; \
 	echo 'let ext_dll = "$(EXT_DLL)"'; \
 	echo 'let exe = "$(EXE)"'; \
-	echo 'let version = "$(shell ocaml scripts/cat.ml VERSION)"'; \
+	echo 'let version = "$(VERSION)"'; \
 	) > $@
