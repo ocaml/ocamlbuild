@@ -371,11 +371,14 @@ check-release:
 	@$(MAKE) --silent check-release-NEXT_RELEASE
 
 check-release-VERSION-git-describe:
-ifeq ($(shell echo $(shell cat VERSION)), $(shell git describe --always --dirty))
+ifeq ($(shell echo $(shell cat VERSION)),\
+      $(shell git describe --tags --always --dirty))
+	@
 else
-	@echo "Bad: VERSION ($(shell cat VERSION)) and "\
-		"'git describe' ($(shell git describe --always --dirty))"\
-		"disagree. You should probably update the VERSION file."
+	@echo "Bad: VERSION ($(shell cat VERSION)) and"\
+		"'git describe --tags --always --dirty'"\
+	        "($(shell git describe --tags --always --dirty))"\
+		"disagree."
 endif
 
 
@@ -384,6 +387,7 @@ NEXT_RELEASE_FILES=$(shell git grep --files-with-matches "NEXT_RELEASE" \
   | grep -v -E $(NEXT_RELEASE_EXCLUDE))
 check-release-NEXT_RELEASE:
 ifeq ($(strip $(NEXT_RELEASE_FILES)),)
+	@
 else
 	@echo "The following occurrences of NEXT_RELEASE"\
 		"should probably be fixed:"

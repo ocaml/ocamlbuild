@@ -49,7 +49,7 @@ OCAMLBUILD_LIBDIR ?= \
 # prefer $(git describe --always --dirty)
 # to the VERSION file. This trick comes from Daniel Bünzli.
 VERSION ?= \
-  $(or $(shell git describe --always --dirty 2>/dev/null),\
+  $(or $(shell git describe --tags --always --dirty 2>/dev/null),\
        $(shell ocaml scripts/cat.ml VERSION))
 
 ifeq ($(ARCH), none)
