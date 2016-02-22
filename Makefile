@@ -173,15 +173,28 @@ beforedepend:: src/glob_lexer.ml
 
 # The config file
 
-configure: Makefile.config src/ocamlbuild_config.ml
+# we mark only the 'configure' rule PHONY,
+# not individual CONF_FILES, as all OCamlbuild
+# sources depend on ocamlbuild_config.ml,
+# so it would rebuild from scratch each time.
+#
+# The reason for marking PHONY is to let the user
+# explicitly re-configure; the --version answer
+# depends on the state of the git repository, so
+# it may change at any time.
+.PHONY: configure
 
-Makefile.config src/ocamlbuild_config.ml: configure.make
+CONF_FILES=Makefile.config src/ocamlbuild_config.ml
+configure:
+	$(MAKE) -f configure.make $(CONF_FILES)
+
+$(CONF_FILES):
 	$(MAKE) -f configure.make $@
 
 clean::
-	rm -f Makefile.config src/ocamlbuild_config.ml
+	rm -f $(CONF_FILES)
 
-beforedepend:: src/ocamlbuild_config.ml
+beforedepend:: Makefile.config
 
 # Installation
 

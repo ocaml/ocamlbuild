@@ -83,6 +83,10 @@ Makefile.config:
 	echo "LIBDIR=$(OCAMLBUILD_LIBDIR)"; \
 	) > $@
 
+# the configuration file depends on the git environment,
+# so it should be rebuilt each time
+.PHONY: src/ocamlbuild_config.ml
+
 src/ocamlbuild_config.ml:
 	(echo "(* This file was generated from ../configure.make *)"; \
 	echo ;\
