@@ -37,13 +37,16 @@ let rec pp_repeat f (n, s) =
  * Recursive calls are either on input targets
  * or dependencies of these targets (returned by Rule.deps_of_rule).
  *)
-let rec self depth on_the_go_orig target =
+let rec self depth on_the_go target =
   let rules = Rule.get_rules () in
-  let on_the_go = target :: on_the_go_orig in
-
   (* skip allocating fmt on a hot path *)
   if is_logging 4 then dprintf 4 "==%a> %a" pp_repeat (depth, "==") Resource.print target;
-  if List.mem target on_the_go_orig then raise (Circular(target, on_the_go_orig));
+  begin match List.index_of target on_the_go with
+    | None -> () (* good no cycle *)
+    | Some n -> raise (Circular(target, fst (List.split_at (n+1) on_the_go)))
+  end;
+
+  let on_the_go = target :: on_the_go in
   match Resource.Cache.resource_state target with
   | Resource.Cache.Bbuilt ->
       (if is_logging 5 then dprintf 5 "%a already built" Resource.print target)

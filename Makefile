@@ -353,7 +353,13 @@ endif
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
-	rm -f src/*.cm? src/*$(EXT_OBJ) *.cm* *$(EXT_OBJ) *$(EXT_LIB)
+	rm -f src/*.cm? *.cm*
+ifdef EXT_OBJ
+	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
+endif
+ifdef EXT_LIB
+	rm -f src/*$(EXT_LIB) *$(EXT_LIB)
+endif
 	rm -f *.byte *.native
 	rm -f test/test2/vivi.ml
 	rm -f ocamlbuild.install

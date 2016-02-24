@@ -8,14 +8,31 @@ The form #$N indicates an issue on the github ocamlbuild repository,
   https://github.com/ocaml/ocamlbuild/pulls/$N
 We also use PR#$N for pull requests.
 
-NEXT_RELASE:
+Changes breaking compatibility are marked with a "* " bullet instead
+of the usual "- ".
+
+NEXT_RELEASE:
 ------------
+
+OCamlbuild NEXT_RELEASE synchronizes the behavior of ocamlbuild with
+changes in the OCaml compiler that are present in the 4.03 release
+branch; this version that should be usable for testing packages using
+4.03 before its release.
 
 - Do not exclude files whose name starts with '_' from the source tree
   (Gabriel Scherer, report by Daniel Bünzli on the caml-list)
+- #44: When ocamlbuild discovers a cycle in the dependencies, the
+   displayed problematic path is now refined to the actual cycle
+  (François Bobot, review by Armaël Géneau)
+- #51: synchronize handling of -o flag for C files with upstream OCaml
+  (whitequark)
 
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
+
+OCamlbuild 0.9.0 is an experimental release designed to help testing
+OCaml software in preparation for the 4.03 release -- the first one to
+not include ocamlbuild.
 
 - MPR#6794, MPR#6809: pass package-specific include flags when building C files
   (Jérémie Dimino, request by whitequark)
@@ -273,6 +290,10 @@ New tools:
 The content below corresponds to the old Changelog, before ocamlbuild was
 included in the OCaml distribution. The version control history of those changes
 is unfortunately lost, but the log below is kept for historical purposes.
+
+(The use of a "* " bullet below does not indicate
+a compatibility-breaking change, it was just the standard format for
+this Changelog.)
 -------------------------------------------------------------------------
 
 
