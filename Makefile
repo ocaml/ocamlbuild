@@ -173,15 +173,28 @@ beforedepend:: src/glob_lexer.ml
 
 # The config file
 
-configure: Makefile.config src/ocamlbuild_config.ml
+# we mark only the 'configure' rule PHONY,
+# not individual CONF_FILES, as all OCamlbuild
+# sources depend on ocamlbuild_config.ml,
+# so it would rebuild from scratch each time.
+#
+# The reason for marking PHONY is to let the user
+# explicitly re-configure; the --version answer
+# depends on the state of the git repository, so
+# it may change at any time.
+.PHONY: configure
 
-Makefile.config src/ocamlbuild_config.ml:
+CONF_FILES=Makefile.config src/ocamlbuild_config.ml
+configure:
+	$(MAKE) -f configure.make $(CONF_FILES)
+
+$(CONF_FILES):
 	$(MAKE) -f configure.make $@
 
 clean::
-	rm -f Makefile.config src/ocamlbuild_config.ml
+	rm -f $(CONF_FILES)
 
-beforedepend:: src/ocamlbuild_config.ml
+beforedepend:: Makefile.config
 
 # Installation
 
@@ -229,13 +242,21 @@ endif
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
-install-lib-basics:
+install-lib-basics: META
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
 
-install-lib-basics-opam:
+install-lib-basics-opam: META
 	echo '  "META"' >> ocamlbuild.install
 	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
+
+# %%FOO%% are configuration variables (only %%VERSION%% currently),
+# and #%% comments are removed before installation
+META: META.in VERSION
+	@cat META.in \
+	| sed s/%%VERSION%%/$$(cat VERSION)/ META.in \
+	| grep -v "#%%.*" \
+	> META
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -261,7 +282,7 @@ else
 install-lib: install-lib-basics install-lib-byte
 endif
 
-install-lib-findlib:
+install-lib-findlib: META
 ifeq ($(OCAML_NATIVE), true)
 	ocamlfind install ocamlbuild \
 	  META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT)
@@ -337,6 +358,40 @@ ifeq ($(CHECK_IF_PREINSTALLED), true)
 	        "safety check, pass CHECK_IF_PREINSTALLED=false to make";\
 	  exit 2;\
 	fi
+endif
+
+check-release:
+	@echo "This Makefile rule checks that:"
+	@echo "- the VERSION and 'git describe' values are consistent"
+	@echo "- NEXT_RELEASE does not appear in the sources anymore"
+	@echo "For any more serious release checking, see howto/release.adoc."
+	@echo "(We only add output below when a check fails.)"
+	@echo
+	@$(MAKE) --silent check-release-VERSION-git-describe
+	@$(MAKE) --silent check-release-NEXT_RELEASE
+
+check-release-VERSION-git-describe:
+ifeq ($(shell echo $(shell cat VERSION)),\
+      $(shell git describe --tags --always --dirty))
+	@
+else
+	@echo "Bad: VERSION ($(shell cat VERSION)) and"\
+		"'git describe --tags --always --dirty'"\
+	        "($(shell git describe --tags --always --dirty))"\
+		"disagree."
+endif
+
+
+NEXT_RELEASE_EXCLUDE="(Makefile|howto)"
+NEXT_RELEASE_FILES=$(shell git grep --files-with-matches "NEXT_RELEASE" \
+  | grep -v -E $(NEXT_RELEASE_EXCLUDE))
+check-release-NEXT_RELEASE:
+ifeq ($(strip $(NEXT_RELEASE_FILES)),)
+	@
+else
+	@echo "The following occurrences of NEXT_RELEASE"\
+		"should probably be fixed:"
+	@git grep "NEXT_RELEASE" -- $(NEXT_RELEASE_FILES)
 endif
 
 # The generic rules

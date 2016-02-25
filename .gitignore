@@ -26,3 +26,6 @@ Makefile.config
 /src/glob_lexer.ml
 /ocamlbuild.byte
 /ocamlbuild.native
+
+# generated from META.in
+META

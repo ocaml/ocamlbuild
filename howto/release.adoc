@@ -93,21 +93,11 @@ release number, so any occurence of +NEXT_RELEASE+ in the development
 repository should be replaced by this version number. There is at
 least one such occurence in the 'Changes' file.
 
-Furthermore, the version coded is hardcoded in some parts of the
-codebase and needs to be updated:
-
-- the 'VERSION' file contains the current version number, with no
-  ending newline
-
-- the 'META' file contains the current version number to inform ocamlfind
-
-You can use +git grep+ to look for all occurrences of +NEXT_RELEASE+
-and a given version number, from the root of the repository:
-
-----
-git grep NEXT_RELEASE
-git grep -F "0.9"
-----
+Furthermore, the version number is written in the 'VERSION' file (no
+ending newline), and it is used to derive the version number at
+installation time -- for example ocamlfind's 'META' file is generated
+from the 'META.in' template. This 'VERSION' file should thus be
+updated.
 
 == Doing the release ==
 
@@ -118,18 +108,7 @@ central git repository.
 
 Mark the current release day in the Changes file.
 
-
-=== Performing the release through github ===
-
-Github's interface allows to create a release tag and publish
-a release. From the https://github.com/ocaml/ocamlbuild[github project
-page] you can go to the
-https://github.com/ocaml/ocamlbuild/releases[release tab] which lists
-the current tags and has
-a https://github.com/ocaml/ocamlbuild/releases/new[draft a new
-release] button. Clicking this button (or the latter link in the
-previous sentence) will let you pick a tag name, release title, and
-description.
+=== Create a git release tag ===
 
 The tag name should be just the release version number. See +git
 tag --list+ to see existing tags from a command-line. The release name
@@ -137,10 +116,7 @@ should be just +Release <version-number>+. The description should be
 the Changes section corresponding to the release (release summary and
 detailed list of entries).
 
-==== Releasing from the command-line instead ====
-
-If you prefer, you can also perform the same steps using the
-command-line:
+To create the tag, run
 
 ----
 git tag <VERSION> -a
@@ -148,6 +124,29 @@ git tag <VERSION> -a
 
 This command should start an editor to ask for a tag message. You can
 use the <<change-summary,release change summary>> as the tag message.
+
+As long as you do not <<push-release-tag,push the release tag
+upstream>>, you can delete the tag if you find out you made a mistake
+and some things still need to be changed before the release.
+
+----
+git tag --delete <VERSION>
+----
+
+=== Run +make check-release+ ===
+
+The +check-release+ target automates what little part of the release
+checking we could automate. It checks that 'VERSION' and the last git
+tag agree, and that no dubious +NEXT_RELEASE+ occurrences persist.
+
+The script that check for +NEXT_RELEASE+ is somewhat fragile, you may
+need to whitelist new files by modifying the 'Makefile' rule.
+
+[[push-release-tag]]
+=== Publish the release upstream ===
+
+You need the commit rights to the upstream repository to run this
+command.
 
 ----
 git push --tags origin
