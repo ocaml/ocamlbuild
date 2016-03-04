@@ -24,3 +24,23 @@ need to use the master version of OCamlbuild. With opam:
 opam pin add ocamlbuild --kind=git "https://github.com/ocaml/ocamlbuild.git#master"
 ```
 
+## Compilation from source ##
+
+1. Configure.
+```
+make configure
+```
+
+The installation location is determined by the installation location of the ocaml
+compiler. For installation in a different location just change the paths in the
+generated Makefile.config.
+
+2. Compile the sources.
+```
+make
+```
+
+3. Install.
+```
+make install
+```
