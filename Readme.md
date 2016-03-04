@@ -26,30 +26,21 @@ opam pin add ocamlbuild --kind=git "https://github.com/ocaml/ocamlbuild.git#mast
 
 ## Compilation from source ##
 
-1. Configure the system.
-
+1. Configure.
 ```
-make -f configure.make Makefile.config OCAMLBUILD_PREFIX=$prefix 
-         OCAMLBUILD_BINDIR=$prefix/bin OCAMLBUILD_LIBDIR=$prefix/lib/ocaml 
-         OCAML_NATIVE=$native OCAML_NATIVE_TOOLS=$native
+make configure
 ```
 
-where ```$native``` is true if native tools are available and ```$prefix``` is
-the intended installation lcoation
+The installation location is determined by the installation location of the ocaml
+compiler. For installation in a different location just change the paths in the
+generated Makefile.config.
 
-2. Create the dependency file.
-
+2. Compile the sources.
 ```
-touch .depend
-make depend
-```
-
-3. Compile the sources.
-```
-make all
+make
 ```
 
-4. Install.
+3. Install.
 ```
 make install
 ```
