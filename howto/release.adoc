@@ -150,6 +150,7 @@ This command should start an editor to ask for a tag message. You can
 use the <<change-summary,release change summary>> as the tag message.
 
 ----
+git push
 git push --tags origin
 ----
 
