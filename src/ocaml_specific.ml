@@ -35,11 +35,11 @@ module C_tools = struct
       if Filename.check_suffix x ".o" && !Options.ext_obj <> "o" then
         Pathname.update_extension !Options.ext_obj x
       else x in
-    let resluts = build (List.map (fun o -> List.map (fun dir -> dir / obj_of_o o) include_dirs) objs) in
+    let results = build (List.map (fun o -> List.map (fun dir -> dir / obj_of_o o) include_dirs) objs) in
     let objs = List.map begin function
       | Good o -> o
       | Bad exn -> raise exn
-    end resluts in
+    end results in
     Cmd(S[!Options.ocamlmklib; A"-o"; Px libname; T(tags_of_pathname a++"c"++"ocamlmklib"); atomize objs]);;
 end
 
@@ -715,6 +715,42 @@ let () =
     (fun param -> S [A "-open"; A param]);
   pflag ["ocaml"; "link"] "runtime_variant" ~doc_param:"_pic"
     (fun param -> S [A "-runtime-variant"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "optimize" ~doc_param:"2"
+    (fun param ->
+       match param with
+       | "classic"
+       | "2"
+       | "3" -> S [A ("-O" ^ param)]
+       | _ ->
+         let e = Printf.sprintf
+             "Invalid parameter for \"optimize\" tag: %s (can be classic, 2, or 3)."
+             param
+         in
+         raise (Invalid_argument e));
+  pflag ["ocaml"; "native"; "compile"] "optimization_rounds" ~doc_param:"2"
+    (fun param -> S [A "-rounds"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_toplevel" ~doc_param:"160"
+    (fun param -> S [A "-inline-toplevel"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_branch_factor" ~doc_param:"0.1"
+    (fun param -> S [A "-inline-branch-factor"; A param];);
+  pflag ["ocaml"; "native"; "compile"] "inline_alloc_cost" ~doc_param:"7"
+    (fun param -> S [A "-inline-alloc-cost"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_branch_cost" ~doc_param:"5"
+    (fun param -> S [A "-inline-branch-cost"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_call_cost" ~doc_param:"5"
+    (fun param -> S [A "-inline-call-cost"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_indirect_cost" ~doc_param:"4"
+    (fun param -> S [A "-inline-indirect-cost"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_prim_cost" ~doc_param:"3"
+    (fun param -> S [A "-inline-prim-cost"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_lifting_benefit"
+    ~doc_param:"1300" (fun param -> S [A "-inline-lifting-benefit"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_max_depth" ~doc_param:"1"
+    (fun param -> S [A "-inline-max-depth"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "inline_max_unroll" ~doc_param:"0"
+    (fun param -> S [A "-inline-max-unroll"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "unbox_closures_factor" ~doc_param:"10"
+    (fun param -> S [A "-unbox-closures-factor"; A param]);
   ()
 
 let camlp4_flags camlp4s =
@@ -859,6 +895,22 @@ flag ["ocaml"; "doc"; "docdir"; "man"] (A"-man");;
 flag ["ocaml"; "doc"; "docfile"; "dot"] (A"-dot");;
 flag ["ocaml"; "doc"; "docfile"; "tex"] (A"-latex");;
 flag ["ocaml"; "doc"; "docfile"; "texi"] (A"-texi");;
+
+(* Inlining and flambda optimization options *)
+flag ["ocaml"; "native"; "compile"; "inlining_report"]
+  (A"-inlining-report");;
+
+flag ["ocaml"; "native"; "compile"; "remove_unused_arguments"]
+  (A"-remove-unused-arguments");;
+
+flag ["ocaml"; "native"; "compile"; "unbox_closures"]
+  (A"-unbox-closures");;
+
+flag ["ocaml"; "native"; "compile"; "no_unbox_free_vars_of_closures"]
+  (A"-no-unbox-free-vars-of-closures");;
+
+flag ["ocaml"; "native"; "compile"; "no_unbox_specialized_args"]
+  (A"-no-unbox-specialized-args");;
 
 (* Kept for backward compatibility. *)
 flag ["ocaml"; "doc"; "docdir"; "manpage"] (A"-man");;

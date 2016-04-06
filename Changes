@@ -29,6 +29,8 @@ branch; this version that should be usable for testing packages using
   (François Bobot, review by Armaël Géneau)
 - #51: synchronize handling of -o flag for C files with upstream OCaml
   (whitequark)
+- #67: Add support for flambda's optimization parameters
+  (martin-neuhaeusser)
 
 OCamlbuild 0.9.0 (19 Jan 2016):
 -------------------------------
