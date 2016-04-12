@@ -77,7 +77,7 @@ module type STRING = sig
 
   (** [contains_string s1 p2 s2] Search in [s1] starting from [p1] if it
       contains the [s2] string. Returns [Some position] where [position]
-      is the begining of the string [s2] in [s1], [None] otherwise. *)
+      is the beginning of the string [s2] in [s1], [None] otherwise. *)
   val contains_string : string -> int -> string -> int option
 
   (** [subst patt repl text] *)
@@ -297,7 +297,7 @@ module type GLOB = sig
   (** A descriptive exception raised when an invalid glob pattern description is given. *)
   exception Parse_error of string
 
-  (** [eval g u] returns [true] if and only if the string [u] matches the given glob expression.  Avoid reparsing
+  (** [eval g u] returns [true] if and only if the string [u] matches the given glob expression.  Avoid re-parsing
       the same pattern, since the automaton implementing the pattern is optimized on the fly.  The first few evaluations
       are done using a time-inefficient but memory-efficient algorithm.  It then compiles the pattern into an efficient
       but more memory-hungry data structure. *)
@@ -313,7 +313,7 @@ module type LOG = sig
       with the arguments [args...] on the logging output if the logging
       level is greater than or equal to [level]. The default level is 1.
       More obscure debugging information should have a higher logging
-      level. Youre formats are wrapped inside these two formats
+      level. Your formats are wrapped inside these two formats
       ["@\[<2>"] and ["@\]@."]. *)
   val dprintf : int -> ('a, Format.formatter, unit) format -> 'a
 
@@ -474,7 +474,7 @@ module type FINDLIB = sig
     | Cannot_run_ocamlfind
     | Dependency_not_found of string * string (* package, dependency *)
     | Package_not_found of string
-    | Cannot_parse_query of string * string (* package, explaination *)
+    | Cannot_parse_query of string * string (* package, explanation *)
 
   exception Findlib_error of error
 
@@ -594,11 +594,15 @@ module type PLUGIN = sig
       below. *)
   type env = Pathname.t -> Pathname.t
 
-  (** A builder is a function that waits for conjonction of alternative targets.
+  (** A builder is a function that waits for a conjunction of alternative targets.
       The alternatives are here to support some choices, for instance for an
-      OCaml module an alternatives can be foo.cmo, foo.cmi, Foo.cmo, Foo.cmi.
-      Conjonctions are here to help making parallelism, indeed commands that are
-      independant will be run concurently.
+      OCaml module an alternatives can be foo.cmo or Foo.cmo.
+      Conjunctions are here to enable parallelism: commands that are
+      independent will be run concurrently.
+
+      For example, passing [["foo.cmi"; "Foo.cmi"]; ["bar.cmi"; "Bar.cmi"]]
+      will build the interfaces of the modules Foo and Bar, trying both
+      possible capitalization of the source file names.
 
       For an example of use of a builder function, see the [targets]
       function given as an example in the documentation of the
@@ -730,7 +734,7 @@ rule "target files"
   val dep : Tags.elt list -> Pathname.t list -> unit
 
   (** [pdep tags ptag deps] is equivalent to [dep tags deps], with an
-      additional parameterized tag [ptag]. [deps] is now a function
+      additional parametrized tag [ptag]. [deps] is now a function
       which takes the parameter of the tag [ptag] as an argument.
 
       Example:
@@ -762,7 +766,7 @@ rule "target files"
       pathname argument of builtins like [Echo]. *)
   val flag_and_dep : Tags.elt list -> Command.spec -> unit
 
-  (** Allows to use [flag_and_dep] with a parameterized tag
+  (** Allows to use [flag_and_dep] with a parametrized tag
       (as [pdep] for [dep]). *)
   val pflag_and_dep : Tags.elt list -> Tags.elt ->
     (string -> Command.spec) -> unit
@@ -772,7 +776,7 @@ rule "target files"
 
       This is useful,
       for example, if the tag is used in a flag declaration that is
-      only perfored in a conditional branch:
+      only performed in a conditional branch:
       [if we_are_on_Windows then flag ["libfoo"] (A "bar");]
 
       When [we_are_on_Windows] is not true, you could get a warning about
