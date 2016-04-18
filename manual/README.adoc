@@ -1,0 +1,18 @@
+= Temporary OCamlbuild manual repository
+
+This repository for the link:manual.adoc[present OCamlbuild manual] is an effort to replace the http://caml.inria.fr/pub/docs/manual-ocaml/ocamlbuild.html[old manual] with something that satisfies users better.
+
+The present documentation is currently only a draft, with parts missing. link:CONTRIBUTING.adoc[Contributions] are warmly welcome to evolve into a more polished and complete document.
+
+== Angles of improvement
+
+The not-good-enough documentation is a subject that often comes up in `ocamlbuild` discussions. It's surprisingly hard to get feedback on what should be improved, but here is what I heard:
+
+. There are not enough short examples to reuse/tweak and forget about.
+. A clear presentation of the basic mental model of the tool is missing.
+. Writing a `myocamlbuild.ml` is frightening and little help is provided (though the former Wiki, whose content is now on http://ocaml.org/learn/tutorials/ocamlbuild/[ocaml.org], does answer questions).
+
+I would add two points:
+
+. There is too much blatter about design philosophies that aren't terribly helpful in the end
+. The manual doesn't emphasize enough the combination of `ocamlbuild` and `ocamlfind`, as the latter tool was not a given when `ocamlbuild` was designed. Choosing `ocamlbuild` + `ocamlfind` as the default tool combination allows a simpler presentation that does more by default and skips over some less-useful features (`use_foo` and + non-``ocamlfind`` ``camlp4`` stuff).

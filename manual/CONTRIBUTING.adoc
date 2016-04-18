@@ -1,0 +1,26 @@
+= Contributing to OCamlbuild
+
+Any contribution is warmly welcome!
+
+== The documentation
+
+You can help complete the documentation by integrating http://ocaml.org/learn/tutorials/ocamlbuild/[ocaml.org Wiki] content in the present documentation.
+This Wiki has a lot of valuable information, but for a mix of social and technical reasons it hasn't evolved into a good alternate documentation that I could point beginners to.
+Hopefully using `git` will feel cooler than  wikisyntax did to potential contributors -- I even decided to ignore my worries and go for the proprietary GitHub platform to lower barrier to entry.
+
+You can use the issue tracker to comments on precise or general shortcomings of the present document, e.g.:
+
+* Things that are missing and must be present;
+* Things that are here but should be shortened; or
+* Things of which you would like to change the presentation.
+
+A patch is even more useful than a bug report.
+For less precise comments (or to send patches), you can send an e-mail to (gabriel dot scherer at the more-and-more-evil google mail).
+
+== OCamlbuild
+
+Bugs in OCamlbuild itself should be reported on http://http://caml.inria.fr/mantis/[the Mantis bugtracker for the OCaml distribution], using the OCamlbuild-specific category.
+Any OCamlbuild-related question can be asked on the mailto:caml-list@inria.fr[caml-list mailing-list].
+
+Contributions in the form of patches are most welcome. OCamlbuild is free software, licensed under the GNU LGPL, and we do our best to review, give feedback, and integrate patches uploaded on Mantis or pull requests on the https://github.com/ocaml/ocaml/pulls[GitHub mirror] of the source code repository for the OCaml distribution.
+In particular, if you try to understand the implementation or documentation, and understanding some part of it requires excessive effort, a patch containing implementation or documentation comments to clarify it to future readers is an excellent idea.
