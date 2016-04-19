@@ -10,6 +10,7 @@
 :tip-caption: 💡 TIP
 :toc-placement: preamble
 :toc:
+:toclevels: 3
 :warning-caption: ⚠ WARNING
 
 OCamlbuild's job is to determine the sequence of calls to the compiler -- with the right set of command-line flags -- needed to build your OCaml-centric software project.
@@ -94,14 +95,14 @@ The examples provided so far use a `Makefile` on top of OCamlbuild to provide th
 
 === Pros, cons, and alternatives
 
-==== Pros
+The main strengths of OCamlbuild are the following:
 
 * It ‘Just Works’ for most OCaml projects, with *minimal configuration* work on your part.
 * It is designed from the scratch with *dynamic dependencies* in mind.
 Dynamic dependencies are the dependencies that are only determined during the build of the target, e.g., the local modules on which a source file depends, and are not explicitly listed in a configuration file.
 This avoids, for example, the dance of pre-generating or post-generating `.depends` files that is occasionally bothersome with `Makefile` projects, without requiring you to describe all local dependency relations manually either.
 
-==== Cons
+Two weaknesses are the following:
 
 * Instead of a homegrown soon-to-become-Turing-complete configuration language, OCamlbuild made the choice of using *OCaml as its configuration language*, and many users dislike this choice.
 Most features of OCamlbuild can be controlled through the purely declarative `_tags` file whose structure is explained in detail in this documentation, but for more complex projects you will eventually need to create a `myocamlbuild.ml` to configure the tool through its OCaml library interface.
@@ -113,7 +114,7 @@ TIP: This could be solved with more engineering effort. OCamlbuild is maintained
 For now, OCamlbuild's default build rules will not scale to millions-of-lines codebases.
 It is however used in countless useful libraries and projects where this has not been a limitation.
 
-==== Alternatives
+Some alternatives for building OCaml projects are:
 
 * https://github.com/mmottl/ocaml-makefile[OCaml-Makefile], a generic set of Makefile rules for OCaml projects. Valuable if you want to build OCaml projects with `make`, without rewriting your own boilerplate from scratch.
 * http://omake.metaprl.org/index.html[OMake], a generic build system that has been succesfully used by several relatively large OCaml projects.
@@ -639,7 +640,7 @@ _tags:
 
 |===
 
-=== Deprecated targets
+==== Deprecated targets
 
 // TODO: I'm not certain which are file names, and which file name extensions.
 .Deprecated targets
@@ -754,7 +755,7 @@ This tag is usefully used negative, `"foo": -traverse`, to say that a part of th
 ** `include`, `traverse`: see the section above on source directories and include paths.
 ** global tags: setting `true: use_mehir` in the root `_tags` file is equivalent to passing the `-use-menhir` command-line parameter.
 
-=== Advanced (context) tags
+==== Advanced (context) tags
 
 These tags are generally not meant to be used directly in `_tags` file, but rather to serve as the context part of tag declarations.
 For example, the `link` flag is automatically added thet set of tags of linking-related command, allowing tag declarations to add specific flags during linking phase only -- but it would make little sense to explicitly add the `link` tag to a target in your `_tags` file.
@@ -996,11 +997,10 @@ Consider the following examples:
 [[Sec_Plugins]]
 == Enriching OCamlbuild through plugins
 
-=== How `myocamlbuild.ml` works
+=== How `myocamlbuild.ml` is used
 
 If you have a `myocamlbuild.ml` file at the root of your OCamlbuild project, the building process will run in two steps.
 
-==== First step
 First, OCamlbuild will compile `myocamlbuild.ml`, linking it with all the modules that are part of the globally installed `ocamlbuild` executable.
 This will produce a program `_build/myocamlbuild` that behaves exactly like `ocamlbuild` itself, except that it also runs the code of your `myocamlbuild.ml` file.
 Immediately after, OCamlbuild will stop (before doing any work on the targets you gave it) and start the `_build/myocamlbuild` program instead, that will handle the rest of the job.
@@ -1028,7 +1028,7 @@ For example, if someone develops a nice library to help writing OCamlbuild plugi
 
 NOTE: The rationale for `-plugin-option` and `-plugin-tag` to apply during different phases of the process is that an option is meaningful at runtime for the plugin, while a plugin tag is meaningful at compile-time.
 
-==== Dispatch
+=== Plugin dispatch
 
 Tag and rule declarations, or configuration option manipulation, are side-effects that modify a global OCamlbuild state.
 It would be fragile to write your `myocamlbuild.ml` with such side-effects performed at module initialization time, in the following style:
@@ -1079,7 +1079,7 @@ type hook =
 WARNING: OCamlbuild does not guarantee any order in which it will call various hooks, except of course that `Before_foo` always happens before `After_foo`.
 In particular, the `hygiene` hooks may be called before or after other hooks, or not be called at all if OCamlbuild decides not to check <<Sec_Hygiene>>.
 
-==== Flag declarations
+=== Flag declarations
 
 A flag declaration maps a _set of tags_ to a list of command-line arguments/flags/options/parameters.
 These arguments will be added to a given compilation command if each of the tags are present on the given target.
@@ -1124,7 +1124,7 @@ TIP: When introducing new flags, it is sometime difficult to guess which combina
 A hint to find the right combination is to have a look at OCamlbuild's log file that is saved in `_build/_log` each time `ocamlbuild` is run.
 It contains the targets OCamlbuild tried to produce, with the associated list of tags and the corresponding command lines.
 
-===== Parametrized tags
+==== Parametrized tags
 
 You can also define families of parametrized tags such as `package(foo)` or `inline(30)`.
 This is done through the `pflag` function, which takes a list of usual tags, the special parametrized tag, and a function from the tag parameter to the corresponding command specification.
@@ -1143,7 +1143,7 @@ val pflag : Tags.elt list -> Tags.elt -> (string -> Command.spec) -> unit
 ----
 
 [[Sec_Rules]]
-===== Rule declarations
+=== Rule declarations
 
 OCamlbuild let you build your own rules, to teach it how to build new kind of targets.
 This is done by calling the `rule` function from a plugin, which is declared and documented in the `PLUGIN` module in `signatures.mli`.
@@ -1215,7 +1215,7 @@ In particular, it is the code of the rule's action that decides which, if any, t
 // TODO: Where are they inconsistent?
 ====
 
-===== Dynamic dependencies
+==== Dynamic dependencies
 
 In the action `ocamldep_ml_command` of the previous example, the `~build` parameter (of type `PLUGIN.builder`) was ignored, because the rule had no dynamic dependencies.
 Therefore there was no need to build extra targets determined during the execution of the rule itself.
@@ -1263,7 +1263,7 @@ The function `build` returns a list of outcomes (`(string, exn) Outcome.t` -- `O
 that is either a `string` (the possible target that could be built) or an exception.
 `Outcome.good` returns the good result if it exists, or raises the exception.
 
-=== Stamps
+==== Stamps
 
 In the rule above, the production `"%.otarget"` is not passed as `~prod` parameter, but as a `~stamp`.
 Stamps are special files that record the list of digests of the dynamic dependencies of the rule that produced them.
@@ -1284,7 +1284,7 @@ It does not contain their documentation -- that is in other files generated.
 The rule thus produces a stamp `%.docdir/html.stamp`.
 You should only depend on that stamp if you want your rule to be executed _each time_ the documentation changes.
 
-=== Pattern variables
+==== Pattern variables
 
 Most rules need exactly one pattern variable and use `%` for this purpose.
 You may use any string of the form `%(identifier)` as pattern variable, or even `%(identifier:pattern)`, in which case the pattern will be only be matched by a string matching the corresponding `pattern`.
@@ -1301,7 +1301,7 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
     ~dep:"%(path)lib%(libname).clib"
 ----
 
-==== Complete example: Menhir support in OCamlbuild
+=== Complete example: Menhir support in OCamlbuild
 
 [source,ocaml]
 .Menhir support in OCamlbuild
