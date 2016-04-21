@@ -664,10 +664,8 @@ let () =
     (* tags package(X), predicate(X) and syntax(X) *)
     List.iter begin fun tags ->
       pflag tags "package" ~doc_param (fun pkg -> S [A "-package"; A pkg]);
-      if not (List.mem "ocamldep" tags) then
-        (* PR#6184: 'ocamlfind ocamldep' does not support -predicate *)
-        pflag tags "predicate" ~doc_param:"archive"
-              (fun pkg -> S [A "-predicates"; A pkg]);
+      pflag tags "predicate" ~doc_param:"archive"
+        (fun pkg -> S [A "-predicates"; A pkg]);
       if List.mem "ocaml" tags then
         pflag tags "syntax" ~doc_param:"camlp4o" (fun pkg -> S [A "-syntax"; A pkg])
     end all_tags
