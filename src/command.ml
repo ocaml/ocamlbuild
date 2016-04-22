@@ -380,6 +380,7 @@ let cons deps acc =
     end acc deps
 
 let deps_of_tags tags =
+  Param_tags.handle_multi_param_tags tags;
   List.fold_left begin fun acc (xtags, xdeps) ->
     if Tags.does_match tags xtags then cons xdeps acc
     else acc
@@ -393,6 +394,15 @@ let dep tags deps = set_deps_of_tags (Tags.of_list tags) deps
 let pdep tags ptag deps =
   Param_tags.declare ptag
     (fun param -> dep (Param_tags.make ptag param :: tags) (deps param))
+
+let pdep_multi tags ptag deps =
+  Param_tags.declare_multi ptag
+    (fun params ->
+       let tags' =
+         My_std.StringSet.elements params
+         |> List.map (Param_tags.make ptag)
+       in
+       dep (tags' @ tags) (deps params))
 
 let list_all_deps () =
   !all_deps_of_tags
