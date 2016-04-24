@@ -14,5 +14,5 @@ The not-good-enough documentation is a subject that often comes up in `ocamlbuil
 
 I would add two points:
 
-. There is too much blatter about design philosophies that aren't terribly helpful in the end
+. Some of the discussion on design choices aren't directly useful to users.
 . The manual doesn't emphasize enough the combination of `ocamlbuild` and `ocamlfind`, as the latter tool was not a given when `ocamlbuild` was designed. Choosing `ocamlbuild` + `ocamlfind` as the default tool combination allows a simpler presentation that does more by default and skips over some less-useful features (`use_foo` and + non-``ocamlfind`` ``camlp4`` stuff).
