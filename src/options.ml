@@ -23,7 +23,7 @@ open Command
 
 let entry = ref None
 let project_root_dir = ref None
-let build_dir = ref (Filename.concat (Sys.getcwd ()) "_build")
+let build_dir = ref (filename_concat (Sys.getcwd ()) "_build")
 let include_dirs = ref []
 let exclude_dirs = ref []
 let nothing_should_be_rebuilt = ref false

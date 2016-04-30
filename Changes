@@ -19,6 +19,9 @@ NEXT_RELEASE:
     optimization_rounds(int) for -rounds <int>
     optimize({2,3,classic}) for -O{2,3,classic}
   (Martin Neuhäußer)
+- #70 (pratial): fix hygiene complains about the build directory under
+  Windows
+  (Andreas Hauptmann, Gabriel Scherer)
 
 0.9.1 (29 Feb 2016):
 --------------------

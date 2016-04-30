@@ -147,7 +147,9 @@ let proceed () =
           ignore (Configuration.parse_file ?dir tags_path);
         end;
 
-        (name <> !Options.build_dir && not (List.mem name !Options.exclude_dirs))
+        ((* beware: !Options.build_dir is an absolute directory *)
+         Pathname.pwd/name <> !Options.build_dir
+         && not (List.mem name !Options.exclude_dirs))
         && begin
           not (path_name <> Filename.current_dir_name && Pathname.is_directory path_name)
           || begin
@@ -159,9 +161,6 @@ let proceed () =
               Tags.mem "traverse" tags
               || List.exists (Pathname.is_prefix path_name) !Options.include_dirs
               || List.exists (Pathname.is_prefix path_name) target_dirs)
-            && ((* beware: !Options.build_dir is an absolute directory *)
-                Pathname.normalize !Options.build_dir
-                <> Pathname.normalize (Pathname.pwd/path_name))
           end
         end
       end
