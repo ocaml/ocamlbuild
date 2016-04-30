@@ -23,6 +23,16 @@ if a tag of the form [name(param)] is [acknowledge]d.
 A given tag may be declared several times with different actions. All actions
 will be executed, in the order they were declared. *)
 
+val declare_multi: string -> (My_std.StringSet.t -> unit) -> unit
+  (** Declare a parameterized tag processing multiple parameters at once.
+
+[declare_multi "name" action]: [action "param"] will be executed (once) by
+[init] if a tag of the form [name(param)] is [acknowledge]d. It may then be
+executed (once) for every new set of parameters found for "name" during
+execution.
+
+Same behavior as for [declare] regarding multiple actions. *)
+
 val acknowledge: Loc.source -> Loc.location option -> string -> unit
   (** Acknowledge a tag.
 
@@ -33,7 +43,7 @@ acknowledged parameter. *)
 
 val init: unit -> unit
   (** Initialize parameterized tags.
-      
+
 This will make effective all instantiations [foo(bar)] such that the
 parametrized tag [foo] has been [declare]d and [foo(bar)] has been
 [acknowledge]d after the last [init] call. *)
@@ -44,6 +54,13 @@ val partial_init: ?quiet:bool -> Loc.source -> Tags.t -> unit
 This will make effective the instances [foo(bar)] appearing
 in the given tag list, instead of those that have been
 [acknowledged] previously. This is for system use only. *)
+
+val handle_multi_param_tags: Tags.t -> unit
+  (** Handle multi parametrized tags in [tags]
+
+If [tags] contains parametrized tags that have been previously declared
+using [declare_multi], make sure the associated actions have been called
+for the set of parameters in [tags]. *)
 
 val make: Tags.elt -> string -> Tags.elt
   (** Make a parameterized tag instance.

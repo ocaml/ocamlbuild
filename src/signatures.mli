@@ -743,6 +743,13 @@ rule "target files"
       add [file] as a dependency when compiling an OCaml program. *)
   val pdep : Tags.elt list -> Tags.elt -> (string -> Pathname.t list) -> unit
 
+  (** [pdep_multi tags ptag deps] is the same as [pdep tags ptap deps], except
+      that it consider multiple tags [ptag] on the same file as a group instead
+      of treating them individually. [deps] is now a function which takes the
+      set of parameters given for tag [ptag] on the same file. *)
+  val pdep_multi : Tags.elt list -> Tags.elt ->
+    (StringSet.t -> Pathname.t list) -> unit
+
   (** [flag tags command_spec] Will inject the given piece of command
       ([command_spec]) when all [tags] will be activated.
       If you do not know which tags to use, have a look to the file
@@ -758,6 +765,11 @@ rule "target files"
       when compiling OCaml modules tagged with ["inline(42)"]. *)
   val pflag : Tags.elt list -> Tags.elt -> (string -> Command.spec) -> unit
 
+  (** Allows to use [flag] with a group of parametrized tags
+      (as [pdep_multi] for [dep]). *)
+  val pflag_multi : Tags.elt list -> Tags.elt ->
+    (StringSet.t -> Command.spec) -> unit
+
   (** [flag_and_dep tags command_spec]
       Combines [flag] and [dep] function.
       Basically it calls [flag tags command_spec], and calls [dep tags files]
@@ -770,6 +782,11 @@ rule "target files"
       (as [pdep] for [dep]). *)
   val pflag_and_dep : Tags.elt list -> Tags.elt ->
     (string -> Command.spec) -> unit
+
+  (** Allows to use [flag_and_dep] with a parametrized tag accepting
+      multiple parameters at once (as [pdep_multi] for [dep]). *)
+  val pflag_and_dep_multi : Tags.elt list -> Tags.elt ->
+    (StringSet.t -> Command.spec) -> unit
 
   (** manually mark the tag as "useful" to silence the warning about
       tags that are not part of any flag declaration.

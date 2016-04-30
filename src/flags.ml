@@ -54,6 +54,17 @@ let pflag tags ptag ?doc_param flags =
   Param_tags.declare ptag
     (fun param -> flag (Param_tags.make ptag param :: tags) (flags param))
 
+let pflag_multi tags ptag ?doc_param flags =
+  let flags_for_doc param = flags (My_std.StringSet.singleton param) in
+  pflags_doc := (tags, ptag, doc_param, flags_for_doc) :: !pflags_doc;
+  Param_tags.declare_multi ptag
+    (fun params ->
+       let tags' =
+         My_std.StringSet.elements params
+         |> List.map (Param_tags.make ptag)
+       in
+       flag (tags' @ tags) (flags params))
+
 let flag_and_dep tags cmd_spec =
   flag tags cmd_spec;
   let ps = Command.fold_pathnames (fun p ps -> p :: ps) (Cmd cmd_spec) [] in
@@ -64,6 +75,17 @@ let pflag_and_dep tags ptag ?doc_param cmd_spec =
   Param_tags.declare ptag
     (fun param ->
        flag_and_dep (Param_tags.make ptag param :: tags) (cmd_spec param))
+
+let pflag_and_dep_multi tags ptag ?doc_param cmd_spec =
+  let cmd_spec_for_doc param = cmd_spec (My_std.StringSet.singleton param) in
+  pflags_doc := (tags, ptag, doc_param, cmd_spec_for_doc) :: !pflags_doc;
+  Param_tags.declare_multi ptag
+    (fun params ->
+       let tags' =
+         My_std.StringSet.elements params
+         |> List.map (Param_tags.make ptag)
+       in
+       flag_and_dep (tags' @ tags) (cmd_spec params))
 
 let add x xs = x :: xs
 let remove me = List.filter (fun x -> me <> x)

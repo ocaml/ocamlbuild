@@ -44,10 +44,16 @@ val flag : ?deprecated:bool -> Tags.elt list -> Command.spec -> unit
 val pflag : Tags.elt list -> string ->
             ?doc_param:string -> (string -> Command.spec) -> unit
 
+val pflag_multi : Tags.elt list -> string ->
+  ?doc_param:string -> (My_std.StringSet.t -> Command.spec) -> unit
+
 val flag_and_dep : Tags.elt list -> Command.spec -> unit
 
 val pflag_and_dep : Tags.elt list -> Tags.elt ->
   ?doc_param:string -> (string -> Command.spec) -> unit
+
+val pflag_and_dep_multi : Tags.elt list -> Tags.elt ->
+  ?doc_param:string -> (My_std.StringSet.t -> Command.spec) -> unit
 
 val add : 'a -> 'a list -> 'a list
 val remove : 'a -> 'a list -> 'a list

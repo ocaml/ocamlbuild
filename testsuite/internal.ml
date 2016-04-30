@@ -212,10 +212,12 @@ let () = test "ModularPlugin2"
                 do not warn at plugin-compilation time"
   ~options:[`no_ocamlfind; `quiet]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
-         T.f "_tags" ~content:"<main.*>: toto(-g)";
+         T.f "_tags" ~content:"<main.*>: toto(-g), titi(-g)";
          T.f "myocamlbuild.ml"
            ~content:"open Ocamlbuild_plugin;;
-                     pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
+                     pflag [\"link\"] \"toto\" (fun arg -> A arg);;
+                     pflag_multi [\"link\"] \"titi\" (fun args -> \
+                       Command.atomize (StringSet.elements args));;"]
   ~failing_msg:""
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
@@ -228,6 +230,19 @@ let () = test "ModularPlugin3"
          T.f "myocamlbuild.ml"
            ~content:"open Ocamlbuild_plugin;;
                      pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
+  ~failing_msg:"Warning: tag \"toto\" does not expect a parameter, \
+                but is used with parameter \"-g\""
+  ~matching:[M.f "main.byte"]
+  ~targets:("main.byte",[]) ();;
+
+let () = test "ModularPlugin4"
+  ~description:"check that unknown multi parametrized tags encountered \
+                during plugin compilation still warn"
+  ~options:[`no_ocamlfind; `quiet; `plugin_tag "'toto(-g)'"]
+  ~tree:[T.f "main.ml" ~content:"let x = 1";
+         T.f "myocamlbuild.ml"
+           ~content:"open Ocamlbuild_plugin;;
+                     pflag_multi [\"link\"] \"toto\" (fun args -> N);;"]
   ~failing_msg:"Warning: tag \"toto\" does not expect a parameter, \
                 but is used with parameter \"-g\""
   ~matching:[M.f "main.byte"]
@@ -332,5 +347,33 @@ let () = test "TargetsStartingWithUnderscore"
   ~options:[`no_ocamlfind]
   ~tree:[ T.f "_a.c" ~content:"" ]
   ~targets:("_a.o", []) ();;
+
+let () = test "MultiTag"
+  ~description:"Test multi parametrized tags"
+  ~options:[`no_ocamlfind]
+  ~tree:[
+    T.f "test.ml" ~content:"let () = print_endline generated_string";
+    T.f "_tags" ~content:{|
+<test.*>: foo(abc), foo(blah), foo(def)
+true: -foo(blah)|};
+    T.f "preprocess.sh" ~content:{|
+echo "let generated_string = \"$1\""
+exec cat "$2"|};
+    T.f "myocamlbuild.ml" ~content:{|
+open Ocamlbuild_plugin
+let () = dispatch (function
+  | After_rules ->
+    let expand_foo args =
+      let str = String.concat "+" (StringSet.elements args) in
+      S [ A "-pp"; A ("sh ../preprocess.sh " ^ str) ]
+    in
+    pflag_multi ["ocaml"; "compile" ] "foo" expand_foo;
+    pflag_multi ["ocaml"; "ocamldep"] "foo" expand_foo;
+    pflag_multi ["ocaml"; "doc"     ] "foo" expand_foo
+  | _ -> ())
+|}
+  ]
+  ~matching:[M.x "test.byte" ~output:"abc+def"]
+  ~targets:("test.byte",[]) ();;
 
 run ~root:"_test_internal";;
