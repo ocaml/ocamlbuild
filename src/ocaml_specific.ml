@@ -838,7 +838,20 @@ flag ["ocaml"; "link"; "toplevel"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "compile"; "profile"; "native"] (A "-p");;
 flag ["ocaml"; "compile"; "no_alias_deps";] (A "-no-alias-deps");;
 flag ["ocaml"; "compile"; "strict_formats";] (A "-strict-formats");;
-flag ["ocaml"; "native"; "compile"; "opaque";] (A "-opaque");;
+
+begin
+  let above_403 =
+    match split_ocaml_version with
+      | Some (major, minor, _patch, _rest) -> major > 4 || minor >= 3
+      | None -> false
+  in
+  (* starting from 4.03, ocamlc also supports -opaque *)
+  if above_403 then
+    flag ["ocaml"; "compile"; "opaque";] (A "-opaque")
+  else
+    flag ["ocaml"; "native"; "compile"; "opaque";] (A "-opaque")
+end;;
+
 flag ["ocaml"; "native"; "compile"; "no_float_const_prop";] (A "-no-float-const-prop");
 flag ["ocaml"; "compile"; "keep_docs";] (A "-keep-docs");
 flag ["ocaml"; "compile"; "keep_locs";] (A "-keep-locs");

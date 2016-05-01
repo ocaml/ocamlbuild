@@ -333,4 +333,19 @@ let () = test "TargetsStartingWithUnderscore"
   ~tree:[ T.f "_a.c" ~content:"" ]
   ~targets:("_a.o", []) ();;
 
+let () = test "OpaqueEverything"
+  ~description:"Check that tagging everything opaque does not break build"
+(*
+  Since 4.03, ocamlc also handles the -opaque flag and it has
+  an interesting semantics when compiling .cmi flags. This means that
+  under 4.03 we must add the -opaque flags on .cmi targets, while
+  this would break compilation under older version. Check that code
+  previously written with "-tag opaque" does not break on older OCaml
+  versions.
+*)
+  ~options:[`no_ocamlfind; `tag "opaque"]
+  ~tree:[ T.f "test.mli" ~content:"val x : int";
+          T.f "test.ml"  ~content:"let x = 123"; ]
+  ~targets:("test.byte", []) ();;
+
 run ~root:"_test_internal";;

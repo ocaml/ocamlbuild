@@ -24,6 +24,8 @@ NEXT_RELEASE:
   (Andreas Hauptmann, Gabriel Scherer)
 - #73: also pass predicates(foo) to ocamldep
   (Jérémie Dimino)
+- extend the scope of the -opaque flag under 4.03
+  (Gabriel Scherer)
 
 0.9.1 (29 Feb 2016):
 --------------------
