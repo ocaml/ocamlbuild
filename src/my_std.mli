@@ -66,3 +66,6 @@ include Signatures.MISC
 
 val set_lexbuf_fname : string -> Lexing.lexbuf -> unit
 val lexbuf_of_string : ?name:string -> string -> Lexing.lexbuf
+
+val split_ocaml_version : (int * int * int * string) option
+(** (major, minor, patchlevel, rest) *)

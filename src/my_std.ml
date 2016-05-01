@@ -446,3 +446,8 @@ let lexbuf_of_string ?name content =
   in
   set_lexbuf_fname fname lexbuf;
   lexbuf
+
+let split_ocaml_version =
+  let version major minor patch rest = (major, minor, patch, rest) in
+  try Some (Scanf.sscanf Sys.ocaml_version "%d.%d.%d%s@\n" version)
+  with _ -> None
