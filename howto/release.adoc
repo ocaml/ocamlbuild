@@ -118,7 +118,6 @@ central git repository.
 
 Mark the current release day in the Changes file.
 
-
 === Performing the release through github ===
 
 Github's interface allows to create a release tag and publish

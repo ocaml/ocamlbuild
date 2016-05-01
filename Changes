@@ -11,8 +11,14 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.9.2 (1 May 2016):
+-------------------
+
+OCamlbuild 0.9.2 is a release to support OCaml 4.03. Martin Neuhäußer
+contributed new flags for flambda-specific optimization options. We
+also extend the scope of the flags -opaque and -for-pack, to align
+with 4.03 best practices. Note that OCamlbuild should still work
+correctly under older OCaml releases.
 
 - #67: Add support for flambda's optimization parameters
   The flags are named according to the flambda options with two exceptions:
