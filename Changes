@@ -26,6 +26,10 @@ NEXT_RELEASE:
   (Jérémie Dimino)
 - extend the scope of the -opaque flag under 4.03
   (Gabriel Scherer)
+- extend the scope of the -for-pack flag to ocamlc,
+  as recommend by OCaml compiler maintainers in
+  [PR#5996](http://caml.inria.fr/mantis/view.php?id=5995#c13339)
+  (Gabriel Scherer)
 
 0.9.1 (29 Feb 2016):
 --------------------

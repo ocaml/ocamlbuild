@@ -685,9 +685,9 @@ let () =
 
 (* parameterized tags *)
 let () =
-  pflag ["ocaml"; "native"; "compile"] "for-pack" ~doc_param:"PackModule"
+  pflag ["ocaml"; "compile"] "for-pack" ~doc_param:"PackModule"
     (fun param -> S [A "-for-pack"; A param]);
-  pflag ["ocaml"; "native"; "pack"] "for-pack" ~doc_param:"PackModule"
+  pflag ["ocaml"; "pack"] "for-pack" ~doc_param:"PackModule"
     (fun param -> S [A "-for-pack"; A param]);
   pflag ["ocaml"; "native"; "compile"] "inline" ~doc_param:"5"
     (fun param -> S [A "-inline"; A param]);

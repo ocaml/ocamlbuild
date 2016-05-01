@@ -348,4 +348,18 @@ let () = test "OpaqueEverything"
           T.f "test.ml"  ~content:"let x = 123"; ]
   ~targets:("test.byte", []) ();;
 
+let () = test "ForPackEverything"
+  ~description:"Check that tagging everything with -for-pack does not break build"
+(*
+  OCaml's PR#5995 highlighted that also using -for-pack for bytecode
+  compilation was benefitial in some situations (when using OCaml 4.03
+  or higher), so we changed ocamlbuild to pass the -for-pack flag
+  under both native and bytecode compilation, instead of just native.
+  Check that this does not break bytecode compilation.
+*)
+  ~options:[`no_ocamlfind; `tag "for_pack(Foo)"]
+  ~tree:[ T.f "test.mli" ~content:"val x : int";
+          T.f "test.ml"  ~content:"let x = 123"; ]
+  ~targets:("test.cmo", []) ();;
+
 run ~root:"_test_internal";;
