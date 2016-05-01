@@ -22,6 +22,8 @@ NEXT_RELEASE:
 - #70 (pratial): fix hygiene complains about the build directory under
   Windows
   (Andreas Hauptmann, Gabriel Scherer)
+- #73: also pass predicates(foo) to ocamldep
+  (Jérémie Dimino)
 
 0.9.1 (29 Feb 2016):
 --------------------
