@@ -223,7 +223,7 @@ let () = test "ModularPlugin2"
 let () = test "ModularPlugin3"
   ~description:"check that unknown parametrized tags encountered \
                 during plugin compilation still warn"
-  ~options:[`no_ocamlfind; `quiet; `plugin_tag "'toto(-g)'"]
+  ~options:[`no_ocamlfind; `quiet; `plugin_tag "toto(-g)"]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml"
            ~content:"open Ocamlbuild_plugin;;
