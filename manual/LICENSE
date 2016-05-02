@@ -1,9 +1,6 @@
-I intend this document to be licensed as widely as possible -- but I'm
-not yet fixed on the final license, given that it's a text document
-rather than a software. A reasonable choice would be the CC0 license
-of Creative COmmons, emulating Public Domain as closely as possible.
+The OCamlbuild manual is licensed under Creative Commons CC0 License, version 1.0,
+whose full text is available at the following address:
+  https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
-I will consider any (warmly welcome) explicit contribution to this
-documentation effort to be contributed under the public domain or
-CC0. Do not silently send me patches or pull requests if you disagree
-with that choice.
+For a summary of the CC0 license, see
+  https://creativecommons.org/publicdomain/zero/1.0/
