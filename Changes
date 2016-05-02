@@ -11,6 +11,16 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
+NEXT_RELEASE:
+-------------
+
+- Integrate the in-progress OCamlbuild manual, previously located at
+    https://github.com/gasche/manual-ocamlbuild
+  into the ocamlbuild repository, in the manual/ subdirectory.
+  The most current version of the manual can thus be accessed at
+    https://github.com/ocaml/ocamlbuild/tree/master/manual/manual.adoc
+  (Gabriel Scherer)
+
 0.9.2 (1 May 2016):
 -------------------
 
