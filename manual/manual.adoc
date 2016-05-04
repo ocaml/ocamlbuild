@@ -109,7 +109,7 @@ Most features of OCamlbuild can be controlled through the purely declarative `_t
 We strive for a simple API and we document it, so that should be more pleasant than you expect.
 * OCamlbuild is not the most efficient build system out there, and in particular its support for *build parallelization* is currently disappointing.
 +
-TIP: This could be solved with more engineering effort. OCamlbuild is maintained by volunteers, and your contributions are warmly welcome, see link:CONTRIBUTING.adoc[`CONTRIBUTING.adoc`].
+TIP: This could be solved with more engineering effort. OCamlbuild is maintained by volunteers, and your contributions are warmly welcome, see link:../CONTRIBUTING.adoc[`CONTRIBUTING.adoc`].
 +
 For now, OCamlbuild's default build rules will not scale to millions-of-lines codebases.
 It is however used in countless useful libraries and projects where this has not been a limitation.
