@@ -8,7 +8,7 @@ versions between 3.10.0 and 4.02.3. Starting from OCaml 4.03, it is
 now released separately.
 
 Your should refer to the [OCambuild
-manual](https://github.com/gasche/manual-ocamlbuild/blob/master/manual.md)
+manual](https://github.com/ocaml/ocamlbuild/blob/master/manual/manual.adoc)
 for more informations on how to use ocamlbuild.
 
 ## Automatic Installation ##
