@@ -150,11 +150,8 @@ use the <<change-summary,release change summary>> as the tag message.
 
 ----
 git push
-git push --tags origin
+git push --tags
 ----
-
-Note that if you use a different remote name than +origin+ you should
-use it there.
 
 == Making the release visible to our users ==
 
