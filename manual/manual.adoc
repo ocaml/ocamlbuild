@@ -716,6 +716,27 @@ Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch]
 * `warn(A@10-28@40-42-45)`
 * `warn_error(+10+40)`
 
+===== Compiler tags for native compilation using flambda (4.03 and newer)
+ 
+* `optimize(2)` (`2` gives the defaults of the tags below, `3` optimizes more, `classic` switches off flambda)
+* `optimization_rounds(2)` 
+* `inline_toplevel(160)`
+* `inline_branch_factor(0.1)`
+* `inline_alloc_cost(7)`
+* `inline_branch_cost(5)`
+* `inline_call_cost(5)`
+* `inline_indirect_cost(4)`
+* `inline_prim_cost(3)`
+* `inline_lifting_benefit(1300)`
+* `inline_max_depth(1)`
+* `inline_max_unroll(0)`
+* `unbox_closures_factor(1)`
+* `inlining_report`
+* `remove_unused_arguments`
+* `unbox_closures`
+* `no_unbox_free_vars_of_closures`
+* `no_unbox_specialized_args`
+
 ===== `ocamlfind` tags
 
 * `package(pkgname)`
