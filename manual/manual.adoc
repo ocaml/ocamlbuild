@@ -511,7 +511,7 @@ There is no corresponding concept of bytecode plugin archive, as `.cma` files (b
 
 | `.itarget` +
  `.otarget`
-| Building `foo.itarget` requests the build of the targets listed (one per line) in the corresponding `foo.itarget` file.
+| Building `foo.otarget` (`o` for Output target) requests the build of the targets listed (one per line) in the corresponding `foo.itarget` file (`i` for Input list of targets).
 
 |===
 
