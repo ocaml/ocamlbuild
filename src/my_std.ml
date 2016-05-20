@@ -267,6 +267,7 @@ let sys_file_exists x =
   | Outcome.Bad _ -> false
   | Outcome.Good a ->
       if basename = Filename.current_dir_name then true else
+      if dirname = x (* issue #86: (dirname "/" = "/") *) then true else
       try Array.iter (fun x -> if x = basename then raise Exit) a; false
       with Exit -> true
 
