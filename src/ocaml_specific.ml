@@ -41,6 +41,9 @@ module C_tools = struct
       | Bad exn -> raise exn
     end results in
     Cmd(S[!Options.ocamlmklib; A"-o"; Px libname; T(tags_of_pathname a++"c"++"ocamlmklib"); atomize objs]);;
+
+  let make_single_library cobj_base clib env _build =
+    Echo ([env cobj_base; ".o"; "\n"], env clib)
 end
 
 open Flags
@@ -308,6 +311,16 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
         This means that using the .o extension will give portable clib files, \
         even if it is not the object file extension on your system."
   (C_tools.link_C_library "%(path)lib%(libname).clib" ("%(path)lib%(libname)"-.-ext_lib) "%(path)%(libname)");;
+
+rule "ocaml C stubs: (o|obj) -> clib"
+  ~prod:"%(path:<**/>)lib%(libname:<*> and not <*.*>).clib"
+  ~dep:("%(path)%(libname)"-.-ext_obj)
+  ~doc:"The preferred way to build a C library libfoo.a is to create \
+        a libfoo.clib file with a list of C object files to include. \
+        It is however possible to build one from a .(o|obj) file of \
+        corresponding name, foo.(o|obj); the library will include this \
+        object file only."
+  (C_tools.make_single_library "%(path)%(libname)" "%(path)lib%(libname).clib");;
 
 rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxa & p.a"
   ~prods:["%.p.cmxa"; x_p_a]
