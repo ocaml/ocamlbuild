@@ -549,6 +549,19 @@ rule "ocaml C stubs: c -> o"
     let c = env "%.c" in
     let o = env x_o in
     let comp = if Tags.mem "native" (tags_of_pathname c) then !Options.ocamlopt else !Options.ocamlc in
+    (* The workaround below is necessary on 4.03 and older OCaml version because
+         ocamlc -c -o dir/foo.o dir/foo.c
+       does not work as expected. See
+         the original discussion: http://caml.inria.fr/mantis/view.php?id=6475
+         the partial revert: https://github.com/ocaml/ocamlbuild/pull/51
+         the 4.04 improvement: https://github.com/ocaml/ocaml/pull/464
+
+       Whenever we support to drop support for OCaml 4.03 we can
+       replace the lines below with just
+
+         Cmd(S[comp; T(tags_of_pathname c++"c"++"compile");
+               A"-c"; A"-o"; P o; Px c])
+     *)
     let cc = Cmd(S[comp; T(tags_of_pathname c++"c"++"compile"); A"-c"; Px c]) in
     if Pathname.dirname o = Pathname.current_dir_name then cc
     else Seq[cc; mv (Pathname.basename o) o]
