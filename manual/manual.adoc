@@ -685,6 +685,7 @@ Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch]
 * `annot`
 * `asm` (for `ocamlopt`'s `-S`)
 * `bin_annot`
+* `color(mode)` (for colors in compiler messages, mode can be `auto`, `always` or `never`)
 * `compat_32`
 * `custom`
 * `debug` (for `-g`)
