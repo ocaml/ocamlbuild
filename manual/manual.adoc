@@ -696,6 +696,7 @@ Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch]
 * `linkall`
 * `no_alias_deps`
 * `no_float_const_prop`
+* `noassert`
 * `nolabels`
 * `nopervasives`
 * `opaque`
@@ -713,14 +714,15 @@ Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch]
 * `strict_formats`
 * `strict_sequence`
 * `thread`
+* `unsafe`
 * `unsafe_string`
 * `warn(A@10-28@40-42-45)`
 * `warn_error(+10+40)`
 
 ===== Compiler tags for native compilation using flambda (4.03 and newer)
- 
+
 * `optimize(2)` (`2` gives the defaults of the tags below, `3` optimizes more, `classic` switches off flambda)
-* `optimization_rounds(2)` 
+* `optimization_rounds(2)`
 * `inline_toplevel(160)`
 * `inline_branch_factor(0.1)`
 * `inline_alloc_cost(7)`

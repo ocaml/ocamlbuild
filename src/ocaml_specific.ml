@@ -864,6 +864,8 @@ flag ["ocaml"; "link"; "toplevel"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "compile"; "profile"; "native"] (A "-p");;
 flag ["ocaml"; "compile"; "no_alias_deps";] (A "-no-alias-deps");;
 flag ["ocaml"; "compile"; "strict_formats";] (A "-strict-formats");;
+flag ["ocaml"; "compile"; "noassert"] (A "-noassert");;
+flag ["ocaml"; "compile"; "unsafe"] (A "-unsafe");;
 
 begin
   let above_403 =
