@@ -14,14 +14,18 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
-- Integrate the in-progress OCamlbuild manual, previously located at
+- #39: new ".o -> .clib" rule to build libraries out of single C stubs
+  (Gabriel Scherer, request by whitequark)
+
+- #78: Integrate the in-progress OCamlbuild manual, previously located at
     https://github.com/gasche/manual-ocamlbuild
   into the ocamlbuild repository, in the manual/ subdirectory.
   The most current version of the manual can thus be accessed at
     https://github.com/ocaml/ocamlbuild/tree/master/manual/manual.adoc
   (Gabriel Scherer)
-- new ".o -> .clib" rule to build libraries out of single C stubs
-  (Gabriel Scherer, request by whitequark)
+
+- #93: added "noassert" and "unsafe" flag for corresponding ocaml{c,opt} options
+  (François Pottier)
 
 0.9.2 (1 May 2016):
 -------------------
