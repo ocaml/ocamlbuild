@@ -969,4 +969,7 @@ pflag ["ocaml"; "doc"; "man"] "man_section"
 ocaml_lib "ocamlbuildlib";;
 ocaml_lib "ocamlbuildlightlib";;
 
+pflag ["c"; "compile"] "cc" (fun param -> S [A "-cc"; A param]);;
+pflag ["c"; "link"] "cc" (fun param -> S [A "-cc"; A param]);;
+
 end in ()
