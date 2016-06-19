@@ -692,6 +692,9 @@ Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch]
 * `dtypes`
 * `for-pack(PackModule)`
 * `inline(5)`
+* `cc(ccomp)`
+* `cclib(-llibname)`
+* `ccopt(option)`
 * `keep_locs`
 * `linkall`
 * `no_alias_deps`
