@@ -972,4 +972,10 @@ ocaml_lib "ocamlbuildlightlib";;
 pflag ["c"; "compile"] "cc" (fun param -> S [A "-cc"; A param]);;
 pflag ["c"; "link"] "cc" (fun param -> S [A "-cc"; A param]);;
 
+pflag ["c"; "compile"] "ccopt" (fun param -> S [A "-ccopt"; A param]);;
+pflag ["c"; "link"] "ccopt" (fun param -> S [A "-ccopt"; A param]);;
+
+pflag ["c"; "compile"] "cclib" (fun param -> S [A "-cclib"; A param]);;
+pflag ["c"; "link"] "cclib" (fun param -> S [A "-cclib"; A param]);;
+
 end in ()
