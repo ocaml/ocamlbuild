@@ -33,7 +33,7 @@ OCAMLLEX  ?= ocamllex
 endif
 
 CP        ?= cp
-COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string
+COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string -bin-annot
 LINKFLAGS ?= -I +unix -I src
 
 PACK_CMO= $(addprefix src/,\
