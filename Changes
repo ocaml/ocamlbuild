@@ -31,6 +31,11 @@ NEXT_RELEASE:
   respective ocaml{c,opt} options
   (Rudi Grinberg)
 
+- PR#7295: add infer_interface support for various type-checking-time flags:
+    color, keep_docs, no_alias_deps, nolabels, nopervasives, open,
+    strict_formats, strict_sequence, warn, warn_error
+  (Gabriel Scherer, report by Knuth Posern)
+
 0.9.2 (1 May 2016):
 -------------------
 

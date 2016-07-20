@@ -718,6 +718,7 @@ let () =
   pflag ["ocaml"; "native"; "compile"] "inline" ~doc_param:"5"
     (fun param -> S [A "-inline"; A param]);
   pflag ["ocaml"; "compile"] "color" (fun setting -> S[A "-color"; A setting]);
+  pflag ["ocaml"; "infer_interface"] "color" (fun setting -> S[A "-color"; A setting]);
   List.iter (fun pp ->
     let doc_param = "my_" ^ pp in
     pflag ["ocaml"; "compile"] pp ~doc_param
@@ -731,11 +732,17 @@ let () =
   ) ["pp"; "ppx"];
   pflag ["ocaml";"compile";] "warn" ~doc_param:"A@10-28@40-42-45"
     (fun param -> S [A "-w"; A param]);
+  pflag ["ocaml";"infer_interface";] "warn" ~doc_param:"A@10-28@40-42-45"
+    (fun param -> S [A "-w"; A param]);
   pflag ["ocaml";"compile";] "warn_error" ~doc_param:"+10+40"
+    (fun param -> S [A "-warn-error"; A param]);
+  pflag ["ocaml";"infer_interface";] "warn_error" ~doc_param:"+10+40"
     (fun param -> S [A "-warn-error"; A param]);
   pflag ["ocaml"; "ocamldep"] "open" ~doc_param:"MyPervasives"
     (fun param -> S [A "-open"; A param]);
   pflag ["ocaml"; "compile"] "open" ~doc_param:"MyPervasives"
+    (fun param -> S [A "-open"; A param]);
+  pflag ["ocaml"; "infer_interface"] "open" ~doc_param:"MyPervasives"
     (fun param -> S [A "-open"; A param]);
   pflag ["ocaml"; "link"] "runtime_variant" ~doc_param:"_pic"
     (fun param -> S [A "-runtime-variant"; A param]);
@@ -862,8 +869,13 @@ flag ["ocaml"; "link"; "program"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "link"; "library"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "link"; "toplevel"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "compile"; "profile"; "native"] (A "-p");;
+
 flag ["ocaml"; "compile"; "no_alias_deps";] (A "-no-alias-deps");;
+flag ["ocaml"; "infer_interface"; "no_alias_deps";] (A "-no-alias-deps");;
+
 flag ["ocaml"; "compile"; "strict_formats";] (A "-strict-formats");;
+flag ["ocaml"; "infer_interface"; "strict_formats";] (A "-strict-formats");;
+
 flag ["ocaml"; "compile"; "noassert"] (A "-noassert");;
 flag ["ocaml"; "compile"; "unsafe"] (A "-unsafe");;
 
@@ -882,6 +894,7 @@ end;;
 
 flag ["ocaml"; "native"; "compile"; "no_float_const_prop";] (A "-no-float-const-prop");
 flag ["ocaml"; "compile"; "keep_docs";] (A "-keep-docs");
+flag ["ocaml"; "infer_interface"; "keep_docs";] (A "-keep-docs");
 flag ["ocaml"; "compile"; "keep_locs";] (A "-keep-locs");
 flag ["ocaml"; "absname"; "compile"] (A "-absname");;
 flag ["ocaml"; "absname"; "infer_interface"] (A "-absname");;
@@ -904,7 +917,9 @@ else begin
 end;;
 
 flag ["ocaml"; "compile"; "nopervasives"] (A"-nopervasives");;
+flag ["ocaml"; "infer_interface"; "nopervasives"] (A"-nopervasives");;
 flag ["ocaml"; "compile"; "nolabels"] (A"-nolabels");;
+flag ["ocaml"; "infer_interface"; "nolabels"] (A"-nolabels");;
 
 (*flag ["ocaml"; "ocamlyacc"; "quiet"] (A"-q");;*)
 flag ["ocaml"; "ocamllex"; "quiet"] (A"-q");;
@@ -927,7 +942,9 @@ List.iter ocaml_warn_flag ['A'; 'C'; 'D'; 'E'; 'F'; 'K'; 'L'; 'M'; 'P'; 'R'; 'S'
 
 flag ~deprecated:true
   ["ocaml"; "compile"; "strict-sequence"] (A "-strict-sequence");;
+
 flag ["ocaml"; "compile"; "strict_sequence"] (A "-strict-sequence");;
+flag ["ocaml"; "infer_interface"; "strict_sequence"] (A "-strict-sequence");;
 
 flag ["ocaml"; "doc"; "docdir"; "html"] (A"-html");;
 flag ["ocaml"; "doc"; "docdir"; "man"] (A"-man");;
