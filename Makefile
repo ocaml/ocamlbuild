@@ -173,13 +173,15 @@ beforedepend:: src/glob_lexer.ml
 
 # The config file
 
-configure: Makefile.config src/ocamlbuild_config.ml
+configure:
+	$(MAKE) -f configure.make all
 
+# proxy rule for rebuilding configuration files directly from the main Makefile
 Makefile.config src/ocamlbuild_config.ml:
 	$(MAKE) -f configure.make $@
 
 clean::
-	rm -f Makefile.config src/ocamlbuild_config.ml
+	$(MAKE) -f configure.make clean
 
 beforedepend:: src/ocamlbuild_config.ml
 

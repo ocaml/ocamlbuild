@@ -53,6 +53,11 @@ endif
 
 OCAML_NATIVE_TOOLS ?= $(OCAML_NATIVE)
 
+all: Makefile.config src/ocamlbuild_config.ml
+
+clean:
+	rm Makefile.config src/ocamlbuild_config.ml
+
 Makefile.config:
 	(echo "# This file was generated from configure.make"; \
 	echo ;\
