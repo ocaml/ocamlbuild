@@ -58,7 +58,7 @@ let tag_pat_msgs =
                 Lexing error: Invalid globbing pattern \"<*{>\".";
 
    "<*>: ~@a,# ~a", "File \"_tags\", line 1, characters 10-11:\n\
-                     Lexing error: Only ',' separated tags are alllowed."];;
+                     Lexing error: Only ',' separated tags are allowed."];;
 
 List.iteri (fun i (content,failing_msg) ->
   let () = test (Printf.sprintf "TagsErrorMessage_%d" (i+1))

@@ -143,7 +143,7 @@ and conf_values x source = parse
     }
   | newline { Lexing.new_line lexbuf; x }
   | eof { x }
-  | _ { error source lexbuf "Only ',' separated tags are alllowed" }
+  | _ { error source lexbuf "Only ',' separated tags are allowed" }
 
 and path_scheme patt_allowed source = parse
   | ([^ '%' ]+ as prefix)
