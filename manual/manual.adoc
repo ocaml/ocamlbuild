@@ -1251,7 +1251,9 @@ In the action `ocamldep_ml_command` of the previous example, the `~build` parame
 Therefore there was no need to build extra targets determined during the execution of the rule itself.
 The static dependency is built by ``ocamlbuild``'s resolution engine before the action executed.
 
-For example:
+On the contrary, dynamic dependencies are targets that are not indicated as dependencies in the rule declaration, but who are dynamically requested to build during the execution of the rule action.
+For example, the `target_list` action below reads a targets of paths in a `%.itarget` file, and builds all those targets.
+The targets cannot be known at the time the rule is declared, they are dynamic dependencies.
 
 [source,ocaml]
 ----
