@@ -25,6 +25,7 @@ let print_list_com f =
 let print_list_blank f =
   print_list ~sep:(fun ppf () -> pp_print_string ppf " ") f
 
+let pp_print_escaped ppf s = Format.fprintf ppf "%S" s
 let print_string_list = print_list_com pp_print_string
 let print_string_list_com = print_list_com pp_print_string
 let print_string_list_blank = print_list_blank pp_print_string
@@ -253,8 +254,8 @@ module Option = struct
   let print_level = pp_print_int
   let print_flag = pp_print_string
   let print_package = pp_print_string
-  let print_tag ppf tag = fprintf ppf "%S" tag
-  let print_tags = print_string_list_com
+  let print_tag = pp_print_escaped
+  let print_tags = print_list_com pp_print_escaped
   let print_path = pp_print_string
   let print_paths = print_string_list_com
   let print_flags = print_string_list_com

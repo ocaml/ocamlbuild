@@ -27,7 +27,7 @@ let () = test "SyntaxFlag"
 
 let () = test "PredicateFlag"
   ~description:"ocamlfind ocamldep does not support the -predicate option"
-  ~options:[`use_ocamlfind; `tag "\"predicate(byte)\""]
+  ~options:[`use_ocamlfind; `tag "predicate(byte)"]
   ~tree:[T.f "test.ml" ~content:"let x = List.map"]
   ~matching:[_build [M.f "test.ml.depends"]]
   ~targets:("test.ml.depends", []) ();;

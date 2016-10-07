@@ -8,13 +8,13 @@ let () = test "SubtoolOptions"
   (* testing for the 'menhir' executable directly
      is too hard to do in a portable way; test the ocamlfind package instead *)
   ~requirements:(package_exists "menhirLib")
-  ~options:[`use_ocamlfind; `use_menhir; `tags["package\\(camlp4.fulllib\\)"]]
+  ~options:[`use_ocamlfind; `use_menhir; `tags ["package(camlp4.fulllib)"]]
   ~tree:[T.f "parser.mly"
             ~content:"%{ %}
                       %token DUMMY
                       %start<Camlp4.PreCast.Syntax.Ast.expr option> test
                       %%
-                      test: {None}"]
+                      test: DUMMY {None}"]
   ~matching:[M.f "parser.native"; M.f "parser.byte"]
   ~targets:("parser.native",["parser.byte"])
   ();;
