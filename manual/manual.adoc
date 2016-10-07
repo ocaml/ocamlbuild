@@ -1177,6 +1177,7 @@ OCamlbuild let you build your own rules, to teach it how to build new kind of ta
 This is done by calling the `rule` function from a plugin, which is declared and documented in the `PLUGIN` module in `signatures.mli`.
 We will not write an exhaustive documentation here (for this, have a look at `signatures.mli`), but rather expose the most common features through representative examples.
 
+[[Subsec_Rules__Rule_example]]
 === A simple rule
 
 Our first example is simple, as it is a rule without dynamic dependencies:
@@ -1245,6 +1246,7 @@ In particular, it is the code of the rule's action that decides which, if any, t
 // TODO: Where are they inconsistent?
 ====
 
+[[Subsec_Rules__Dynamic_dependencies]]
 ==== Dynamic dependencies
 
 In the action `ocamldep_ml_command` of the previous example, the `~build` parameter (of type `PLUGIN.builder`) was ignored, because the rule had no dynamic dependencies.
@@ -1295,6 +1297,7 @@ The function `build` returns a list of outcomes (`(string, exn) Outcome.t` -- `O
 that is either a `string` (the possible target that could be built) or an exception.
 `Outcome.good` returns the good result if it exists, or raises the exception.
 
+[[Subsec_Rules__Stamps]]
 ==== Stamps
 
 In the rule above, the production `"%.otarget"` is not passed as `~prod` parameter, but as a `~stamp`.
@@ -1316,6 +1319,7 @@ It does not contain their documentation -- that is in other files generated.
 The rule thus produces a stamp `%.docdir/html.stamp`.
 You should only depend on that stamp if you want your rule to be executed _each time_ the documentation changes.
 
+[[Subsec_Rules__Pattern_variables]]
 ==== Pattern variables
 
 Most rules need exactly one pattern variable and use `%` for this purpose.
@@ -1333,6 +1337,7 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
     ~dep:"%(path)lib%(libname).clib"
 ----
 
+[[Subsec_Rules__Rule_ordering]]
 ==== Rule ordering and `~insert`
 
 One cannot define a rule if there already exists a built-in rule of the same name.
