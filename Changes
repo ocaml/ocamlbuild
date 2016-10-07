@@ -11,8 +11,11 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.9.3 (6 Oct 2016):
+-------------------
+
+OCamlbuild 0.9.3 introduces several features contributed or requested
+by our users. See the detailed changelog below.
 
 - #39: new ".o -> .clib" rule to build libraries out of single C stubs
   (Gabriel Scherer, request by whitequark)
@@ -27,7 +30,7 @@ NEXT_RELEASE:
 - #93: added "noassert" and "unsafe" flag for corresponding ocaml{c,opt} options
   (François Pottier)
 
-- #94: added "cc", "cclib", and "ccopt" flags which correspond to the their
+- #94: added "cc", "cclib", and "ccopt" flags which correspond to the
   respective ocaml{c,opt} options
   (Rudi Grinberg)
 
