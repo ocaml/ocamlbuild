@@ -916,6 +916,10 @@ else begin
   flag ["ocaml"; "link"; "thread"; "byte"; "toplevel"] (A "threads.cma");
 end;;
 
+flag ["ocaml"; "compile"; "nostdlib"] (A"-nostdlib");;
+flag ["ocaml"; "infer_interface"; "nostdlib"] (A"-nostdlib");;
+flag ["ocaml"; "link"; "nostdlib"] (A"-nostdlib");;
+
 flag ["ocaml"; "compile"; "nopervasives"] (A"-nopervasives");;
 flag ["ocaml"; "infer_interface"; "nopervasives"] (A"-nopervasives");;
 flag ["ocaml"; "compile"; "nolabels"] (A"-nolabels");;
