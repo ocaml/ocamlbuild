@@ -960,7 +960,7 @@ The `{pattern}` part is what we call a "glob expression", which is an expression
 | `bar/foo.ml` +
  `bar/baz/foo.ml`
 | `foo.ml`
-| Any string starting and ending iwth a slash `/`.
+| Any string starting and ending with a slash `/`.
 
 | `[r1 r2 r3 ...]`, +
  where each `r` is either: +
