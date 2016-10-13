@@ -677,7 +677,7 @@ For convenience, we try to offer a tag for each setting exported as command-line
 A builtin tag `foo_bar` corresponding to the option `-foo-bar` is in general better than trying to pass `-cflags -foo-bar` to the ocamlbuild compilation command, as it can enable the `-foo-bar` flag only when it make sense, in a more fine-grained way that "during a compilation command".
 
 TIP: If you notice that a compiler-provided command-line option is missing its tag counterpart, this is a bug that you should report against OCamlbuild.
-Feel free to look at the implementation and link:CONTRIBUTING.adoc[send a patch] adding this tag, it is really easy.
+Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a patch] adding this tag, it is really easy.
 
 ===== Compiler tags
 
@@ -1042,7 +1042,7 @@ It lets you manipulate command-line options, define new rules and targets, add n
 The signature of this module is the `PLUGIN` module type of the interface-only `signatures.mli` file of the OCamlbuild distribution.
 
 NOTE: You will find the module source code littered with comments explaining the purpose of the exposed values, but this documentation aspect can still be improved.
-We warmly welcome patches to improve this aspect of `ocamlbuild` -- link:CONTRIBUTING.adoc[or any other aspect].
+We warmly welcome patches to improve this aspect of `ocamlbuild` -- link:../CONTRIBUTING.adoc[or any other aspect].
 
 You can influence the `myocamlbuild.ml` compilation-and-launch process in several ways:
 
