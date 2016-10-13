@@ -702,6 +702,7 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `noassert`
 * `nolabels`
 * `nopervasives`
+* `nostdlib` (since NEXT_RELEASE)
 * `opaque`
 * `open(MyPervasives)`
 * `output_obj`

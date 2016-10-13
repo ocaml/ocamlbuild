@@ -14,6 +14,9 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+- #111: added "nostdlib" flag for corresponding ocaml{c,opt} options (Thomas
+  Wood)
+
 0.9.3 (6 Oct 2016):
 -------------------
 
