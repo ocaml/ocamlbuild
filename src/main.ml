@@ -84,8 +84,8 @@ let proceed () =
 
   let target_dirs = List.union [] (List.map Pathname.dirname !Options.targets) in
 
-  Configuration.parse_string ~source:Const.Source.builtin
-    "<**/*.ml> or <**/*.mli> or <**/*.mlpack> or <**/*.ml.depends>: ocaml\n\
+  Configuration.parse_string ~source:Const.Source.builtin {|
+     <**/*.ml> or <**/*.mli> or <**/*.mlpack> or <**/*.ml.depends>: ocaml\n\
      <**/*.byte>: ocaml, byte, program\n\
      <**/*.odoc>: ocaml, doc\n\
      <**/*.native>: ocaml, native, program\n\
@@ -95,8 +95,8 @@ let proceed () =
      <**/*.cmi>: ocaml, byte, native\n\
      <**/*.cmx>: ocaml, native\n\
      <**/*.mly>: infer\n\
-     <**/.svn>|\"node_modules\"|\".bzr\"|\".hg\"|\".git\"|\"_darcs\": -traverse\n\
-    ";
+     <**/.svn>|"CVS"|".bzr"|".hg"|".git"|"_darcs"|"node_modules": -traverse\n\
+    |};
 
   List.iter
     (Configuration.parse_string ~source:Const.Source.command_line)
