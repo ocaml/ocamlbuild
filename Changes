@@ -14,8 +14,11 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
-- #111: added "nostdlib" flag for corresponding ocaml{c,opt} options (Thomas
-  Wood)
+- #111: added "nostdlib" flag for corresponding ocaml{c,opt} options
+  (Thomas Wood)
+
+- #115: add `node_modules` to the list of directories ignored by default
+  (Yunxing Dai)
 
 0.9.3 (6 Oct 2016):
 -------------------
@@ -59,7 +62,7 @@ correctly under older OCaml releases.
     optimization_rounds(int) for -rounds <int>
     optimize({2,3,classic}) for -O{2,3,classic}
   (Martin Neuhäußer)
-- #70 (pratial): fix hygiene complains about the build directory under
+- #70 (partial): fix hygiene complains about the build directory under
   Windows
   (Andreas Hauptmann, Gabriel Scherer)
 - #73: also pass predicates(foo) to ocamldep
