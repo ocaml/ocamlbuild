@@ -125,7 +125,7 @@ let plugin_tags_internal = ref []
 let log_file_internal = ref "_log"
 
 let my_include_dirs = ref [[Filename.current_dir_name]]
-let my_exclude_dirs = ref [[".svn"; "CVS"]]
+let my_exclude_dirs = ref [["node_modules"; ".svn"; "CVS"]]
 
 let dummy = "*invalid-dummy-string*";; (* Dummy string for delimiting the latest argument *)
 
