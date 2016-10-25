@@ -530,7 +530,7 @@ These targets will call the documentation generator `ocamldoc`.
 | Contains a list of module names for which to produce documentation, using one of the targets listed below.
 
 | `.docdir/index.html`
-| Building the target `foo.docdir/index.thml` will create a subdirectory `foo.docdir` containing the HTML documentation of all modules listed in `foo.odocl`.
+| Building the target `foo.docdir/index.html` will create a subdirectory `foo.docdir` containing the HTML documentation of all modules listed in `foo.odocl`.
 
 | `.docdir/man`
 | As `.docdir/index.html` above, but builds the documentation in `man` format.
