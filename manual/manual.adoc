@@ -61,7 +61,7 @@ OCamlbuild was designed as a generic build system (it is in fact not OCaml-speci
 
 === Examples
 
-We maintain a few self-contained examples of projects using various OCamlbuild features under link:examples/[`examples/`]:
+We maintain a few self-contained examples of projects using various OCamlbuild features under link:../examples/[`examples/`]:
 
 .Examples
 [[Table_Examples]]
@@ -70,26 +70,26 @@ We maintain a few self-contained examples of projects using various OCamlbuild f
 | Directory
 | Description
 
-| link:examples/01-simple[01-simple]
+| link:../examples/01-simple[01-simple]
 | A minimal example with self-contained OCaml code in the project directory.
 
-| link:examples/02-subdirs[02-subdirs]
+| link:../examples/02-subdirs[02-subdirs]
 | OCaml code in `lib/` and `src/` subdirectories.
  See <<Sec_Directories>> for the details.
 
-| link:examples/03-packages[03-packages]
+| link:../examples/03-packages[03-packages]
 | A simple example of use of an Findlib package (http://mjambon.com/yojson.html[`yojson`]) in an OCamlbuild project.
  See <<Sec_Findlib>> introduction section for more details.
 
-| link:examples/04-library[04-library]
+| link:../examples/04-library[04-library]
 | A simple example of using a `.mllib` file to easily build library archives (`.cma` in bytecode, `.cmxa` with native compilation).
  See <<Sec_Archives_documentation>> for more details.
 
-| link:examples/05-lex-yacc[05-lex-yacc]
+| link:../examples/05-lex-yacc[05-lex-yacc]
 | A simple program using `ocamllex` to generate a lexer, and http://gallium.inria.fr/~fpottier/menhir/[Menhir] to generate a parser (ocamlyacc would work as easily, but we recommend using Menhir instead which is just a better parser generator).
  See <<Sec_ocamlyacc_and_Menhir_targets>> in <<Sec_Reference>> for all parser-relevant options.
 
-| link:examples/06-ocamldoc[06-ocamldoc]
+| link:../examples/06-ocamldoc[06-ocamldoc]
 | A simple example illustrating the use of OCamldoc to generate documentation as html, TeX, man-pages and graphviz files. See <<Sec_Archives_documentation>> for more details.
 |===
 
@@ -1363,12 +1363,12 @@ The default behavior, in absence of `~insert` argument, is to place custom rules
 [source,ocaml]
 .Menhir support in OCamlbuild
 ----
-include::samples/complete-example-menhir-support-in-ocamlbuild/myocamlbuild.ml[]
+include::../samples/complete-example-menhir-support-in-ocamlbuild/myocamlbuild.ml[]
 ----
 
 , where the Menhir-specific actions in `Ocaml_tools` are defined as follows:
 
 [source,ocaml]
 ----
-include::samples/complete-example-menhir-support-in-ocamlbuild/Ocaml_tools.ml[]
+include::../samples/complete-example-menhir-support-in-ocamlbuild/Ocaml_tools.ml[]
 ----
