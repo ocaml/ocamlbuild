@@ -75,7 +75,7 @@ We maintain a few self-contained examples of projects using various OCamlbuild f
 
 | link:examples/02-subdirs[02-subdirs]
 | OCaml code in `lib/` and `src/` subdirectories.
- See <<Sec_Directories> for the details.
+ See <<Sec_Directories>> for the details.
 
 | link:examples/03-packages[03-packages]
 | A simple example of use of an Findlib package (http://mjambon.com/yojson.html[`yojson`]) in an OCamlbuild project.
@@ -88,6 +88,9 @@ We maintain a few self-contained examples of projects using various OCamlbuild f
 | link:examples/05-lex-yacc[05-lex-yacc]
 | A simple program using `ocamllex` to generate a lexer, and http://gallium.inria.fr/~fpottier/menhir/[Menhir] to generate a parser (ocamlyacc would work as easily, but we recommend using Menhir instead which is just a better parser generator).
  See <<Sec_ocamlyacc_and_Menhir_targets>> in <<Sec_Reference>> for all parser-relevant options.
+
+| link:examples/06-ocamldoc[06-ocamldoc]
+| A simple example illustrating the use of OCamldoc to generate documentation as html, TeX, man-pages and graphviz files. See <<Sec_Archives_documentation>> for more details.
 |===
 
 NOTE: There are many ways to integrate OCamlbuild in your project.
