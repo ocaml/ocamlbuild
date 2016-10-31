@@ -75,7 +75,7 @@ We maintain a few self-contained examples of projects using various OCamlbuild f
 
 | link:examples/02-subdirs[02-subdirs]
 | OCaml code in `lib/` and `src/` subdirectories.
- See <<Sec_Directories> for the details.
+ See <<Sec_Directories>> for the details.
 
 | link:examples/03-packages[03-packages]
 | A simple example of use of an Findlib package (http://mjambon.com/yojson.html[`yojson`]) in an OCamlbuild project.
