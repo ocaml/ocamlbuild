@@ -20,6 +20,9 @@ NEXT_RELEASE:
 - #115: add `node_modules` to the list of directories ignored by default
   (Yunxing Dai)
 
+- added "-toolchain" option for corresponding ocamlfind option.
+  (whitequark)
+
 0.9.3 (6 Oct 2016):
 -------------------
 

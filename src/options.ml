@@ -39,6 +39,7 @@ let nostdlib = ref false
 let use_menhir = ref false
 let catch_errors = ref true
 let use_ocamlfind = ref false
+let toolchain = ref ""
 
 (* Currently only ocamlfind and menhir is defined as no-core tool,
    perhaps later we need something better *)
@@ -93,7 +94,11 @@ let ocamlmklib = ref (V"OCAMLMKLIB")
 let ocamlmktop = ref (V"OCAMLMKTOP")
 let ocamlrun = ref N
 let ocamlfind_cmd = ref (V"OCAMLFIND")
-let ocamlfind arg = S[!ocamlfind_cmd; arg]
+let ocamlfind arg =
+  if !toolchain = "" then
+    S[!ocamlfind_cmd; arg]
+  else
+    S[!ocamlfind_cmd; A"-toolchain"; A!toolchain; arg]
 let program_to_execute = ref false
 let must_clean = ref false
 let show_documentation = ref false
@@ -233,6 +238,7 @@ let spec = ref (
        using Findlib directly to determine command-line arguments. \
        Use -no-ocamlfind to disable.";
    "-no-ocamlfind", Clear use_ocamlfind, " Don't use ocamlfind.";
+   "-toolchain", Set_string toolchain, "<toolchain> Set the Findlib toolchain to use.";
 
    "-j", Set_int Command.jobs, "<N> Allow N jobs at once (0 for unlimited)";
 
