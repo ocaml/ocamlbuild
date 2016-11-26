@@ -369,7 +369,7 @@ let digest =
   fun x ->
     match cmd x [] with
     | [x] -> x
-    | xs  -> Digest.string ("["^String.concat ";" xs^"]")
+    | xs  -> Digest.string ("[" ^ String.concat ";" xs ^ "]")
 
 let all_deps_of_tags = ref []
 
