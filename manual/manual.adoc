@@ -246,10 +246,10 @@ OCamlbuild knows which target you need (library archives or program executables)
 Everything present in the source directory is considered to be an input; if you keep old `.cmo` files in your source repository, OCamlbuild will not try to rebuild them from source files, but take them as references to produce the final targets, which is not what you want if they are stale.
 
 [[Sec_Findlib]]
-=== http://projects.camlcity.org/projects/findlib.html[Findlib]-based packages
+=== Findlib-based packages
 
 Your project will probably depend on external libraries as well.
-Let's assume they are provided via the Findlib tool `ocamlfind`. Suppose we depend on packages `tata` and `toto`. To tell OCamlbuild about them, use the tags `package(tata)` and `package(toto)`.
+Let's assume they are provided via the http://projects.camlcity.org/projects/findlib.html[Findlib] tool `ocamlfind`. Suppose we depend on packages `tata` and `toto`. To tell OCamlbuild about them, use the tags `package(tata)` and `package(toto)`.
 You also need to tell OCamlbuild to enable support for `ocamlfind` by passing the `-use-ocamlfind` command-line option.
 
 So you will have the following `_tags` file:
@@ -280,6 +280,9 @@ let () =
       Options.use_ocamlfind := true
     | _ -> ())
 ----
+
+Since NEXT_RELEASE, `ocamlbuild` also accepts a `-toolchain foo`
+option that is passed to `ocamlfind`.
 
 === Syntax extensions
 
