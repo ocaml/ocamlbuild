@@ -84,7 +84,7 @@ let ocamlopt_p tags deps out =
     S [!Options.ocamlopt; A"-pack"; forpack_flags out tags; T tags;
        S include_flags; atomize_paths deps;
        A"-o"; Px out] in
-  if (*FIXME true ||*) Pathname.exists mli then Cmd cmd
+  if true || Pathname.exists mli then Cmd cmd
   else
     let rm = S[A"rm"; A"-f"; P mli] in
     Cmd(S[A"touch"; P mli; Sh" ; if "; cmd; Sh" ; then "; rm; Sh" ; else ";
