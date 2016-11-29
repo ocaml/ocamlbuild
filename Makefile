@@ -109,9 +109,9 @@ INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
 INSTALL_MANDIR=$(DESTDIR)$(MANDIR)
 
 ifeq ($(OCAML_NATIVE), true)
-all: byte native
+all: byte native man
 else
-all: byte
+all: byte man
 endif
 
 byte: ocamlbuild.byte ocamlbuildlib.cma
@@ -185,6 +185,25 @@ clean::
 	$(MAKE) -f configure.make clean
 
 beforedepend:: src/ocamlbuild_config.ml
+
+# man page
+
+man: man/ocamlbuild.1
+
+man/ocamlbuild.1: man/ocamlbuild.header.1 man/ocamlbuild.options.1 man/ocamlbuild.footer.1
+	cat man/ocamlbuild.{header,options,footer}.1 > man/ocamlbuild.1
+
+man/ocamlbuild.options.1: man/options_man.byte
+	./man/options_man.byte > man/ocamlbuild.options.1
+
+clean::
+	rm -f man/ocamlbuild.options.1
+
+man/options_man.byte: ocamlbuild_pack.cmo
+	$(OCAMLC) ocamlbuild_pack.cmo -I src man/options_man.ml -o man/options_man.byte
+
+clean::
+	rm -f man/options_man.cm*
 
 # Installation
 
