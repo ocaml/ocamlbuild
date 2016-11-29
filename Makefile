@@ -118,7 +118,7 @@ byte: ocamlbuild.byte ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
 native: ocamlbuild.native ocamlbuildlib.cmxa
 
-allopt: byte alias # compatibility alias
+allopt: all # compatibility alias
 
 # The executables
 
