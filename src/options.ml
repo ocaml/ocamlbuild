@@ -385,3 +385,5 @@ let ocamlbuild_project_heuristic () =
       (at_root "_tags")
   || Sys.file_exists (* authorized since we're not in build *)
       (at_root "myocamlbuild.ml")
+
+let spec () = !spec

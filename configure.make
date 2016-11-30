@@ -24,6 +24,9 @@ OCAMLBUILD_LIBDIR ?= \
   $(or $(shell opam config var lib 2>/dev/null),\
        $(shell ocamlfind printconf destdir 2>/dev/null),\
        $(LIBDIR))
+OCAMLBUILD_MANDIR ?= \
+  $(or $(shell opam config var man 2>/dev/null),\
+       $(PREFIX)/man)
 
 # It is important to distinguish OCAML_LIBDIR, which points to the
 # directory of the ocaml compiler distribution, and OCAMLBUILD_LIBDIR,
@@ -42,8 +45,8 @@ OCAMLBUILD_LIBDIR ?= \
 # libraries will be installed.
 #
 # In the generated configuration files, we export
-# OCAMLBUILD_{PREFIX,BINDIR,LIBDIR}, which are the ones that should
-# generally be used, as the shorted names {PREFIX,BINDIR,LIBDIR}.
+# OCAMLBUILD_{PREFIX,{BIN,LIB,MAN}DIR}, which are the ones that should
+# generally be used, as the shorter names PREFIX,{BIN,LIB,MAN}DIR.
 
 ifeq ($(ARCH), none)
 OCAML_NATIVE ?= false
@@ -56,7 +59,7 @@ OCAML_NATIVE_TOOLS ?= $(OCAML_NATIVE)
 all: Makefile.config src/ocamlbuild_config.ml
 
 clean:
-	rm Makefile.config src/ocamlbuild_config.ml
+	rm -f Makefile.config src/ocamlbuild_config.ml
 
 Makefile.config:
 	(echo "# This file was generated from configure.make"; \
@@ -79,6 +82,7 @@ Makefile.config:
 	echo "PREFIX=$(OCAMLBUILD_PREFIX)"; \
 	echo "BINDIR=$(OCAMLBUILD_BINDIR)"; \
 	echo "LIBDIR=$(OCAMLBUILD_LIBDIR)"; \
+	echo "MANDIR=$(OCAMLBUILD_MANDIR)"; \
 	) > $@
 
 src/ocamlbuild_config.ml:

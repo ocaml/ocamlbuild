@@ -23,6 +23,9 @@ NEXT_RELEASE:
 - added "-toolchain" option for corresponding ocamlfind option.
   (whitequark)
 
+- install ocamlbuild's man pages, missing since 4.02
+  (Gabriel Scherer)
+
 0.9.3 (6 Oct 2016):
 -------------------
 

@@ -106,18 +106,19 @@ INSTALL_LIB_OPT=\
 
 INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
+INSTALL_MANDIR=$(DESTDIR)$(MANDIR)
 
 ifeq ($(OCAML_NATIVE), true)
-all: byte native
+all: byte native man
 else
-all: byte
+all: byte man
 endif
 
 byte: ocamlbuild.byte ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
 native: ocamlbuild.native ocamlbuildlib.cmxa
 
-allopt: byte alias # compatibility alias
+allopt: all # compatibility alias
 
 # The executables
 
@@ -184,6 +185,25 @@ clean::
 	$(MAKE) -f configure.make clean
 
 beforedepend:: src/ocamlbuild_config.ml
+
+# man page
+
+man: man/ocamlbuild.1
+
+man/ocamlbuild.1: man/ocamlbuild.header.1 man/ocamlbuild.options.1 man/ocamlbuild.footer.1
+	cat man/ocamlbuild.{header,options,footer}.1 > man/ocamlbuild.1
+
+man/ocamlbuild.options.1: man/options_man.byte
+	./man/options_man.byte > man/ocamlbuild.options.1
+
+clean::
+	rm -f man/ocamlbuild.options.1
+
+man/options_man.byte: ocamlbuild_pack.cmo
+	$(OCAMLC) ocamlbuild_pack.cmo -I src man/options_man.ml -o man/options_man.byte
+
+clean::
+	rm -f man/options_man.cm*
 
 # Installation
 
@@ -282,6 +302,15 @@ endif
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
+install-man:
+	cp man/ocamlbuild.1 $(INSTALL_MANDIR)/man1/ocamlbuild.1
+
+install-man-opam:
+	echo 'man: [' >> ocamlbuild.install
+	echo '  "man/ocamlbuild.1" {"man1/ocamlbuild.1"}' >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
+	echo >> ocamlbuild.install
+
 uninstall-bin:
 	rm $(BINDIR)/ocamlbuild
 	rm $(BINDIR)/ocamlbuild.byte
@@ -313,9 +342,12 @@ endif
 uninstall-lib-findlib:
 	ocamlfind remove ocamlbuild
 
+uninstall-man:
+	rm $(INSTALL_MANDIR)/man1/ocamlbuild.1
+
 install: check-if-preinstalled
-	$(MAKE) install-bin install-lib
-uninstall: uninstall-bin uninstall-lib
+	$(MAKE) install-bin install-lib install-man
+uninstall: uninstall-bin uninstall-lib uninstall-man
 
 findlib-install: check-if-preinstalled
 	$(MAKE) install-bin install-lib-findlib
@@ -329,6 +361,7 @@ ocamlbuild.install:
 	touch ocamlbuild.install
 	$(MAKE) install-bin-opam
 	$(MAKE) install-lib-opam
+	$(MAKE) install-man-opam
 
 check-if-preinstalled:
 ifeq ($(CHECK_IF_PREINSTALLED), true)
@@ -377,6 +410,6 @@ $(EXTRA_CMX): ocamlbuild_pack.cmx ocamlbuild_pack.cmi
 
 include .depend
 
-.PHONY: all allopt clean beforedepend
+.PHONY: all allopt beforedepend clean configure
 .PHONY: install installopt installopt_really depend
 

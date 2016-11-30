@@ -31,5 +31,7 @@ val plugin_tags : string list ref
 *)
 val ocamlbuild_project_heuristic : unit -> bool
 
+val spec : unit -> (Arg.key * Arg.spec * Arg.doc) list
+
 val entry : bool Slurp.entry option ref
 val init : unit -> unit

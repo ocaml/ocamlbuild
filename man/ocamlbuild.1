@@ -110,11 +110,20 @@ The following command-line options are recognized by
 \fB\-version\fR
 Display the version
 .TP
+\fB\-\-version\fR
+same as \-version
+.TP
+\fB\-vnum\fR
+Display the version number
+.TP
+\fB\-\-vnum\fR
+same as \-vnum
+.TP
 \fB\-quiet\fR
 Make as quiet as possible
 .TP
 \fB\-verbose\fR <level>
-Set the verbose level
+Set the verbosity level
 .TP
 \fB\-documentation\fR
 Show rules and flags
@@ -128,11 +137,14 @@ No log file
 \fB\-clean\fR
 Remove build directory and other files, then exit
 .TP
+\fB\-r\fR
+Traverse directories by default (true: traverse)
+.TP
 \fB\-I\fR <path>
 Add to include directories
 .TP
 \fB\-Is\fR <path,...>
-(same as above, but accepts a comma\-separated list)
+(same as above, but accepts a (comma or blank)\-separated list)
 .TP
 \fB\-X\fR <path>
 Directory to ignore
@@ -146,6 +158,24 @@ Link to this ocaml library
 \fB\-libs\fR <flag,...>
 (idem)
 .TP
+\fB\-mod\fR <module>
+Link to this ocaml module
+.TP
+\fB\-mods\fR <module,...>
+(idem)
+.TP
+\fB\-pkg\fR <package>
+Link to this ocaml findlib package
+.TP
+\fB\-pkgs\fR <package,...>
+(idem)
+.TP
+\fB\-package\fR <package>
+(idem)
+.TP
+\fB\-syntax\fR <syntax>
+Specify syntax using ocamlfind
+.TP
 \fB\-lflag\fR <flag>
 Add to ocamlc link flags
 .TP
@@ -156,6 +186,12 @@ Add to ocamlc link flags
 Add to ocamlc compile flags
 .TP
 \fB\-cflags\fR <flag,...>
+(idem)
+.TP
+\fB\-docflag\fR <flag>
+Add to ocamldoc flags
+.TP
+\fB\-docflags\fR <flag,...>
 (idem)
 .TP
 \fB\-yaccflag\fR <flag>
@@ -182,6 +218,18 @@ Add to default tags
 \fB\-tags\fR <tag,...>
 (idem)
 .TP
+\fB\-plugin\-tag\fR <tag>
+Use this tag when compiling the myocamlbuild.ml plugin
+.TP
+\fB\-plugin\-tags\fR <tag,...>
+(idem)
+.TP
+\fB\-tag\-line\fR <tag>
+Use this line of tags (as in _tags)
+.TP
+\fB\-show\-tags\fR <path>
+Show tags that applies on that pathname
+.TP
 \fB\-ignore\fR <module,...>
 Don't try to build these modules
 .TP
@@ -200,14 +248,23 @@ Don't build myocamlbuild.ml
 \fB\-no\-stdlib\fR
 Don't ignore stdlib modules
 .TP
+\fB\-dont\-catch\-errors\fR
+Don't catch and display exceptions (useful to display the call stack)
+.TP
 \fB\-just\-plugin\fR
 Just build myocamlbuild.ml
 .TP
 \fB\-byte\-plugin\fR
 Don't use a native plugin but bytecode
 .TP
-\fB\-no-sanitize\fR
-Do not enforce sanity\-check rules
+\fB\-plugin\-option\fR
+Use the option only when plugin is run
+.TP
+\fB\-sanitization\-script\fR
+Change the file name for the generated sanitization script
+.TP
+\fB\-no\-sanitize\fR
+Do not generate sanitization script
 .TP
 \fB\-nothing\-should\-be\-rebuilt\fR
 Fail if something needs to be rebuilt
@@ -215,17 +272,38 @@ Fail if something needs to be rebuilt
 \fB\-classic\-display\fR
 Display executed commands the old\-fashioned way
 .TP
+\fB\-use\-menhir\fR
+Use menhir instead of ocamlyacc
+.TP
+\fB\-use\-jocaml\fR
+Use jocaml compilers instead of ocaml ones
+.TP
+\fB\-use\-ocamlfind\fR
+Use the 'ocamlfind' wrapper instead of using Findlib directly to determine command\-line arguments. Use \-no\-ocamlfind to disable.
+.TP
+\fB\-no\-ocamlfind\fR
+Don't use ocamlfind.
+.TP
+\fB\-toolchain\fR <toolchain>
+Set the Findlib toolchain to use.
+.TP
 \fB\-j\fR <N>
 Allow N jobs at once (0 for unlimited)
 .TP
 \fB\-build\-dir\fR <path>
-Set build directory
+Set build directory (implies no\-links)
 .TP
-\fB\-install\-dir\fR <path>
-Set the install directory
+\fB\-install\-lib\-dir\fR <path>
+Set the install library directory
+.TP
+\fB\-install\-bin\-dir\fR <path>
+Set the install binary directory
 .TP
 \fB\-where\fR
-Display the install directory
+Display the install library directory
+.TP
+\fB\-which\fR <command>
+Display path to the tool command
 .TP
 \fB\-ocamlc\fR <command>
 Set the OCaml bytecode compiler
@@ -242,8 +320,17 @@ Set the OCaml documentation generator
 \fB\-ocamlyacc\fR <command>
 Set the ocamlyacc tool
 .TP
+\fB\-menhir\fR <command>
+Set the menhir tool (use it after \-use\-menhir)
+.TP
 \fB\-ocamllex\fR <command>
 Set the ocamllex tool
+.TP
+\fB\-ocamlmklib\fR <command>
+Set the ocamlmklib tool
+.TP
+\fB\-ocamlmktop\fR <command>
+Set the ocamlmktop tool
 .TP
 \fB\-ocamlrun\fR <command>
 Set the ocamlrun tool
@@ -252,12 +339,12 @@ Set the ocamlrun tool
 Stop argument processing, remaining arguments are given to the user program
 .TP
 \fB\-help\fR
-Display the list of options
+Display this list of options
 .TP
 \fB\-\-help\fR
-Display the list of options
-.PP
+Display this list of options
 
+.PP
 .SH SEE ALSO
 The
 .BR ocamlbuild

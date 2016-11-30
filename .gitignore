@@ -26,3 +26,6 @@ Makefile.config
 /src/glob_lexer.ml
 /ocamlbuild.byte
 /ocamlbuild.native
+
+/man/ocamlbuild.1
+/man/options_man.byte
