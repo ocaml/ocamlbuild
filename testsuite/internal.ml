@@ -380,6 +380,15 @@ CAMLprim value hello_world(value unit)
   ]
   ~targets:("libtest.a", []) ();;
 
+let () = test "JustNoPlugin"
+    ~description:"(ocamlbuild -just-plugin) should do nothing when no plugin is there"
+    ~options:[`no_ocamlfind; `just_plugin]
+    ~tree:[T.f "test.ml" ~content:{|print_endline "Hellow World"|};]
+    (* we check that the target is *not* built *)
+    ~matching:[_build [M.Not (M.f "test.cmo")]]
+    ~targets:("test.cmo", [])
+    ();;
+
 let () = test "MldylibOverridesMllib"
   ~description:"Check that the rule producing a cmxs from a .mllib only \
                 triggers if there is no .mldylib"

@@ -26,6 +26,9 @@ NEXT_RELEASE:
 - #127: install ocamlbuild's man pages, missing since 4.02
   (Gabriel Scherer)
 
+- #130: make sure that -just-plugin always stops after the plugin-build phase
+  (Gabriel Scherer, report by whitequark)
+
 - #132: add a rule producing .cmxs from .mllib files.
   Previously, .mllib files would only produce .cm{x,}a files, and .cmxs were
   only produced by a separate (and in most cases redundant) .mldylib file.
