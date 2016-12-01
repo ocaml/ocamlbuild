@@ -380,4 +380,23 @@ CAMLprim value hello_world(value unit)
   ]
   ~targets:("libtest.a", []) ();;
 
+let () = test "MldylibOverridesMllib"
+  ~description:"Check that the rule producing a cmxs from a .mllib only \
+                triggers if there is no .mldylib"
+(*
+   GPR #132 (requested by issue #131) adds a new rule which allows producing a
+   .cmxs from a .mllib, where previously this was only possible by providing
+   a separate .mldylib file. This test ensures that the added rule behaves
+   conservatively, i.e. only triggers when no .mldylib file can be found.
+*)
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~matching:[_build [M.Not (M.f "bar.cmi")]]
+  ~tree:[
+    T.f "foo.ml";
+    T.f "bar.ml";
+    T.f "mylib.mllib" ~content:"Foo\nBar";
+    T.f "mylib.mldylib" ~content:"Foo";
+  ]
+  ~targets:("mylib.cmxs", []) ();;
+
 run ~root:"_test_internal";;
