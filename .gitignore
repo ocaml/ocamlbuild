@@ -28,4 +28,5 @@ Makefile.config
 /ocamlbuild.native
 
 /man/ocamlbuild.1
+/man/ocamlbuild.options.1
 /man/options_man.byte
