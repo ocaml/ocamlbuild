@@ -26,6 +26,13 @@ NEXT_RELEASE:
 - #127: install ocamlbuild's man pages, missing since 4.02
   (Gabriel Scherer)
 
+- #132: add a rule producing .cmxs from .mllib files.
+  Previously, .mllib files would only produce .cm{x,}a files, and .cmxs were
+  only produced by a separate (and in most cases redundant) .mldylib file.
+  This rule allows to produce .cmxs from .mllib files; .mldylib files
+  still take precedence when they exist.
+  (Armaël Guéneau, requested by Daniel Bünzli)
+
 0.9.3 (6 Oct 2016):
 -------------------
 
