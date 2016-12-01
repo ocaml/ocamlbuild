@@ -11,3 +11,8 @@ The organization of tests is the following:
 - external.ml contains the tests that rely on other findlib packages
   or external tools to run. Each test will only run if the findlib
   package it depends on is present.
+
+
+To execute a test file (e.g. internal.ml), run from this directory:
+
+    OCAMLBUILD=$(pwd)/../ocamlbuild.byte ocaml internal.ml
