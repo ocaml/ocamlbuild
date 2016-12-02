@@ -399,4 +399,28 @@ let () = test "MldylibOverridesMllib"
   ]
   ~targets:("mylib.cmxs", []) ();;
 
+let () = test "MldylibOverridesCmx"
+  ~description:"Check that the rule producing foo.cmxs from foo.mldylib \
+                takes precedence over the one that uses foo.cmx"
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~matching:[_build [M.f "bar.cmi"]]
+  ~tree:[
+    T.f "foo.ml";
+    T.f "bar.ml";
+    T.f "foo.mldylib" ~content:"Foo\nBar";
+  ]
+  ~targets:("foo.cmx", ["foo.cmxs"]) ();;
+
+let () = test "MllibOverridesCmx"
+  ~description:"Check that the rule producing foo.cmxs from foo.mllib \
+                takes precedence over the one that uses foo.cmx"
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~matching:[_build [M.f "bar.cmi"]]
+  ~tree:[
+    T.f "foo.ml";
+    T.f "bar.ml";
+    T.f "foo.mllib" ~content:"Foo\nBar";
+  ]
+  ~targets:("foo.cmx", ["foo.cmxs"]) ();;
+
 run ~root:"_test_internal";;
