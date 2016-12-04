@@ -364,7 +364,7 @@ rule "ocaml: mldylib & cmx* & o* -> cmxs & so"
   (Ocaml_compiler.native_shared_library_link_mldylib "%.mldylib" "%.cmxs");;
 
 rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxs & p.so"
-  ~prods:["%.cmxs"; x_p_dll]
+  ~prods:["%.p.cmxs"; x_p_dll]
   ~dep:"%.mllib"
   (Ocaml_compiler.native_profile_shared_library_link_mldylib "%.mllib" "%.cmxs");;
 
