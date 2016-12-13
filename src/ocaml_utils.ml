@@ -34,14 +34,14 @@ end
 let flag_and_dep = Flags.flag_and_dep
 let pflag_and_dep = Flags.pflag_and_dep ?doc_param:None
 
-let module_name_of_filename f = String.capitalize (Pathname.remove_extensions f)
+let module_name_of_filename f = String.capitalize_ascii (Pathname.remove_extensions f)
 let module_name_of_pathname x =
   module_name_of_filename (Pathname.to_string (Pathname.basename x))
 
 let ignore_stdlib x =
   if !Options.nostdlib then false
   else
-    let x' = !*stdlib_dir/((String.uncapitalize x)-.-"cmi") in
+    let x' = !*stdlib_dir/((String.uncapitalize_ascii x)-.-"cmi") in
     Pathname.exists x'
 
 let non_dependencies = ref []
@@ -63,8 +63,8 @@ let expand_module =
   memo3 (fun include_dirs module_name exts ->
     let dirname = Pathname.dirname module_name in
     let basename = Pathname.basename module_name in
-    let module_name_cap = dirname/(String.capitalize basename) in
-    let module_name_uncap = dirname/(String.uncapitalize basename) in
+    let module_name_cap = dirname/(String.capitalize_ascii basename) in
+    let module_name_uncap = dirname/(String.uncapitalize_ascii basename) in
     List.fold_right begin fun include_dir ->
       List.fold_right begin fun ext acc ->
         include_dir/(module_name_uncap-.-ext) ::
