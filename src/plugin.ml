@@ -28,17 +28,30 @@ let plugin                = "myocamlbuild"
 let plugin_file           = plugin^".ml"
 let plugin_config_file    = plugin^"_config.ml"
 let plugin_config_file_interface = plugin^"_config.mli"
-let we_need_a_plugin ()      = !Options.plugin && sys_file_exists plugin_file
-let we_have_a_plugin ()      = sys_file_exists ((!Options.build_dir/plugin)^(!Options.exe))
-let we_have_a_config_file () = sys_file_exists plugin_config_file
-let we_have_a_config_file_interface () = sys_file_exists plugin_config_file_interface
+let we_have_a_plugin_source () =
+  sys_file_exists plugin_file
+let we_need_a_plugin_binary () =
+  !Options.plugin && we_have_a_plugin_source ()
+let we_have_a_plugin_binary () =
+  sys_file_exists ((!Options.build_dir/plugin)^(!Options.exe))
+let we_have_a_config_file () =
+  sys_file_exists plugin_config_file
+let we_have_a_config_file_interface () =
+  sys_file_exists plugin_config_file_interface
+
+(* exported through plugin.mli *)
+let we_need_a_plugin () = we_need_a_plugin_binary ()
 
 module Make(U:sig end) =
   struct
-    let we_need_a_plugin = we_need_a_plugin ()
-    let we_have_a_plugin = we_have_a_plugin ()
+    let we_need_a_plugin_binary = we_need_a_plugin_binary ()
+    let we_have_a_plugin_source = we_have_a_plugin_source ()
     let we_have_a_config_file = we_have_a_config_file ()
     let we_have_a_config_file_interface = we_have_a_config_file_interface ()
+    let we_have_a_plugin_binary () =
+      (* this remains a function as it will change during the build *)
+      we_have_a_plugin_binary ()
+
     let up_to_date_or_copy fn =
       let fn' = !Options.build_dir/fn in
       Pathname.exists fn &&
@@ -50,11 +63,11 @@ module Make(U:sig end) =
           end
         end
 
-    let rebuild_plugin_if_needed () =
+    let rebuild_plugin () =
       let a = up_to_date_or_copy plugin_file in
       let b = (not we_have_a_config_file) || up_to_date_or_copy plugin_config_file in
       let c = (not we_have_a_config_file_interface) || up_to_date_or_copy plugin_config_file_interface in
-      if a && b && c && we_have_a_plugin then
+      if a && b && c && we_have_a_plugin_binary () then
         () (* Up to date *)
            (* FIXME: remove ocamlbuild_config.ml in _build/ if removed in parent *)
       else begin
@@ -229,35 +242,52 @@ module Make(U:sig end) =
         Shell.chdir !Options.build_dir;
         Shell.rm_f (plugin^(!Options.exe));
         Command.execute cmd;
-        if !Options.just_plugin then begin
-          Log.finish ();
-          raise Exit_OK;
-        end;
       end
 
-    let execute_plugin_if_needed () =
-      if we_need_a_plugin then
-        begin
-          rebuild_plugin_if_needed ();
-          Shell.chdir Pathname.pwd;
-          let runner = if !Options.native_plugin then N else !Options.ocamlrun in
-          let argv = List.tl (Array.to_list Sys.argv) in
-          let passed_argv = List.filter (fun s -> s <> "-plugin-option") argv in
-          let spec = S[runner; P(!Options.build_dir/plugin^(!Options.exe));
-                       A"-no-plugin"; atomize passed_argv] in
-          Log.finish ();
-          let rc = sys_command (Command.string_of_command_spec spec) in
-          raise (Exit_silently_with_code rc);
+    let execute_plugin () =
+      Shell.chdir Pathname.pwd;
+      let runner = if !Options.native_plugin then N else !Options.ocamlrun in
+      let argv = List.tl (Array.to_list Sys.argv) in
+      let passed_argv = List.filter (fun s -> s <> "-plugin-option") argv in
+      let spec = S[runner; P(!Options.build_dir/plugin^(!Options.exe));
+                   A"-no-plugin"; atomize passed_argv] in
+      Log.finish ();
+      let rc = sys_command (Command.string_of_command_spec spec) in
+      raise (Exit_silently_with_code rc)
+
+    let main () =
+      if we_need_a_plugin_binary then begin
+        rebuild_plugin ();
+        if not (we_have_a_plugin_binary ()) then begin
+          Log.eprintf "Error: we failed to build the plugin";
+          raise (Exit_with_code Exit_codes.rc_build_error);
         end
-      else if not (sys_file_exists plugin_file) && !Options.plugin_tags <> [] then
+      end;
+      (* if -just-plugin is passed by there is no plugin, nothing
+         happens, and we decided not to emit a warning: this lets
+         people that write ocamlbuild-driver scripts always run
+         a first phase (ocamlbuild -just-plugin ...)  if they want to,
+         without having to test for the existence of a plugin
+         first. *)
+      if !Options.just_plugin then begin
+        Log.finish ();
+        raise Exit_OK;
+      end;
+      (* On the contrary, not having a plugin yet passing -plugin-tags
+         is probably caused by a user error that we should warn about;
+         for example people may incorrectly think that -plugin-tag
+         foo.ocamlbuild will enable foo's rules: they have to
+         explicitly use Foo in their plugin and it's best to warn if
+         they don't. *)
+      if not we_have_a_plugin_source && !Options.plugin_tags <> [] then
         eprintf "Warning: option -plugin-tag(s) has no effect \
-                 in absence of plugin file %S" plugin_file
-      else
-        ()
+                 in absence of plugin file %S" plugin_file;
+      if we_need_a_plugin_binary && we_have_a_plugin_binary () then
+        execute_plugin ()
   end
 ;;
 
 let execute_plugin_if_needed () =
   let module P = Make(struct end) in
-  P.execute_plugin_if_needed ()
+  P.main ()
 ;;
