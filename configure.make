@@ -59,6 +59,8 @@ OCAML_NATIVE_TOOLS ?= $(OCAML_NATIVE)
 all: Makefile.config src/ocamlbuild_config.ml
 
 clean:
+
+distclean:
 	rm -f Makefile.config src/ocamlbuild_config.ml
 
 Makefile.config:

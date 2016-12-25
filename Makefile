@@ -120,6 +120,8 @@ native: ocamlbuild.native ocamlbuildlib.cmxa
 
 allopt: all # compatibility alias
 
+distclean:: clean
+
 # The executables
 
 ocamlbuild.byte: ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
@@ -184,6 +186,9 @@ Makefile.config src/ocamlbuild_config.ml:
 clean::
 	$(MAKE) -f configure.make clean
 
+distclean::
+	$(MAKE) -f configure.make distclean
+
 beforedepend:: src/ocamlbuild_config.ml
 
 # man page
@@ -197,13 +202,20 @@ man/ocamlbuild.options.1: man/options_man.byte
 	./man/options_man.byte > man/ocamlbuild.options.1
 
 clean::
-	rm -f man/ocamlbuild.options.1 man/ocamlbuild.1
+	rm -f man/ocamlbuild.options.1
+
+distclean::
+	rm -f man/ocamlbuild.1
 
 man/options_man.byte: ocamlbuild_pack.cmo
 	$(OCAMLC) ocamlbuild_pack.cmo -I src man/options_man.ml -o man/options_man.byte
 
 clean::
 	rm -f man/options_man.cm*
+	rm -f man/options_man.byte
+ifdef EXT_OBJ
+	rm -f man/options_man$(EXT_OBJ)
+endif
 
 # Installation
 
@@ -388,15 +400,17 @@ endif
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
-	rm -f src/*.cm? *.cm*
+	rm -f src/*.cm* *.cm*
 ifdef EXT_OBJ
 	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
 endif
 ifdef EXT_LIB
 	rm -f src/*$(EXT_LIB) *$(EXT_LIB)
 endif
-	rm -f *.byte *.native
 	rm -f test/test2/vivi.ml
+
+distclean::
+	rm -f ocamlbuild.byte ocamlbuild.native
 	rm -f ocamlbuild.install
 
 # The dependencies
