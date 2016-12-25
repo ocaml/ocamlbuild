@@ -11,8 +11,15 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.10.0 (25 Dec 2016):
+---------------------
+
+OCamlbuild 0.10.0 introduces a minor change to the way `.cmxs` files
+are produced when no `.mldylib` file is absent: it will now use the
+exact same semantics as `.cmxa` and `.mllib` file -- in particular, it
+should not be necessary anymore to have identical
+`foo.{mllib,mldylib}` files, only `foo.mllib` should suffice. See the
+detailed Changelog for details.
 
 - #111: added "nostdlib" flag for corresponding ocaml{c,opt} options
   (Thomas Wood)

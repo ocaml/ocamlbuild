@@ -44,13 +44,12 @@ current opam file satisfies best practices.
 
 The 'Changes' file at the root of our repository serves as a user- and
 contributors-facing memory of the project evolution. The section
-concerning the current development version is marked NEXT_RELEASE;
-before the release.
+concerning the current development version is marked NEXT_RELEASE.
 
 ==== Changes entries ====
 
 Check the detailed changelog to make sure that no important feature is
-missing, and that compatibility-breaking changes are probably marked,
+missing, that compatibility-breaking changes are probably marked,
 and that existing change entries are descriptive enough.
 
 Changes entries should:
