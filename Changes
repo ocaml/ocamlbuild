@@ -18,6 +18,7 @@ NEXT_RELEASE:
   (Thomas Wood)
 
 - #115: add `node_modules` to the list of directories ignored by default
+  (.svn/, CVS/, .bzr/, .hg/, .git/, _darcs/, node_modules/)
   (Yunxing Dai)
 
 - #125: added "-toolchain" option for corresponding ocamlfind option.
