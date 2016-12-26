@@ -700,6 +700,7 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `no_alias_deps`
 * `no_float_const_prop`
 * `noassert`
+* `noautolink` (since NEXT_RELEASE)
 * `nolabels`
 * `nopervasives`
 * `nostdlib` (since 0.9.4)
