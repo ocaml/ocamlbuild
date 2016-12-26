@@ -26,6 +26,7 @@ OCAMLBUILD_LIBDIR ?= \
        $(LIBDIR))
 OCAMLBUILD_MANDIR ?= \
   $(or $(shell opam config var man 2>/dev/null),\
+       $(MANDIR),\
        $(PREFIX)/man)
 
 # It is important to distinguish OCAML_LIBDIR, which points to the
