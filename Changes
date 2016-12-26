@@ -11,6 +11,12 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
+NEXT_RELEASE:
+-------------
+
+- "noautolink" tag for ocaml{c,opt}
+  (Gabriel Scherer)
+
 0.10.1 (26 Dec 2016):
 ---------------------
 

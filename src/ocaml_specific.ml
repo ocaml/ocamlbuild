@@ -866,6 +866,7 @@ flag ["ocaml"; "rectypes"; "pack"] (A "-rectypes");;
 flag ["ocaml"; "principal"; "compile"] (A "-principal");;
 flag ["ocaml"; "principal"; "infer_interface"] (A "-principal");;
 flag ["ocaml"; "linkall"; "link"] (A "-linkall");;
+flag ["ocaml"; "noautolink"; "link"] (A "-noautolink");;
 flag ["ocaml"; "link"; "profile"; "native"] (A "-p");;
 flag ["ocaml"; "link"; "program"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "link"; "library"; "custom"; "byte"] (A "-custom");;
