@@ -152,6 +152,18 @@ git push
 git push --tags
 ----
 
+==== Post-release changes ====
+
+Create an empty Changes section for the next release,
+
+```
+NEXT_RELEASE:
+-------------
+```
+
+Also put NEXT_RELEASE in your VERSION and META file. This will prevent
+you from forgetting to update them at the next release time.
+
 == Making the release visible to our users ==
 
 [[opam-repo]]
