@@ -322,6 +322,34 @@ rule "ocaml C stubs: (o|obj) -> clib"
         object file only."
   (C_tools.make_single_library "%(path)%(libname)" "%(path)lib%(libname).clib");;
 
+(** Static libraries (.cmxa) and (.cmxs):
+
+    Historically ocamlbuild had a bit too many .cmxs-related rules for
+    its own good. There were rules to build a .cmxs from a .mldylib,
+    but also from a .cmxa, and from a .cmx. In particular, the latter
+    two options conflicted with the rule to build a .cmxa from a .cmx,
+    giving two distinct ways to build a .cmxs from a .cmx, giving two
+    different results.
+
+    The new design is as follows:
+
+    - First we declare, with the highest priority, the *explicit*
+      rules, the one where the users expresses its intent.
+      + .mllib -> .cmxa
+      + .mldylib -> .cmxs
+    - Then we declare, with lower priority, the *implicit* rules
+      that are given for the user convenience. We ask that these
+      rules do not conflict with each other by creating distinct
+      paths to build the same target.
+      + .cmx -> .cmxa (to mirror the bytecode rule .cmo -> .cma)
+      + .cmxa -> .cmxs
+
+    In particular, we had to remove the (.cmx -> .cmxs) rules, which
+    conflicts with the two other low-priority rules. The user willing
+    to recover this semantics should write a .mldylib rule with
+    a single module name in it.
+*)
+
 rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxa & p.a"
   ~prods:["%.p.cmxa"; x_p_a]
   ~dep:"%.mllib"
@@ -337,6 +365,18 @@ rule "ocaml: mllib & cmx* & o* -> cmxa & a"
         see the rules producing a .cmxs from a .mllib or a .mldylib."
   (Ocaml_compiler.native_library_link_mllib "%.mllib" "%.cmxa");;
 
+rule "ocaml: mldylib & p.cmx* & p.o* -> p.cmxs & p.so"
+  ~prods:["%.p.cmxs"; x_p_dll]
+  ~dep:"%.mldylib"
+  (Ocaml_compiler.native_profile_shared_library_link_mldylib "%.mldylib" "%.p.cmxs");;
+
+rule "ocaml: mldylib & cmx* & o* -> cmxs & so"
+  ~prods:["%.cmxs"; x_dll]
+  ~dep:"%.mldylib"
+  ~doc:"Builds a .cmxs (native archive for dynamic linking) containing exactly \
+        the modules listed in the corresponding .mldylib file."
+  (Ocaml_compiler.native_shared_library_link_mldylib "%.mldylib" "%.cmxs");;
+
 rule "ocaml: p.cmx & p.o -> p.cmxa & p.a"
   ~prods:["%.p.cmxa"; x_p_a]
   ~deps:["%.p.cmx"; x_p_o]
@@ -351,71 +391,17 @@ rule "ocaml: cmx & o -> cmxa & a"
         transitivitely."
   (Ocaml_compiler.native_library_link "%.cmx" "%.cmxa");;
 
-rule "ocaml: mldylib & p.cmx* & p.o* -> p.cmxs & p.so"
-  ~prods:["%.p.cmxs"; x_p_dll]
-  ~dep:"%.mldylib"
-  (Ocaml_compiler.native_profile_shared_library_link_mldylib "%.mldylib" "%.p.cmxs");;
-
-rule "ocaml: mldylib & cmx* & o* -> cmxs & so"
-  ~prods:["%.cmxs"; x_dll]
-  ~dep:"%.mldylib"
-  ~doc:"Builds a .cmxs (native archive for dynamic linking) containing exactly \
-        the modules listed in the corresponding .mldylib file."
-  (Ocaml_compiler.native_shared_library_link_mldylib "%.mldylib" "%.cmxs");;
-
-rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxs & p.so"
-  ~prods:["%.p.cmxs"; x_p_dll]
-  ~dep:"%.mllib"
-  (Ocaml_compiler.native_profile_shared_library_link_mldylib "%.mllib" "%.cmxs");;
-
-rule "ocaml: mllib & cmx* & o* -> cmxs & so"
-  ~prods:["%.cmxs"; x_dll]
-  ~dep:"%.mllib"
-  ~doc:"Builds a .cmxs containing exactly the modules listed in the \
-        corresponding .mllib file. This rule triggers only when no .mldylib \
-        could be found."
-  (Ocaml_compiler.native_shared_library_link_mldylib "%.mllib" "%.cmxs");;
-
-rule "ocaml: p.cmx & p.o -> p.cmxs & p.so"
-  ~prods:["%.p.cmxs"; x_p_dll]
-  ~deps:["%.p.cmx"; x_p_o]
-  (Ocaml_compiler.native_shared_library_link ~tags:["profile"] "%.p.cmx" "%.p.cmxs");;
-
 rule "ocaml: p.cmxa & p.a -> p.cmxs & p.so"
   ~prods:["%.p.cmxs"; x_p_dll]
   ~deps:["%.p.cmxa"; x_p_a]
   (Ocaml_compiler.native_shared_library_link ~tags:["profile";"linkall"] "%.p.cmxa" "%.p.cmxs");;
 
-rule "ocaml: cmx & o -> cmxs"
-  ~prods:["%.cmxs"]
-  ~deps:["%.cmx"; x_o]
-  ~doc:"If you have not created a foo.mldylib or foo.mllib file for a \
-        compilation unit foo.cmx, the target foo.cmxs will produce a .cmxs \
-        file containing exactly the .cmx.
-
-\
-        Note: this differs from the behavior of .cmxa targets \
-        with no .mllib, as the dependencies of the modules will not be \
-        included: generally, the modules compiled as dynamic plugins depend \
-        on library modules that will be already linked in the executable, \
-        and that the .cmxs should therefore not duplicate."
-  (Ocaml_compiler.native_shared_library_link "%.cmx" "%.cmxs");;
-
-rule "ocaml: cmx & o -> cmxs & so"
-  ~prods:["%.cmxs"; x_dll]
-  ~deps:["%.cmx"; x_o]
-  (Ocaml_compiler.native_shared_library_link "%.cmx" "%.cmxs");;
-
 rule "ocaml: cmxa & a -> cmxs & so"
   ~prods:["%.cmxs"; x_dll]
   ~deps:["%.cmxa"; x_a]
   ~doc:"This rule allows to build a .cmxs from a .cmxa, to avoid having \
-        to duplicate a .mllib file into a .mldylib.
-
-\
-        Another way of avoiding duplication is by producing the .cmxs directly \
-        from the .mllib file, using the corresponding rule."
-  (Ocaml_compiler.native_shared_library_link ~tags:["linkall"] "%.cmxa" "%.cmxs");;
+        to duplicate a .mllib file into a .mldylib."
+  (Ocaml_compiler.native_shared_library_link ~tags:["linkall";"foo"] "%.cmxa" "%.cmxs");;
 
 rule "ocaml dependencies ml"
   ~prod:"%.ml.depends"
