@@ -14,6 +14,10 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+- #124: do not explicitly pass -shared when building shared libraries;
+  let the compiler decide what to build.
+  (whitequark)
+
 0.10.0 (25 Dec 2016):
 ---------------------
 
