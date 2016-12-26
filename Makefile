@@ -14,9 +14,6 @@
 # see 'check-if-preinstalled' target
 CHECK_IF_PREINSTALLED ?= true
 
-OCAMLBUILD_LIBDIR:=$(LIBDIR)
-OCAMLBUILD_BINDIR:=$(BINDIR)
-
 # this configuration file is generated from configure.make
 include Makefile.config
 
