@@ -30,12 +30,40 @@ NEXT_RELEASE:
 - #130: make sure that -just-plugin always stops after the plugin-build phase
   (Gabriel Scherer, report by whitequark)
 
-- #132: add a rule producing .cmxs from .mllib files.
-  Previously, .mllib files would only produce .cm{x,}a files, and .cmxs were
-  only produced by a separate (and in most cases redundant) .mldylib file.
-  This rule allows to produce .cmxs from .mllib files; .mldylib files
-  still take precedence when they exist.
-  (Armaël Guéneau, requested by Daniel Bünzli)
+* #132: remove the rule ".cmx -> .cmxs"
+  Previously, there was a ".cmx -> .cmxa" rule that would
+  pull a module and its dependencies in a .cmxa, and a separate
+  ".cmx -> .cmxs" rule that would pull only a module as a .cmxs.
+
+  The latter is a reasonable default choice, the idea being that a module's
+  dependencies may often be statically linked with the program instead of being
+  dynamically linked. But it conflicts with the presence of a rule ".cmxa -> .cmxs"
+  as soon as the library has the same name as one of the modules it contains.
+
+  The reason why the rule ".cmxa -> .cmxs" matter is that it can be composed
+  with the rule ".mllib -> .cmxa" to build .cmxs files from .mllib files, without
+  having to copy each .mllib file into a separate .mldylib file.
+
+  In other terms, the previous behaviour would, by default (in absence
+  of .mldylib file who always takes priority), only link the module in
+  the .cmxs file, and people wishing otherwise would have to write
+  a list of modules in a .mldylib file. The new behavior will, by
+  default, take the .mllib file or the module dependencies (as for
+  .cmxa) to build a .cmxs file, and people wishing otherwise will have
+  to write just the module name in a .mldylib file.
+
+  It is unclear whether this change will break some projects on which
+  users relied on the previous semantics. It seems equally likely that
+  the previous semantics, when it applied, was a source of bugs
+  (the .cmxs files didn't have the expected modules) that would not be
+  discovered by people not testing dynamic linking. Such bugs have
+  been found and fixed in the following cases:
+
+  - <https://github.com/dbuenzli/uucp/pull/9>
+  - <https://github.com/dbuenzli/uunf/pull/4>
+  - <https://github.com/dbuenzli/uuseg/pull/4>
+
+  (Gabriel Scherer, Armaël Guéneau, Daniel Bünzli)
 
 0.9.3 (6 Oct 2016):
 -------------------
