@@ -11,8 +11,8 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.10.1 (26 Dec 2016):
+---------------------
 
 - #124, #136: do not explicitly pass -shared when building shared libraries;
   let the compiler decide what to build.
