@@ -17,6 +17,10 @@ NEXT_RELEASE:
 - "noautolink" tag for ocaml{c,opt}
   (Gabriel Scherer)
 
+- fix a regression introduced by .cmxs change of 0.10.0
+  for .cmxa files with C stubs or linking arguments
+  (Daniel Bünzli)
+
 0.10.1 (26 Dec 2016):
 ---------------------
 

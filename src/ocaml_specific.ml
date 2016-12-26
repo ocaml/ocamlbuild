@@ -394,14 +394,14 @@ rule "ocaml: cmx & o -> cmxa & a"
 rule "ocaml: p.cmxa & p.a -> p.cmxs & p.so"
   ~prods:["%.p.cmxs"; x_p_dll]
   ~deps:["%.p.cmxa"; x_p_a]
-  (Ocaml_compiler.native_shared_library_link ~tags:["profile";"linkall"] "%.p.cmxa" "%.p.cmxs");;
+  (Ocaml_compiler.native_shared_library_link ~tags:["profile";"linkall"; "noautolink"] "%.p.cmxa" "%.p.cmxs");;
 
 rule "ocaml: cmxa & a -> cmxs & so"
   ~prods:["%.cmxs"; x_dll]
   ~deps:["%.cmxa"; x_a]
   ~doc:"This rule allows to build a .cmxs from a .cmxa, to avoid having \
         to duplicate a .mllib file into a .mldylib."
-  (Ocaml_compiler.native_shared_library_link ~tags:["linkall";"foo"] "%.cmxa" "%.cmxs");;
+  (Ocaml_compiler.native_shared_library_link ~tags:["linkall"; "noautolink"] "%.cmxa" "%.cmxs");;
 
 rule "ocaml dependencies ml"
   ~prod:"%.ml.depends"
