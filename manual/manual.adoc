@@ -333,9 +333,6 @@ or, for a native archive
 ocamlbuild 'mylib.cmxa'
 ----
 
-// TODO: Rephrase. This sentence is very unclear.
-Producing a shared native library `.cmxs` is also supported by a different form of file with the same syntax, `foo.mldylib`.
-
 Similarly, if you want to invoke `ocamldoc` to document your program, you should list the modules you want documented in a `.odocl` file. If you name it `mydoc.odocl` for example, you can then invoke:
 
 [source,sh]
@@ -509,12 +506,10 @@ Again, note that `myocamlbuild` plugins may add new targets and rules. To see th
 There is no corresponding concept of bytecode plugin archive, as `.cma` files (built from `.mllib` files) support for static and dynamic linking.
 
 | `.cmxs`
-| The preferred way to build a plugin archive is to list its content in a `.mldylib` file. In absence of `foo.mldylib`, building `foo.cmxs` will either
-+
-* build `foo.cmxa` and copy its content into a `.cmxs` file (in particular this means that a `.cmxs` can be created from a `.mllib` file), or
-* build `foo.cmx` and create a plugin archive containing exactly `foo.cmx`.
- This differs from the rule for `.cm{,x}a` files (whose archive include the dependencies of the module `Foo`), in order to avoid dynamically linking the same modules several times.
+| The preferred way to build a plugin archive is to list its content in a `.mldylib` file.
+If a `foo.mldylib` is absent, the modules contained in `foo.cmxa` will be reused instead. In particular, one can transitively create a `foo.cmxs` from a `foo.mllib` file.
 
+WARNING: Before OCamlbuild 0.10.0, in absence of a `foo.mldylib` file, in the specific case where a module `Foo` existed, a `.cmxs` file would be built with only `foo.cmx` inside. If you ure users have older OCamlbuild versions, creating an explicit `foo.mldylib` file may be the safest choice.
 | `.itarget` +
  `.otarget`
 | Building `foo.otarget` (`o` for Output target) requests the build of the targets listed (one per line) in the corresponding `foo.itarget` file (`i` for Input list of targets).
