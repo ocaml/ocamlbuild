@@ -21,6 +21,9 @@ of the usual "- ".
 - #137, #138: fix the man/ installation for non-opam users
   (Adam Sampson and Gabriel Scherer)
 
+- fix `--version` output: 0.10.0 displays "0.9.3"...
+  (Gabriel Scherer)
+
 0.10.0 (25 Dec 2016):
 ---------------------
 
