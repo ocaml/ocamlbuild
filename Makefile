@@ -315,6 +315,7 @@ endif
 	echo >> ocamlbuild.install
 
 install-man:
+	mkdir -p $(INSTALL_MANDIR)/man1
 	cp man/ocamlbuild.1 $(INSTALL_MANDIR)/man1/ocamlbuild.1
 
 install-man-opam:
