@@ -232,13 +232,13 @@ rule "ocaml: cmo* -> byte.c"
   ~dep:"%.cmo"
   (Ocaml_compiler.byte_output_obj "%.cmo" x_byte_c);;
 
-rule "ocaml: cmo* -> byte.(so|dll|dylib)"
+rule "ocaml: cmo* -> byte.(so|dll)"
   ~prod:x_byte_so
   ~dep:"%.cmo"
-  ~doc:"The foo.byte.so target, or foo.byte.dll under Windows, \
-  or foo.byte.dylib under Mac OS X will produce a shared library file
-  by passing the -output-obj and -cclib -shared options \
-  to the OCaml compiler. See also foo.native.{so,dll,dylib}."
+  ~doc:"The foo.byte.so target, or foo.byte.dll under Windows \
+  and macOS will produce a shared library file by passing \
+  the -output-obj option to the OCaml compiler. \
+  See also foo.native.{so,dll}."
   (Ocaml_compiler.byte_output_shared "%.cmo" x_byte_so);;
 
 rule "ocaml: p.cmx* & p.o* -> p.native"
@@ -259,7 +259,7 @@ rule "ocaml: cmx* & o* -> native.(o|obj)"
   ~deps:["%.cmx"; x_o]
   (Ocaml_compiler.native_output_obj "%.cmx" x_native_o);;
 
-rule "ocaml: cmx* & o* -> native.(so|dll|dylib)"
+rule "ocaml: cmx* & o* -> native.(so|dll)"
   ~prod:x_native_so
   ~deps:["%.cmx"; x_o]
   (Ocaml_compiler.native_output_shared "%.cmx" x_native_so);;
@@ -848,7 +848,6 @@ flag ["c";     "debug"; "compile"] (A "-g");
 flag ["c";     "debug"; "link"] (A "-g");
 flag ["ocaml"; "link"; "native"; "output_obj"] (A"-output-obj");;
 flag ["ocaml"; "link"; "byte"; "output_obj"] (A"-output-obj");;
-flag ["ocaml"; "link"; "output_shared"] & (S[A"-cclib"; A"-shared"]);;
 flag ["ocaml"; "dtypes"; "compile"] (A "-dtypes");;
 flag ["ocaml"; "annot"; "compile"] (A "-annot");;
 flag ["ocaml"; "annot"; "pack"] (A "-annot");;
