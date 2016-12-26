@@ -18,8 +18,8 @@ NEXT_RELEASE:
   let the compiler decide what to build.
   (whitequark)
 
-- #137: do not assume that the man1/ repository exists in the OCaml prefix
-  (Adam Sampson)
+- #137, #138: fix the man/ installation for non-opam users
+  (Adam Sampson and Gabriel Scherer)
 
 0.10.0 (25 Dec 2016):
 ---------------------
