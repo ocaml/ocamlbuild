@@ -389,6 +389,29 @@ let () = test "JustNoPlugin"
     ~targets:("test.cmo", [])
     ();;
 
+let () = test "CmxsFromMllib1"
+  ~description:"Check that a .cmxs file can be built from a .mllib file"
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~tree:[
+    T.f "a.ml" ~content:"let a = 1\n";
+    T.f "b.ml" ~content:"let b = true\n";
+    T.f "foo.mllib" ~content:"A\nB\n";
+  ]
+  ~targets:("foo.cmxs", []) ();;
+
+let () = test "CmxsFromMllib2"
+  ~description:"Check that a .cmxs file can be built from a .mllib file,
+                even when one of the module has the same name as the library"
+  ~options:[`no_ocamlfind; `no_plugin]
+  ~tree:[
+    T.f "a.ml" ~content:"let a = 1\n";
+    T.f "b.ml" ~content:"let b = true\n";
+    T.f "foo.ml" ~content:"let foo = (A.a, B.b)\n";
+    T.f "foo.mllib" ~content:"A\nB\nFoo\n";
+  ]
+  ~targets:("foo.cmxs", []) ();;
+
+
 let () = test "MldylibOverridesMllib"
   ~description:"Check that the rule producing a cmxs from a .mllib only \
                 triggers if there is no .mldylib"
