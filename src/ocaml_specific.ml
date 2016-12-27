@@ -342,7 +342,8 @@ rule "ocaml C stubs: (o|obj) -> clib"
       rules do not conflict with each other by creating distinct
       paths to build the same target.
       + .cmx -> .cmxa (to mirror the bytecode rule .cmo -> .cma)
-      + .cmxa -> .cmxs
+      + .cmx -> .cmxs (to mirror the bytecode rule .cmo -> .cma)
+      + .mllib -> .cmxs
 
     In particular, we had to remove the (.cmx -> .cmxs) rules, which
     conflicts with the two other low-priority rules. The user willing
@@ -391,17 +392,31 @@ rule "ocaml: cmx & o -> cmxa & a"
         transitivitely."
   (Ocaml_compiler.native_library_link "%.cmx" "%.cmxa");;
 
-rule "ocaml: p.cmxa & p.a -> p.cmxs & p.so"
-  ~prods:["%.p.cmxs"; x_p_dll]
-  ~deps:["%.p.cmxa"; x_p_a]
-  (Ocaml_compiler.native_shared_library_link ~tags:["profile";"linkall"] "%.p.cmxa" "%.p.cmxs");;
+rule "ocaml: mllib & p.cmx* & p.o* -> p.cmxs & p.so"
+  ~prods:["%.cmxs"; x_p_dll]
+  ~dep:"%.mllib"
+  (Ocaml_compiler.native_profile_shared_library_link_mldylib "%.mllib" "%.cmxs");;
 
-rule "ocaml: cmxa & a -> cmxs & so"
+rule "ocaml: mllib & cmx* & o* -> cmxs & so"
   ~prods:["%.cmxs"; x_dll]
-  ~deps:["%.cmxa"; x_a]
-  ~doc:"This rule allows to build a .cmxs from a .cmxa, to avoid having \
-        to duplicate a .mllib file into a .mldylib."
-  (Ocaml_compiler.native_shared_library_link ~tags:["linkall";"foo"] "%.cmxa" "%.cmxs");;
+  ~dep:"%.mllib"
+  ~doc:"Builds a .cmxs containing exactly the modules listed in the \
+        corresponding .mllib file. This rule triggers only when no .mldylib \
+        could be found."
+  (Ocaml_compiler.native_shared_library_link_mldylib "%.mllib" "%.cmxs");;
+
+rule "ocaml: p.cmx & p.o -> p.cmxs & p.so"
+  ~prods:["%.p.cmxa"; x_p_dll]
+  ~deps:["%.p.cmx"; x_p_o]
+  (Ocaml_compiler.native_shared_library_link ~tags:["profile"] "%.p.cmx" "%.p.cmxs");;
+
+rule "ocaml: cmx & o -> cmxs & so"
+  ~prods:["%.cmxa"; x_dll]
+  ~deps:["%.cmx"; x_o]
+  ~doc:"If you have not created a foo.mldylib or foo.mllib file for a \
+        compilation unit foo.cmx, the target foo.cmxs will produce a .cmxs \
+        file containing exactly the .cmx."
+  (Ocaml_compiler.native_shared_library_link "%.cmx" "%.cmxs");;
 
 rule "ocaml dependencies ml"
   ~prod:"%.ml.depends"
