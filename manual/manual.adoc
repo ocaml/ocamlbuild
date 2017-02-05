@@ -782,7 +782,7 @@ This is useful if for some reason you are given, for example, a `.cmi` file to u
 ** `traverse`: explicitly indicate that OCamlbuild should consider this subdirectory as part of the current project; this flag is set for all subdirectories by default (so OCamlbuild will look in subdirectories recursively to find module dependencies) as soon as the current directory "looks like an OCamlbuild project" (there is either a `myocamlbuild.ml` or `_tags` file present).
 This tag is usefully used negative, `"foo": -traverse`, to say that a part of the local directory hierarchy should _not_ be considered by OCamlbuild.
 ** `include`, `traverse`: see the section above on source directories and include paths.
-** global tags: setting `true: use_mehir` in the root `_tags` file is equivalent to passing the `-use-menhir` command-line parameter.
+** global tags: setting `true: use_menhir` in the root `_tags` file is equivalent to passing the `-use-menhir` command-line parameter.
 
 ==== Advanced (context) tags
 
