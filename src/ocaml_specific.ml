@@ -401,7 +401,7 @@ rule "ocaml: cmxa & a -> cmxs & so"
   ~deps:["%.cmxa"; x_a]
   ~doc:"This rule allows to build a .cmxs from a .cmxa, to avoid having \
         to duplicate a .mllib file into a .mldylib."
-  (Ocaml_compiler.native_shared_library_link ~tags:["linkall";"foo"] "%.cmxa" "%.cmxs");;
+  (Ocaml_compiler.native_shared_library_link ~tags:["linkall"] "%.cmxa" "%.cmxs");;
 
 rule "ocaml dependencies ml"
   ~prod:"%.ml.depends"
