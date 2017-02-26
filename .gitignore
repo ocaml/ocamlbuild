@@ -17,6 +17,7 @@
 .DS_Store
 *.out
 *.out.dSYM
+/tmp/
 
 ocamlbuild.install
 Makefile.config

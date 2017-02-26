@@ -143,13 +143,22 @@ src/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
 
 # The packs
 
+# Build artifacts are first placed into tmp/ to avoid a race condition
+# described in https://caml.inria.fr/mantis/view.php?id=4991.
+
 src/ocamlbuild_pack.cmo: $(PACK_CMO)
-	$(OCAMLC) -pack $^ -o $@
+	mkdir -p tmp
+	$(OCAMLC) -pack $^ -o tmp/ocamlbuild_pack.cmo
+	mv tmp/ocamlbuild_pack.cmi src/ocamlbuild_pack.cmi
+	mv tmp/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmo
 
 src/ocamlbuild_pack.cmi: src/ocamlbuild_pack.cmo
 
 src/ocamlbuild_pack.cmx: $(PACK_CMX)
-	$(OCAMLOPT) -pack $^ -o $@
+	mkdir -p tmp
+	$(OCAMLOPT) -pack $^ -o tmp/ocamlbuild_pack.cmx
+	mv tmp/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmx
+	mv tmp/ocamlbuild_pack.o src/ocamlbuild_pack.o
 
 # The lexers
 
@@ -390,6 +399,7 @@ endif
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
+	rm -rf tmp/
 	rm -f src/*.cm* *.cm*
 ifdef EXT_OBJ
 	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
