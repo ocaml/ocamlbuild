@@ -554,7 +554,14 @@ let run ~root =
       end
   in
 
-  in List.iter one_test !tests;
+  let tests_to_run = List.tl (Array.to_list Sys.argv) in
+  begin match tests_to_run with
+  | [] -> List.iter one_test !tests
+  | _ ->
+    !tests |> List.iter (fun test ->
+      if List.mem test.name tests_to_run then
+        one_test test)
+  end;
 
   if !failed then
     exit 1
