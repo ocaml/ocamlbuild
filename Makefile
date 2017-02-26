@@ -90,15 +90,15 @@ EXTRA_CMX=$(EXTRA_CMO:.cmo=.cmx)
 EXTRA_CMI=$(EXTRA_CMO:.cmo=.cmi)
 
 INSTALL_LIB=\
-  ocamlbuildlib.cma \
+  src/ocamlbuildlib.cma \
   src/ocamlbuild.cmo \
-  ocamlbuild_pack.cmi \
+  src/ocamlbuild_pack.cmi \
   $(EXTRA_CMO:.cmo=.cmi)
 
 INSTALL_LIB_OPT=\
-  ocamlbuildlib.cmxa ocamlbuildlib$(EXT_LIB) \
+  src/ocamlbuildlib.cmxa src/ocamlbuildlib$(EXT_LIB) \
   src/ocamlbuild.cmx src/ocamlbuild$(EXT_OBJ) \
-  ocamlbuild_pack.cmx \
+  src/ocamlbuild_pack.cmx \
   $(EXTRA_CMO:.cmo=.cmx) $(EXTRA_CMO:.cmo=$(EXT_OBJ))
 
 INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
@@ -111,9 +111,9 @@ else
 all: byte man
 endif
 
-byte: ocamlbuild.byte ocamlbuildlib.cma
+byte: ocamlbuild.byte src/ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
-native: ocamlbuild.native ocamlbuildlib.cmxa
+native: ocamlbuild.native src/ocamlbuildlib.cmxa
 
 allopt: all # compatibility alias
 
@@ -121,41 +121,35 @@ distclean:: clean
 
 # The executables
 
-ocamlbuild.byte: ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
-	$(OCAMLC) $(LINKFLAGS) -o ocamlbuild.byte \
-          unix.cma ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
+ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
+	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
 
-ocamlbuildlight.byte: ocamlbuild_pack.cmo ocamlbuildlight.cmo
-	$(OCAMLC) $(LINKFLAGS) -o ocamlbuildlight.byte \
-          ocamlbuild_pack.cmo ocamlbuildlight.cmo
+ocamlbuildlight.byte: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
+	$(OCAMLC) $(LINKFLAGS) -o $@ $^
 
-ocamlbuild.native: ocamlbuild_pack.cmx $(EXTRA_CMX) src/ocamlbuild.cmx
-	$(OCAMLOPT) $(LINKFLAGS) -o ocamlbuild.native \
-          unix.cmxa ocamlbuild_pack.cmx $(EXTRA_CMX) src/ocamlbuild.cmx
+ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) src/ocamlbuild.cmx
+	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
 
 # The libraries
 
-ocamlbuildlib.cma: ocamlbuild_pack.cmo $(EXTRA_CMO)
-	$(OCAMLC) -a -o ocamlbuildlib.cma \
-          ocamlbuild_pack.cmo $(EXTRA_CMO)
+src/ocamlbuildlib.cma: src/ocamlbuild_pack.cmo $(EXTRA_CMO)
+	$(OCAMLC) -a -o $@ $^
 
-ocamlbuildlightlib.cma: ocamlbuild_pack.cmo ocamlbuildlight.cmo
-	$(OCAMLC) -a -o ocamlbuildlightlib.cma \
-          ocamlbuild_pack.cmo ocamlbuildlight.cmo
+src/ocamlbuildlightlib.cma: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
+	$(OCAMLC) -a -o $@ $^
 
-ocamlbuildlib.cmxa: ocamlbuild_pack.cmx $(EXTRA_CMX)
-	$(OCAMLOPT) -a -o ocamlbuildlib.cmxa \
-          ocamlbuild_pack.cmx $(EXTRA_CMX)
+src/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
+	$(OCAMLOPT) -a -o $@ $^
 
 # The packs
 
-ocamlbuild_pack.cmo: $(PACK_CMO)
-	$(OCAMLC) -pack $(PACK_CMO) -o ocamlbuild_pack.cmo
+src/ocamlbuild_pack.cmo: $(PACK_CMO)
+	$(OCAMLC) -pack $^ -o $@
 
-ocamlbuild_pack.cmi: ocamlbuild_pack.cmo
+src/ocamlbuild_pack.cmi: src/ocamlbuild_pack.cmo
 
-ocamlbuild_pack.cmx: $(PACK_CMX)
-	$(OCAMLOPT) -pack $(PACK_CMX) -o ocamlbuild_pack.cmx
+src/ocamlbuild_pack.cmx: $(PACK_CMX)
+	$(OCAMLOPT) -pack $^ -o $@
 
 # The lexers
 
@@ -204,8 +198,8 @@ clean::
 distclean::
 	rm -f man/ocamlbuild.1
 
-man/options_man.byte: ocamlbuild_pack.cmo
-	$(OCAMLC) ocamlbuild_pack.cmo -I src man/options_man.ml -o man/options_man.byte
+man/options_man.byte: src/ocamlbuild_pack.cmo
+	$(OCAMLC) $^ -I src man/options_man.ml -o man/options_man.byte
 
 clean::
 	rm -f man/options_man.cm*
@@ -386,15 +380,13 @@ endif
 
 # The generic rules
 
-.SUFFIXES: .ml .mli .cmo .cmi .cmx
-
-.ml.cmo:
+%.cmo: %.ml
 	$(OCAMLC) $(COMPFLAGS) -c $<
 
-.mli.cmi:
+%.cmi: %.mli
 	$(OCAMLC) $(COMPFLAGS) -c $<
 
-.ml.cmx:
+%.cmx: %.ml
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
 
 clean::
@@ -416,9 +408,9 @@ distclean::
 depend: beforedepend
 	$(OCAMLDEP) -I src src/*.mli src/*.ml > .depend
 
-$(EXTRA_CMI): ocamlbuild_pack.cmi
-$(EXTRA_CMO): ocamlbuild_pack.cmo ocamlbuild_pack.cmi
-$(EXTRA_CMX): ocamlbuild_pack.cmx ocamlbuild_pack.cmi
+$(EXTRA_CMI): src/ocamlbuild_pack.cmi
+$(EXTRA_CMO): src/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmi
+$(EXTRA_CMX): src/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmi
 
 include .depend
 
