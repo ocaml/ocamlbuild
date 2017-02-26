@@ -30,6 +30,11 @@ let forpack_flags arg tags =
     Ocaml_arch.forpack_flags_of_pathname arg
   else N
 
+let include_flags_for_deps deps =
+  let dirnames = List.union [] (List.map Pathname.dirname deps) in
+  let include_flags = List.fold_right ocaml_add_include_flag dirnames [] in
+  S include_flags
+
 let ocamlc_c tags arg out =
   let tags = tags++"ocaml"++"byte" in
   Cmd (S [!Options.ocamlc; A"-c"; T(tags++"compile");
@@ -37,7 +42,7 @@ let ocamlc_c tags arg out =
 
 let ocamlc_link flag tags deps out =
   Cmd (S [!Options.ocamlc; flag; T tags;
-          atomize_paths deps; A"-o"; Px out])
+          include_flags_for_deps deps; atomize_paths deps; A"-o"; Px out])
 
 let ocamlc_link_lib = ocamlc_link (A"-a")
 let ocamlc_link_prog = ocamlc_link N
@@ -70,19 +75,17 @@ let ocamlopt_c tags arg out =
 
 let ocamlopt_link flag tags deps out =
   Cmd (S [!Options.ocamlopt; flag; forpack_flags out tags; T tags;
-          atomize_paths deps; A"-o"; Px out])
+          include_flags_for_deps deps; atomize_paths deps; A"-o"; Px out])
 
 let ocamlopt_link_lib = ocamlopt_link (A"-a")
 let ocamlopt_link_shared_lib = ocamlopt_link (A"-shared")
 let ocamlopt_link_prog = ocamlopt_link N
 
 let ocamlopt_p tags deps out =
-  let dirnames = List.union [] (List.map Pathname.dirname deps) in
-  let include_flags = List.fold_right ocaml_add_include_flag dirnames [] in
   let mli = Pathname.update_extensions "mli" out in
   let cmd =
     S [!Options.ocamlopt; A"-pack"; forpack_flags out tags; T tags;
-       S include_flags; atomize_paths deps;
+       include_flags_for_deps deps; atomize_paths deps;
        A"-o"; Px out] in
   if (*FIXME true ||*) Pathname.exists mli then Cmd cmd
   else
