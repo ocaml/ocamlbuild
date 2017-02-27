@@ -326,8 +326,8 @@ module Option = struct
     | `use_ocamlfind -> fprintf ppf "use-ocamlfind"
     | `j level -> fprintf ppf "j %a" print_level level
     | `build_dir path -> fprintf ppf "build-dir %a" print_path path
-    | `install_lib_dir path -> fprintf ppf "install %a" print_path path
-    | `install_bin_dir path -> fprintf ppf "install %a" print_path path
+    | `install_lib_dir path -> fprintf ppf "install-lib-dir %a" print_path path
+    | `install_bin_dir path -> fprintf ppf "install-bin-dir %a" print_path path
     | `where -> fprintf ppf "where"
     | `ocamlc command -> fprintf ppf "ocamlc %a" print_command command
     | `ocamlopt command -> fprintf ppf "ocamlopt %a" print_command command
@@ -441,10 +441,20 @@ let run ~root =
   rm root;
   Unix.mkdir root 0o750;
 
+  let build_tree = Filename.dirname (Filename.dirname (Sys.argv.(0))) in
+  let ocamlbuild = Filename.concat build_tree "ocamlbuild.byte" in
+  let testsuite_opts = [
+    (`install_bin_dir build_tree);
+    (`install_lib_dir (Filename.concat build_tree "src"));
+  ] in
+
   let command opts args =
     let b = Buffer.create 127 in
     let f = Format.formatter_of_buffer b in
-    fprintf f "%s %a %a" ocamlbuild (print_list_blank Option.print_opt) opts (print_list_blank pp_print_string) args;
+    fprintf f "%s %a %a"
+      ocamlbuild
+      (print_list_blank Option.print_opt) (testsuite_opts @ opts)
+      (print_list_blank pp_print_string)  args;
     Format.pp_print_flush f ();
     Buffer.contents b
   in
