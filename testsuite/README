@@ -15,4 +15,4 @@ The organization of tests is the following:
 
 To execute a test file (e.g. internal.ml), run from this directory:
 
-    OCAMLBUILD=$(pwd)/../ocamlbuild.byte ocaml internal.ml
+    ocaml internal.ml
