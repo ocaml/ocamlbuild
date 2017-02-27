@@ -167,6 +167,32 @@ let () = test "OutputShared"
          T.f "_tags" ~content:"<*.so>: runtime_variant(_pic)"]
   ~targets:("hello.byte.so",["hello.native.so"]) ();;
 
+let () = test "CmxsStubLink"
+  ~options:[`no_ocamlfind]
+  ~description:".cmxs link rules pass correct -I flags"
+  ~tree:[T.d "src" [
+           T.f "foo_stubs.c" ~content:"";
+           T.f "libfoo_stubs.clib" ~content:"foo_stubs.o";
+           T.f "foo.ml" ~content:"";
+         ];
+         T.f "_tags" ~content:"
+<src/foo.{cma,cmxa}> : record_foo_stubs
+<src/foo.cmxs> : link_foo_stubs";
+         T.f "myocamlbuild.ml" ~content:"
+open Ocamlbuild_plugin
+let () =
+  dispatch begin function
+  | After_rules ->
+      dep [\"record_foo_stubs\"] [\"src/libfoo_stubs.a\"];
+      flag_and_dep
+        [\"link\"; \"ocaml\"; \"link_foo_stubs\"] (P \"src/libfoo_stubs.a\");
+      flag [\"library\"; \"ocaml\";           \"record_foo_stubs\"]
+        (S ([A \"-cclib\"; A \"-lfoo_stubs\"]));
+  | _ -> ()
+  end
+"]
+  ~targets:("src/foo.cmxs",[]) ();;
+
 let () = test "StrictSequenceFlag"
   ~options:[`no_ocamlfind; `quiet]
   ~description:"strict_sequence tag"
