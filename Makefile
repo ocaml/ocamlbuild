@@ -217,6 +217,16 @@ ifdef EXT_OBJ
 	rm -f man/options_man$(EXT_OBJ)
 endif
 
+# Testing
+
+test-%: testsuite/%.ml all
+	cd testsuite && ocaml $(CURDIR)/$<
+
+test: test-internal test-findlibonly test-external
+
+clean::
+	rm -rf testsuite/_test_*
+
 # Installation
 
 # The binaries go in BINDIR. We copy ocamlbuild.byte and

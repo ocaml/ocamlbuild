@@ -459,6 +459,8 @@ let run ~root =
     Buffer.contents b
   in
 
+  let failed = ref false in
+
   let one_test
       { name
       ; description
@@ -509,6 +511,7 @@ let run ~root =
                 print_colored `Red "FAILED" name `Yellow
                   (Printf.sprintf "Command '%s' with error code %n \
                                    output written to %s" cmd n log_name);
+                failed := true;
               | Some failing_msg ->
                 let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
                 let lines =
@@ -517,10 +520,12 @@ let run ~root =
                 let msg = String.concat "\n" lines in
                 if failing_msg = msg then
                   print_colored `Green "PASSED" name `Cyan description
-                else
+                else begin
                   print_colored `Red "FAILED" name `Yellow
                     ((Printf.sprintf "Failure with not matching message:\n\
-                                      %s\n!=\n%s\n") msg failing_msg)
+                                      %s\n!=\n%s\n") msg failing_msg);
+                  failed := true
+                end
             end;
           | _ ->
             let errors =
@@ -540,9 +545,13 @@ let run ~root =
                 print_colored `Red "FAILED" name `Yellow
                   (Printf.sprintf "Some system checks failed, \
                                    output written to %s"
-                     log_name)
+                     log_name);
+                failed := true
               end
             end
       end
 
-  in List.iter one_test !tests
+  in List.iter one_test !tests;
+
+  if !failed then
+    exit 1
