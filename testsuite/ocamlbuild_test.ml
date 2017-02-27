@@ -441,7 +441,9 @@ let run ~root =
   rm root;
   Unix.mkdir root 0o750;
 
-  let build_tree = Filename.dirname (Filename.dirname (Sys.argv.(0))) in
+  let test_tree = Filename.dirname (Sys.argv.(0)) in
+  let test_tree = if test_tree = "." then Sys.getcwd () else test_tree in
+  let build_tree = Filename.dirname test_tree in
   let ocamlbuild = Filename.concat build_tree "ocamlbuild.byte" in
   let testsuite_opts = [
     (`install_bin_dir build_tree);
@@ -550,6 +552,7 @@ let run ~root =
               end
             end
       end
+  in
 
   in List.iter one_test !tests;
 
