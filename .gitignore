@@ -22,6 +22,9 @@
 ocamlbuild.install
 Makefile.config
 
+/bootstrap/src
+/bootstrap/_build*
+
 /src/ocamlbuild_config.ml
 /src/lexers.ml
 /src/glob_lexer.ml
