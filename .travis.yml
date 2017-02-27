@@ -10,9 +10,6 @@ install:
   - export OPAMYES=1
   - opam init --compiler=${OCAML_VERSION}
   - opam install ocamlfind camlp4 menhir
-  # The command above has ocamlbuild as a transitive build dependency.
-  # Remove it now, so as not to accidentally link to the system ocamlbuildlib.
-  - opam remove ocamlbuild
 script:
   - eval `opam config env`
   # First, run our own testsuite. Do this *before* any ocamlbuild is installed globally,
