@@ -450,6 +450,11 @@ let run ~root =
     (`install_lib_dir (Filename.concat build_tree "src"));
   ] in
 
+  let verbose =
+    try ignore (Sys.getenv "VERBOSE"); true
+    with Not_found -> false
+  in
+
   let command opts args =
     let b = Buffer.create 127 in
     let f = Format.formatter_of_buffer b in
@@ -504,15 +509,22 @@ let run ~root =
           | WSIGNALED n,lines
           | WSTOPPED n,lines when allow_failure || n <> 0 ->
             begin match failing_msg with
-                          | None ->
-                let ch = open_out log_name in
-                List.iter
-                  (fun l -> output_string ch l; output_string ch "\n")
-                  lines;
-                close_out ch;
-                print_colored `Red "FAILED" name `Yellow
-                  (Printf.sprintf "Command '%s' with error code %n \
-                                   output written to %s" cmd n log_name);
+              | None ->
+                if verbose then begin
+                  print_colored `Red "FAILED" name `Yellow
+                    (Printf.sprintf "Command '%s' with error code %n, \
+                                     output below" cmd n);
+                  List.iter print_endline lines;
+                end else begin
+                  let ch = open_out log_name in
+                  List.iter
+                    (fun l -> output_string ch l; output_string ch "\n")
+                    lines;
+                  close_out ch;
+                  print_colored `Red "FAILED" name `Yellow
+                    (Printf.sprintf "Command '%s' with error code %n, \
+                                     output written to %s" cmd n log_name);
+                end;
                 failed := true;
               | Some failing_msg ->
                 let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
@@ -536,18 +548,26 @@ let run ~root =
             begin if errors == [] then
                 print_colored `Green "PASSED" name `Cyan description
               else begin
-                let ch = open_out log_name in
-                output_string ch ("Run '" ^ cmd ^ "'\n");
-                List.iter
-                  (fun e ->
-                    output_string ch (Match.string_of_error e);
-                    output_string ch ".\n")
-                  errors;
-                close_out ch;
-                print_colored `Red "FAILED" name `Yellow
-                  (Printf.sprintf "Some system checks failed, \
-                                   output written to %s"
-                     log_name);
+                if verbose then begin
+                  print_colored `Red "FAILED" name `Yellow
+                    "Some system checks failed, output below";
+                  List.iter
+                    (fun e -> Printf.printf "%s.\n%!" (Match.string_of_error e))
+                    errors;
+                end else begin
+                  let ch = open_out log_name in
+                  output_string ch ("Run '" ^ cmd ^ "'\n");
+                  List.iter
+                    (fun e ->
+                      output_string ch (Match.string_of_error e);
+                      output_string ch ".\n")
+                    errors;
+                  close_out ch;
+                  print_colored `Red "FAILED" name `Yellow
+                    (Printf.sprintf "Some system checks failed, \
+                                     output written to %s"
+                       log_name);
+                end;
                 failed := true
               end
             end
