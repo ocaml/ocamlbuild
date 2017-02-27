@@ -1,0 +1,23 @@
+language: c
+os: linux
+env:
+  - OCAML_VERSION=4.03.0
+  - OCAML_VERSION=4.04.0
+install:
+  - echo "yes" | sudo add-apt-repository ppa:avsm/ocaml42+opam12
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq opam
+  - export OPAMYES=1
+  - opam init --compiler=${OCAML_VERSION}
+  - opam install ocamlfind
+script:
+  - eval `opam config env`
+  # First, run our own testsuite. Do this *before* any ocamlbuild is installed globally,
+  # to check that we don't have a spurious dependency on a global ocamlbuild.
+  - make test-internal test-findlibonly
+  - make distclean
+  # Second, verify that installation works, and a variety of downstream opam packages
+  # still install.
+  - opam pin add -n -k path ocamlbuild .
+  - opam install -v ocamlbuild
+  - opam install -v mtime # this tests topkg and stub libraries
