@@ -68,7 +68,7 @@ let pretty_print ppelt f r =
     | None -> ()
     | Some doc -> fprintf f "~doc:\"@[<hov>%a@]\"@ " pp_print_text doc
   end;
-  fprintf f "<fun>@]"  
+  fprintf f "<fun>@]"
 
 let print = print_rule_name
 
@@ -82,7 +82,7 @@ let subst env rule =
     prods = prods;
     deps =
       (* The substition should preserve normalization of pathnames *)
-      subst_resources rule.deps; 
+      subst_resources rule.deps;
     stamp = stamp;
     doc = rule.doc;
     code = (fun env -> rule.code (finder env)) }
@@ -335,5 +335,5 @@ let show_documentation () =
     (fun rule -> pp "%a@\n@\n" (pretty_print Resource.print_pattern) rule)
     rules;
   pp "@."
-   
+
 

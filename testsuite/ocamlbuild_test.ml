@@ -408,8 +408,8 @@ let test name
     ?(matching=[])
     ~targets ()
      =
-  tests := !tests @ [{ 
-    name; 
+  tests := !tests @ [{
+    name;
     description;
     requirements;
     tree;
@@ -477,12 +477,12 @@ let run ~root =
         (match pre_cmd with
           | None -> ()
           | Some str -> ignore(Sys.command str));
-        
+
         let log_name = full_name ^ ".log" in
-        
+
         let cmd = command options (fst targets :: snd targets) in
         let allow_failure = failing_msg <> None in
-        
+
         let open Unix in
 
         match execute cmd with
@@ -523,7 +523,7 @@ let run ~root =
                 output_string ch ("Run '" ^ cmd ^ "'\n");
                 List.iter
                   (fun e ->
-                    output_string ch (Match.string_of_error e); 
+                    output_string ch (Match.string_of_error e);
                     output_string ch ".\n")
                   errors;
                 close_out ch;

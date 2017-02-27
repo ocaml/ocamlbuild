@@ -33,7 +33,7 @@ acknowledged parameter. *)
 
 val init: unit -> unit
   (** Initialize parameterized tags.
-      
+
 This will make effective all instantiations [foo(bar)] such that the
 parametrized tag [foo] has been [declare]d and [foo(bar)] has been
 [acknowledge]d after the last [init] call. *)

@@ -13,7 +13,7 @@ all: 		native byte # profile debug
 clean:
 			$(OCB) -clean
 
-native: 
+native:
 			$(OCB) main.native
 
 byte:

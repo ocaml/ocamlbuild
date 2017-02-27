@@ -2,7 +2,7 @@
 # Pure OCaml, package from Opam, two directories
 #
 
-# - The -I flag introduces sub-directories 
+# - The -I flag introduces sub-directories
 # - -use-ocamlfind is required to find packages (from Opam)
 # - _tags file introduces packages, bin_annot flag for tool chain
 # - using *.mll and *.mly are handled automatically

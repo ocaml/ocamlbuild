@@ -2,7 +2,7 @@
 # Pure OCaml, package from Opam, two directories
 #
 
-# - The -I flag introduces sub-directories 
+# - The -I flag introduces sub-directories
 # - -use-ocamlfind is required to find packages (from Opam)
 # - _tags file introduces packages, bin_annot
 
@@ -35,6 +35,6 @@ sanity:
 			ocamlfind query yojson
 			
 test: 		native
-			echo '{"hello": "json"}' | ./main.native 
+			echo '{"hello": "json"}' | ./main.native
 
 .PHONY: 	all clean byte native profile debug lib sanity test

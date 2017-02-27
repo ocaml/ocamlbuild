@@ -7,5 +7,5 @@ let main () =
   let result = Parser.main Lexer.token lexbuf in
     Printf.printf "%d\n" result
 
-let () = main ()        
+let () = main ()
 

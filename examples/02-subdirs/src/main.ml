@@ -6,5 +6,5 @@ let main () =
   | []        -> Printf.printf "Hello, world!\n"
   | names     -> Printf.printf "Hello, %s!\n" (Util.join names)
 
-let () = main ()        
+let () = main ()
 

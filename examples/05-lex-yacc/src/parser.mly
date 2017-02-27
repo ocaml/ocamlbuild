@@ -13,11 +13,11 @@
 
 (* Menhir let us give names to symbol values,
    instead of having to use $1, $2, $3 as in ocamlyacc *)
-main 
+main
   : e = expr EOF                { e }
   ;
 
-expr 
+expr
   : n = INT                 { n }
   | LPAREN e = expr RPAREN  { e }
   | e1=expr PLUS  e2=expr   { e1 + e2 }

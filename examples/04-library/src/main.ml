@@ -1,7 +1,7 @@
 
 module J = Yojson.Basic
 
-let json io = 
+let json io =
   J.from_channel io |> J.to_channel stdout
 
 let main () =
@@ -12,5 +12,5 @@ let main () =
   | []          -> json stdin; print_newline ()
   | _           -> Printf.eprintf "usage: %s" this; exit 1
 
-let () = main ()        
+let () = main ()
 

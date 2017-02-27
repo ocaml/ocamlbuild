@@ -1,5 +1,5 @@
 #
-# Pure OCaml, no packages, no _tags 
+# Pure OCaml, no packages, no _tags
 #
 
 # bin-annot is required for Merlin and other IDE-like tools
@@ -12,7 +12,7 @@ all: 		native byte # profile debug
 clean:
 			$(OCB) -clean
 
-native: 
+native:
 			$(OCB) main.native
 
 byte:
