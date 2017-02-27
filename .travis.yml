@@ -15,9 +15,12 @@ script:
   # First, run our own testsuite. Do this *before* any ocamlbuild is installed globally,
   # to check that we don't have a spurious dependency on a global ocamlbuild.
   - VERBOSE=1 make test
-  - make distclean
-  # Second, verify that installation works, and a variety of downstream opam packages
+  # Second, bootstrap ourselves using the freshly built binaries, as a more complex
+  # exercise than the testsuite alone.
+  - OCAMLBUILD=$(pwd)/ocamlbuild.native make -C bootstrap
+  # Third, verify that installation works, and a variety of downstream opam packages
   # still install.
+  - make distclean
   - opam pin add -n -k path ocamlbuild .
   - opam install -v ocamlbuild
   - opam install -v mtime # this tests topkg and stub libraries
