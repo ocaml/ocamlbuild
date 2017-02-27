@@ -14,7 +14,7 @@ script:
   - eval `opam config env`
   # First, run our own testsuite. Do this *before* any ocamlbuild is installed globally,
   # to check that we don't have a spurious dependency on a global ocamlbuild.
-  - make test-internal test-findlibonly
+  - make test
   - make distclean
   # Second, verify that installation works, and a variety of downstream opam packages
   # still install.

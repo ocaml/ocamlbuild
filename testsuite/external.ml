@@ -2,22 +2,29 @@
 #use "findlibonly_test_header.ml";;
 #use "external_test_header.ml";;
 
-let () = test "camlp4.opt"
+let () = test "SyntaxFlag"
+  ~options:[`use_ocamlfind; `package "camlp4.macro"; `syntax "camlp4o"]
+  ~requirements:(package_exists "camlp4.macro")
+  ~description:"-syntax for ocamlbuild"
+  ~tree:[T.f "dummy.ml" ~content:"IFDEF TEST THEN\nprint_endline \"Hello\";;\nENDIF;;"]
+  ~matching:[M.f "dummy.native"]
+  ~targets:("dummy.native",[]) ();;
+
+(* This test fails with the recent versions of camlp4, see
+   https://caml.inria.fr/mantis/view.php?id=5652#c8776.
+
+let () = test "Camlp4NativePlugin"
   ~description:"Fixes PR#5652"
-  ~options:[`package "camlp4.macro";`tags ["camlp4o.opt"; "syntax\\(camp4o\\)"];
+  ~requirements:(package_exists "camlp4.macro")
+  ~options:[`use_ocamlfind; `package "camlp4.macro";
+            `tags ["camlp4o.opt"; "syntax(camp4o)"];
             `ppflag "camlp4o.opt"; `ppflag "-parser"; `ppflag "macro";
             `ppflag "-DTEST"]
   ~tree:[T.f "dummy.ml"
             ~content:"IFDEF TEST THEN\nprint_endline \"Hello\";;\nENDIF;;"]
   ~matching:[M.x "dummy.native" ~output:"Hello"]
   ~targets:("dummy.native",[]) ();;
-
-let () = test "SyntaxFlag"
-  ~options:[`use_ocamlfind; `package "camlp4.macro"; `syntax "camlp4o"]
-  ~description:"-syntax for ocamlbuild"
-  ~tree:[T.f "dummy.ml" ~content:"IFDEF TEST THEN\nprint_endline \"Hello\";;\nENDIF;;"]
-  ~matching:[M.f "dummy.native"]
-  ~targets:("dummy.native",[]) ();;
+*)
 
 let () = test "SubtoolOptions"
   ~description:"Options that come from tags that needs to be spliced \
