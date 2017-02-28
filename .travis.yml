@@ -23,4 +23,7 @@ script:
   - make distclean
   - opam pin add -n -k path ocamlbuild .
   - opam install -v ocamlbuild
-  - opam install -v mtime # this tests topkg and stub libraries
+  - opam install -v mtime # this tests topkg, with stub libraries
+  - opam install -v inotify # this tests oasis, with stub libraries
+  - opam install -v cpuid # this tests the ocb-stubblr plugin
+  - opam install -v ppx_deriving # this tests the cppo plugin
