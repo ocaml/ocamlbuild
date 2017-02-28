@@ -382,7 +382,9 @@ module type OPTIONS = sig
   val exclude_dirs : string list ref
   val nothing_should_be_rebuilt : bool ref
   val ocamlc : command_spec ref
+  val plugin_ocamlc : command_spec ref
   val ocamlopt : command_spec ref
+  val plugin_ocamlopt : command_spec ref
   val ocamldep : command_spec ref
   val ocamldoc : command_spec ref
   val ocamlyacc : command_spec ref
@@ -406,6 +408,7 @@ module type OPTIONS = sig
   val show_documentation : bool ref
   val recursive : bool ref
   val use_ocamlfind : bool ref
+  val plugin_use_ocamlfind : bool ref
 
   val targets : string list ref
   val ocaml_libs : string list ref

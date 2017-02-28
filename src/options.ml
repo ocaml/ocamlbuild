@@ -39,6 +39,7 @@ let nostdlib = ref false
 let use_menhir = ref false
 let catch_errors = ref true
 let use_ocamlfind = ref false
+let plugin_use_ocamlfind = ref false
 let toolchain = ref ""
 
 (* Currently only ocamlfind and menhir is defined as no-core tool,
@@ -85,7 +86,9 @@ let () =
     ["ocamlc"; "ocamlopt"; "ocamldep"; "ocamldoc";
     "ocamlyacc"; "menhir"; "ocamllex"; "ocamlmklib"; "ocamlmktop"; "ocamlfind"]
 let ocamlc = ref (V"OCAMLC")
+let plugin_ocamlc = ref (V"OCAMLC")
 let ocamlopt = ref (V"OCAMLOPT")
+let plugin_ocamlopt = ref (V"OCAMLOPT")
 let ocamldep = ref (V"OCAMLDEP")
 let ocamldoc = ref (V"OCAMLDOC")
 let ocamlyacc = ref N
@@ -99,6 +102,7 @@ let ocamlfind arg =
     S[!ocamlfind_cmd; arg]
   else
     S[!ocamlfind_cmd; A"-toolchain"; A!toolchain; arg]
+let plugin_ocamlfind arg = S[!ocamlfind_cmd; arg]
 let program_to_execute = ref false
 let must_clean = ref false
 let show_documentation = ref false
@@ -142,7 +146,9 @@ let dummy = "*invalid-dummy-string*";; (* Dummy string for delimiting the latest
  * multiple/installed plugins *)
 let use_jocaml () =
   ocamlc := A "jocamlc";
+  plugin_ocamlc := A "jocamlc";
   ocamlopt := A "jocamlopt";
+  plugin_ocamlopt := A "jocamlopt";
   ocamldep := A "jocamldep";
   ocamlyacc := A "jocamlyacc";
   ocamllex := A "jocamllex";
@@ -234,11 +240,16 @@ let spec = ref (
    "-classic-display", Set Log.classic_display, " Display executed commands the old-fashioned way";
    "-use-menhir", Set use_menhir, " Use menhir instead of ocamlyacc";
    "-use-jocaml", Unit use_jocaml, " Use jocaml compilers instead of ocaml ones";
-   "-use-ocamlfind", Set use_ocamlfind, " Use the 'ocamlfind' wrapper instead of \
+   "-use-ocamlfind", Unit (fun () -> use_ocamlfind := true; plugin_use_ocamlfind := true), " Use the 'ocamlfind' wrapper instead of \
        using Findlib directly to determine command-line arguments. \
-       Use -no-ocamlfind to disable.";
-   "-no-ocamlfind", Clear use_ocamlfind, " Don't use ocamlfind.";
-   "-toolchain", Set_string toolchain, "<toolchain> Set the Findlib toolchain to use.";
+       Use -no-ocamlfind to disable. Implies -plugin-use-ocamlfind.";
+   "-no-ocamlfind", Unit (fun () -> use_ocamlfind := false; plugin_use_ocamlfind := false), " Don't use ocamlfind. Implies -plugin-no-ocamlfind.";
+   "-plugin-use-ocamlfind", Set plugin_use_ocamlfind, " Use the 'ocamlfind' wrapper \
+     for building myocamlbuild.ml";
+   "-plugin-no-ocamlfind", Clear plugin_use_ocamlfind, " Don't use ocamlfind \
+     for building myocamlbuild.ml";
+   "-toolchain", Set_string toolchain, "<toolchain> Set the Findlib toolchain to use. \
+     The default toolchain is always used for building myocamlbuild.ml.";
 
    "-j", Set_int Command.jobs, "<N> Allow N jobs at once (0 for unlimited)";
 
@@ -248,7 +259,11 @@ let spec = ref (
    "-where", Unit (fun () -> print_endline !Ocamlbuild_where.libdir; raise Exit_OK), " Display the install library directory";
    "-which", String (fun cmd -> print_endline (find_tool cmd); raise Exit_OK), "<command> Display path to the tool command";
    "-ocamlc", set_cmd ocamlc, "<command> Set the OCaml bytecode compiler";
+   "-plugin-ocamlc", set_cmd plugin_ocamlc, "<command> Set the OCaml bytecode compiler \
+     used when building myocamlbuild.ml (only)";
    "-ocamlopt", set_cmd ocamlopt, "<command> Set the OCaml native compiler";
+   "-plugin-ocamlopt", set_cmd plugin_ocamlopt, "<command> Set the OCaml native compiler \
+     used when building myocamlbuild.ml (only)";
    "-ocamldep", set_cmd ocamldep, "<command> Set the OCaml dependency tool";
    "-ocamldoc", set_cmd ocamldoc, "<command> Set the OCaml documentation generator";
    "-ocamlyacc", set_cmd ocamlyacc, "<command> Set the ocamlyacc tool";
@@ -305,34 +320,47 @@ let init () =
       Log.init log
   in
 
+  let with_ocamlfind (ocamlfind, command_name, command_ref) =
+      command_ref := match !command_ref with
+        | Sh user_command ->
+          (* this command has been set by the user
+             using an -ocamlc, -ocamlopt, etc. flag;
+
+             not all such combinations make sense (eg. "ocamlfind
+             /my/special/path/to/ocamlc" will make ocamlfind choke),
+             but the user will see the error and hopefully fix the
+             flags. *)
+          ocamlfind & (Sh user_command);
+        | _ -> ocamlfind & A command_name
+  in
+
   if !use_ocamlfind then begin
     begin try ignore(Command.search_in_path "ocamlfind")
     with Not_found ->
       failwith "ocamlfind not found on path, but -no-ocamlfind not used"
     end;
 
-    let with_ocamlfind (command_name, command_ref) =
-        command_ref := match !command_ref with
-          | Sh user_command ->
-            (* this command has been set by the user
-               using an -ocamlc, -ocamlopt, etc. flag;
-
-               not all such combinations make sense (eg. "ocamlfind
-               /my/special/path/to/ocamlc" will make ocamlfind choke),
-               but the user will see the error and hopefully fix the
-               flags. *)
-            ocamlfind & (Sh user_command);
-          | _ -> ocamlfind & A command_name
-    in
     (* Note that plugins can still modify these variables After_options.
        This design decision can easily be changed. *)
     List.iter with_ocamlfind [
-      "ocamlc", ocamlc;
-      "ocamlopt", ocamlopt;
-      "ocamldep", ocamldep;
-      "ocamldoc", ocamldoc;
-      "ocamlmklib", ocamlmklib;
-      "ocamlmktop", ocamlmktop;
+      ocamlfind, "ocamlc", ocamlc;
+      ocamlfind, "ocamlopt", ocamlopt;
+      ocamlfind, "ocamldep", ocamldep;
+      ocamlfind, "ocamldoc", ocamldoc;
+      ocamlfind, "ocamlmklib", ocamlmklib;
+      ocamlfind, "ocamlmktop", ocamlmktop;
+    ]
+  end;
+
+  if !plugin_use_ocamlfind then begin
+    begin try ignore(Command.search_in_path "ocamlfind")
+    with Not_found ->
+      failwith "ocamlfind not found on path, but -no-plugin-ocamlfind not used"
+    end;
+
+    List.iter with_ocamlfind [
+      plugin_ocamlfind, "ocamlc", plugin_ocamlc;
+      plugin_ocamlfind, "ocamlopt", plugin_ocamlopt;
     ]
   end;
 

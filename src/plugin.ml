@@ -86,18 +86,17 @@ module Make(U:sig end) =
 
         let cma, cmo, compiler, byte_or_native =
           if !Options.native_plugin then
-            "cmxa", "cmx", !Options.ocamlopt, "native"
+            "cmxa", "cmx", !Options.plugin_ocamlopt, "native"
           else
-            "cma", "cmo", !Options.ocamlc, "byte"
+            "cma", "cmo", !Options.plugin_ocamlc, "byte"
         in
-
 
         let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_module_spec) =
 
           let use_light_mode =
             not !Options.native_plugin && !*My_unix.is_degraded in
           let use_ocamlfind_pkgs =
-            !Options.use_ocamlfind && !Options.plugin_tags <> [] in
+            !Options.plugin_use_ocamlfind && !Options.plugin_tags <> [] in
           (* The plugin has the following dependencies that must be
              included during compilation:
 
@@ -127,7 +126,7 @@ module Make(U:sig end) =
              to support modular construction of
              ocamlbuild plugins). Indeed, if we hard-code linking to
              unix.cmxa in all cases, and the user
-             enables -use-ocamlfind and
+             enables -plugin-use-ocamlfind and
              passes -plugin-tag "package(unix)" (or package(foo) for
              any foo which depends on unix), the command-line finally
              executed will be
@@ -146,7 +145,7 @@ module Make(U:sig end) =
 
              We switch to this behavior when two conditions, embodied in
              the boolean variable [use_ocamlfind_pkgs], are met:
-             (a) use-ocamlfind is enabled
+             (a) plugin-use-ocamlfind is enabled
              (b) the user is passing some plugin tags
 
              Condition (a) is overly conservative as the double-linking
