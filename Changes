@@ -85,6 +85,9 @@ detailed changelog below for details.
 - #172-175, #177: setting up Continuous Infrastructure (CI) testsuite checks
   (whitequark)
 
+- #202: install license, changes and readme in opam's docdir for `odig`
+  (Gabriel Scherer, request and review by Daniel Bünzli)
+
 - "noautolink" tag for ocaml{c,opt}
   (Gabriel Scherer)
 
