@@ -624,9 +624,12 @@ flag ["ocaml"; "menhir"] (atomize !Options.ocaml_yaccflags);;
 flag ["ocaml"; "doc"] (atomize !Options.ocaml_docflags);;
 flag ["ocaml"; "ocamllex"] (atomize !Options.ocaml_lexflags);;
 
-(* Tell menhir to explain conflicts *)
+(* menhir options *)
 flag [ "ocaml" ; "menhir" ; "explain" ] (S[A "--explain"]);;
 flag [ "ocaml" ; "menhir" ; "infer" ] (S[A "--infer"]);;
+flag [ "ocaml" ; "menhir" ; "table" ] (S[A "--table"]);;
+flag [ "ocaml" ; "menhir" ; "trace" ] (S[A "--trace"]);;
+flag [ "ocaml" ; "menhir" ; "trace" ] (S[A "--canonical"]);;
 
 (* Define two ocamlbuild flags [only_tokens] and [external_tokens(Foo)]
    which correspond to menhir's [--only-tokens] and [--external-tokens Foo].
