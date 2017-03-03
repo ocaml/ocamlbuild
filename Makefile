@@ -278,6 +278,7 @@ install-lib-basics:
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
 
 install-lib-basics-opam:
+	echo '  "opam"' >> ocamlbuild.install
 	echo '  "META"' >> ocamlbuild.install
 	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
 
@@ -334,6 +335,13 @@ install-man-opam:
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
+install-doc-opam:
+	echo 'docdir: [' >> ocamlbuild.install
+	echo '  "LICENSE"' >> ocamlbuild.install
+	echo '  "Changes"' >> ocamlbuild.install
+	echo '  "Readme.md"' >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
+
 uninstall-bin:
 	rm $(BINDIR)/ocamlbuild
 	rm $(BINDIR)/ocamlbuild.byte
@@ -385,6 +393,7 @@ ocamlbuild.install:
 	$(MAKE) install-bin-opam
 	$(MAKE) install-lib-opam
 	$(MAKE) install-man-opam
+	$(MAKE) install-doc-opam
 
 check-if-preinstalled:
 ifeq ($(CHECK_IF_PREINSTALLED), true)
