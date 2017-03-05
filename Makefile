@@ -235,7 +235,7 @@ clean::
 
 # The library is put in LIBDIR/ocamlbuild. We copy
 # - the META file (for ocamlfind)
-# - src/signatures.mli (user documentation)
+# - src/signatures.{mli,cmi,cmti} (user documentation)
 # - the files in INSTALL_LIB and INSTALL_LIB_OPT (if available)
 
 # We support three installation methods:
@@ -275,12 +275,14 @@ endif
 
 install-lib-basics:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
-	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) META src/signatures.{mli,cmi,cmti} $(INSTALL_LIBDIR)/ocamlbuild
 
 install-lib-basics-opam:
 	echo '  "opam"' >> ocamlbuild.install
 	echo '  "META"' >> ocamlbuild.install
 	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
+	echo '  "src/signatures.cmi" {"signatures.cmi"}' >> ocamlbuild.install
+	echo '  "src/signatures.cmti" {"signatures.cmti"}' >> ocamlbuild.install
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -309,10 +311,10 @@ endif
 install-lib-findlib:
 ifeq ($(OCAML_NATIVE), true)
 	ocamlfind install ocamlbuild \
-	  META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT)
+	  META src/signatures.{mli,cmi,cmti} $(INSTALL_LIB) $(INSTALL_LIB_OPT)
 else
 	ocamlfind install ocamlbuild \
-	  META src/signatures.mli $(INSTALL_LIB)
+	  META src/signatures.{mli,cmi,cmti} $(INSTALL_LIB)
 endif
 
 install-lib-opam:
@@ -350,7 +352,7 @@ ifeq ($(OCAML_NATIVE), true)
 endif
 
 uninstall-lib-basics:
-	rm $(LIBDIR)/ocamlbuild/META $(LIBDIR)/ocamlbuild/signatures.mli
+	rm $(LIBDIR)/ocamlbuild/META $(LIBDIR)/ocamlbuild/signatures.{mli,cmi,cmti}
 
 uninstall-lib-byte:
 	for lib in $(INSTALL_LIB); do\
