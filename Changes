@@ -11,9 +11,11 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-
 NEXT_RELEASE:
 -------------
+
+0.11.0 (5 Mar 2017):
+--------------------
 
 OCamlbuild 0.11.0 introduces a change to the way `.cmxs` files are
 produced when no `.mldylib` file is absent: it will now use the exact
@@ -96,7 +98,8 @@ detailed changelog below for details.
 
 These releases were never widely distributed, because of
 a quickly-caught regression due to the change of .cmxs compilation
-behavior (#132).
+behavior (#132), fixed with the help Daniel Bünzli, Jérémie Dimino
+and, in particular, whitequark.
 
 0.9.3 (6 Oct 2016):
 -------------------
