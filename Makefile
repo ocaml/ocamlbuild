@@ -105,6 +105,11 @@ INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
 INSTALL_MANDIR=$(DESTDIR)$(MANDIR)
 
+INSTALL_SIGNATURES=\
+  src/signatures.mli \
+  src/signatures.cmi \
+  src/signatures.cmti
+
 ifeq ($(OCAML_NATIVE), true)
 all: byte native man
 else
@@ -275,14 +280,14 @@ endif
 
 install-lib-basics:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
-	$(CP) META src/signatures.{mli,cmi,cmti} $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) META $(INSTALL_SIGNATURES) $(INSTALL_LIBDIR)/ocamlbuild
 
 install-lib-basics-opam:
 	echo '  "opam"' >> ocamlbuild.install
 	echo '  "META"' >> ocamlbuild.install
-	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
-	echo '  "src/signatures.cmi" {"signatures.cmi"}' >> ocamlbuild.install
-	echo '  "src/signatures.cmti" {"signatures.cmti"}' >> ocamlbuild.install
+	for lib in $(INSTALL_SIGNATURES); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -311,10 +316,10 @@ endif
 install-lib-findlib:
 ifeq ($(OCAML_NATIVE), true)
 	ocamlfind install ocamlbuild \
-	  META src/signatures.{mli,cmi,cmti} $(INSTALL_LIB) $(INSTALL_LIB_OPT)
+	  META $(INSTALL_SIGNATURES) $(INSTALL_LIB) $(INSTALL_LIB_OPT)
 else
 	ocamlfind install ocamlbuild \
-	  META src/signatures.{mli,cmi,cmti} $(INSTALL_LIB)
+	  META $(INSTALL_SIGNATURES) $(INSTALL_LIB)
 endif
 
 install-lib-opam:
@@ -352,7 +357,10 @@ ifeq ($(OCAML_NATIVE), true)
 endif
 
 uninstall-lib-basics:
-	rm $(LIBDIR)/ocamlbuild/META $(LIBDIR)/ocamlbuild/signatures.{mli,cmi,cmti}
+	rm $(LIBDIR)/ocamlbuild/META
+	for lib in $(INSTALL_SIGNATURES); do \
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
 
 uninstall-lib-byte:
 	for lib in $(INSTALL_LIB); do\
