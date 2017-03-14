@@ -407,6 +407,7 @@ module type OPTIONS = sig
   val use_menhir : bool ref
   val show_documentation : bool ref
   val recursive : bool ref
+  val project : bool ref
   val use_ocamlfind : bool ref
   val plugin_use_ocamlfind : bool ref
 

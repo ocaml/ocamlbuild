@@ -107,6 +107,7 @@ let program_to_execute = ref false
 let must_clean = ref false
 let show_documentation = ref false
 let recursive = ref false
+let project = ref false
 let ext_lib = ref Ocamlbuild_config.a
 let ext_obj = ref Ocamlbuild_config.o
 let ext_dll =
@@ -191,6 +192,7 @@ let spec = ref (
    "-no-log", Unit (fun () -> log_file_internal := ""), " No log file";
    "-clean", Set must_clean, " Remove build directory and other files, then exit";
    "-r", Set recursive, " Traverse directories by default (true: traverse)";
+   "-project", Set project, " Is a project (disable heuristics)";
 
    "-I", String (add_to' my_include_dirs), "<path> Add to include directories";
    "-Is", String (add_to my_include_dirs), "<path,...> (same as above, but accepts a (comma or blank)-separated list)";

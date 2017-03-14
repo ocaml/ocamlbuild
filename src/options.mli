@@ -24,7 +24,7 @@ include Signatures.OPTIONS with type command_spec = Command.spec
 val plugin_tags : string list ref
 
 (* Returns 'true' if we heuristically infer that we are run from an
-   ocamlbuild projet (either _tags or myocamlbuild.ml are present).
+   ocamlbuild project (either _tags or myocamlbuild.ml are present).
 
    This information is used to decide whether to enable recursive
    traversal of subdirectories by default.
