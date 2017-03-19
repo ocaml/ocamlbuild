@@ -163,7 +163,7 @@ src/ocamlbuild_pack.cmx: $(PACK_CMX)
 	mkdir -p tmp
 	$(OCAMLOPT) -pack $^ -o tmp/ocamlbuild_pack.cmx
 	mv tmp/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmx
-	mv tmp/ocamlbuild_pack.o src/ocamlbuild_pack.o
+	mv tmp/ocamlbuild_pack$(EXT_OBJ) src/ocamlbuild_pack$(EXT_OBJ)
 
 # The lexers
 
