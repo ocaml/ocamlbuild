@@ -793,6 +793,7 @@ For example, the `link` flag is automatically added thet set of tags of linking-
  If you wished to use OCamlbuild for a completely different purpose (not necessarily OCaml-related), for example building LaTeX documents, you could use a corresponding `latex` tag.
 * compilation stage context: `pp` (syntactic preprocessing), `compile` (compilation of source files), `link` (linking of object files), but also `pack` (when packing compiled object files), `library` (when creating library archives), `infer_interface` (producing a `.mli` from the corresponding `.ml`) and `toplevel` (when building custom toplevels).
 * byte or native compilation context: `byte` (`ocamlc`) or `native` (`ocamlopt`).
+* File tags: when building the target `foo.bar`, a tag `file:foo.bar` is added to the set of current tags. This can be used for one-off customizations.
 * extension tags: when building the target `foo.bar`, a tag `extension:bar` is added to the set of current tags.
  This is used by the builtin `ocamldoc` rules to enable either `-latex` or `-dot` depending on the requested target extension.
 * tool-specific tags: `menhir`, `ocamlyacc`, `ocamllex`, `doc` (for `ocamldoc`)
