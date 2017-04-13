@@ -788,6 +788,8 @@ let () =
     (fun param -> S [A "-inline-max-unroll"; A param]);
   pflag ["ocaml"; "native"; "compile"] "unbox_closures_factor" ~doc_param:"10"
     (fun param -> S [A "-unbox-closures-factor"; A param]);
+  pflag ["ocaml"; "native"; "compile"] "afl_inst_ratio" ~doc_param:"50"
+    (fun param -> S [A "-afl-inst-ratio"; A param]);
   ()
 
 let camlp4_flags camlp4s =
@@ -907,6 +909,8 @@ flag ["ocaml"; "absname"; "infer_interface"] (A "-absname");;
 flag ["ocaml"; "byte"; "compile"; "compat_32";] (A "-compat-32");;
 flag ["ocaml";"compile";"native";"asm"] & S [A "-S"];;
 
+(* AFL instrumentation *)
+flag ["ocaml"; "compile"; "native"; "afl_instrument"] (A "-afl-instrument");;
 
 (* threads, with or without findlib *)
 flag ["ocaml"; "compile"; "thread"] (A "-thread");;
