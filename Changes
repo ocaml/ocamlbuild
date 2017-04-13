@@ -93,6 +93,10 @@ detailed changelog below for details.
 - "noautolink" tag for ocaml{c,opt}
   (Gabriel Scherer)
 
+- #234: add "afl_instrument" and "afl_inst_ratio" flags for corresponding
+  ocamlopt options.
+  (Jeremy Yallop)
+
 0.10.{0,1} (Dec 2016):
 ----------------------
 
