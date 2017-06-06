@@ -6,35 +6,35 @@
 # - -use-ocamlfind is required to find packages (from Opam)
 # - _tags file introduces packages, bin_annot
 
-OCB_FLAGS = -use-ocamlfind -I src -I libdemo
-OCB = 		ocamlbuild $(OCB_FLAGS)
+.PHONY: all clean byte native profile debug lib sanity test
 
-all: 		native byte lib # profile debug
+OCB_FLAGS = -use-ocamlfind -I src -I libdemo
+OCB = ocamlbuild $(OCB_FLAGS)
+
+all: native byte lib # profile debug
 
 clean:
-			$(OCB) -clean
+	$(OCB) -clean
 
 lib:
-			$(OCB) libdemo.cma
-			$(OCB) libdemo.cmxa
-			$(OCB) libdemo.cmxs
+	$(OCB) libdemo.cma
+	$(OCB) libdemo.cmxa
+	$(OCB) libdemo.cmxs
 
-native:  	sanity
-			$(OCB) main.native
+native: sanity
+	$(OCB) main.native
 
-byte: 		sanity
-			$(OCB) main.byte
+byte: sanity
+	$(OCB) main.byte
 
-profile: 	sanity
-			$(OCB) -tag profile main.native
+profile: sanity
+	$(OCB) -tag profile main.native
 
-debug: 		sanity
-			$(OCB) -tag debug main.byte
+debug: sanity
+	$(OCB) -tag debug main.byte
 
 sanity:
-			ocamlfind query yojson
+	ocamlfind query yojson
 			
-test: 		native
-			echo '{"hello": "json"}' | ./main.native
-
-.PHONY: 	all clean byte native profile debug lib sanity test
+test: native
+	echo '{"hello": "json"}' | ./main.native
