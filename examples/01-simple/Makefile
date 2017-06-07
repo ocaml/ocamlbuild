@@ -4,27 +4,28 @@
 
 # bin-annot is required for Merlin and other IDE-like tools
 
+.PHONY:	all clean byte native profile debug test
+
 OCB_FLAGS = -tag bin_annot
 OCB = 		ocamlbuild $(OCB_FLAGS)
 
-all: 		native byte # profile debug
+all: native byte # profile debug
 
 clean:
-			$(OCB) -clean
+	$(OCB) -clean
 
 native:
-			$(OCB) main.native
+	$(OCB) main.native
 
 byte:
-			$(OCB) main.byte
+	$(OCB) main.byte
 
 profile:
-			$(OCB) -tag profile main.native
+	$(OCB) -tag profile main.native
 
 debug:
-			$(OCB) -tag debug main.byte
+	$(OCB) -tag debug main.byte
 
-test: 		native
-			./main.native "OCaml" "OCamlBuild" "users"
+test: native
+	./main.native "OCaml" "OCamlBuild" "users"
 
-.PHONY: 	all clean byte native profile debug test
