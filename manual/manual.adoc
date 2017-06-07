@@ -91,6 +91,10 @@ We maintain a few self-contained examples of projects using various OCamlbuild f
 
 | link:../examples/06-ocamldoc[06-ocamldoc]
 | A simple example illustrating the use of OCamldoc to generate documentation as html, TeX, man-pages and graphviz files. See <<Sec_Archives_documentation>> for more details.
+
+| link:../examples/07-dependent-projects[07-dependent-projects]
+| A simple example demonstrating the use of symbolic links to include library code from another local project.
+ See https://ocaml.org/learn/tutorials/ocamlbuild/Working_on_dependent_projects_with_ocamlbuild.html[here] for more details.
 |===
 
 NOTE: There are many ways to integrate OCamlbuild in your project.
