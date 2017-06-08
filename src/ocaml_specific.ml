@@ -1000,13 +1000,14 @@ pflag ["ocaml"; "doc"; "man"] "man_section"
 ocaml_lib "ocamlbuildlib";;
 ocaml_lib "ocamlbuildlightlib";;
 
-pflag ["c"; "compile"] "cc" (fun param -> S [A "-cc"; A param]);;
-pflag ["c"; "link"] "cc" (fun param -> S [A "-cc"; A param]);;
-
-pflag ["c"; "compile"] "ccopt" (fun param -> S [A "-ccopt"; A param]);;
-pflag ["c"; "link"] "ccopt" (fun param -> S [A "-ccopt"; A param]);;
-
-pflag ["c"; "compile"] "cclib" (fun param -> S [A "-cclib"; A param]);;
-pflag ["c"; "link"] "cclib" (fun param -> S [A "-cclib"; A param]);;
+begin
+  let ccflag ~lang ~phase ~flag =
+    pflag [lang; phase] flag (fun param -> S [A ("-"^flag); A param])
+  in
+  ["c"; "ocaml"] |> List.iter (fun lang ->
+  ["compile"; "link"] |> List.iter (fun phase ->
+  ["cc"; "ccopt"; "cclib"] |> List.iter (fun flag ->
+    ccflag ~lang ~phase ~flag)))
+end;;
 
 end in ()

@@ -18,6 +18,10 @@ NEXT_RELEASE:
   ocamlopt options.
   (Jeremy Yallop)
 
+- #237: extend cc/ccopt/cclib flags to apply to "ocaml" compilation as well,
+  as tweaking the C linker can be required for pure-OCaml projects -- see #236
+  (Gabriel Scherer, report by Nathan Rebours)
+
 0.11.0 (5 Mar 2017):
 --------------------
 
