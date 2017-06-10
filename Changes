@@ -98,6 +98,14 @@ detailed changelog below for details.
 - #202: install license, changes and readme in opam's docdir for `odig`
   (Gabriel Scherer, request and review by Daniel Bünzli)
 
+* #240: new heuristic for handling the OCAMLLIB environment variable.
+  `ocamlbuild -where` will ignore OCAMLLIB completely if OCAMLBUILD_LIBDIR is
+  not a lexical subdirectory of OCAML_LIBDIR (i.e. an opam installation).
+  Otherwise, it now returns $OCAMLLIB with the difference between
+  OCAMLBUILD_LIBDIR and OCAML_LIBDIR appended (i.e. for a normal findlib
+  installation, it now returns $OCAMLLIB/site-lib/ocamlbuild)
+  (David Allsopp, review by Gabriel Schere)
+
 - "noautolink" tag for ocaml{c,opt}
   (Gabriel Scherer)
 
