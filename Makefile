@@ -343,7 +343,7 @@ install-man-opam:
 	echo >> ocamlbuild.install
 
 install-doc-opam:
-	echo 'docdir: [' >> ocamlbuild.install
+	echo 'doc: [' >> ocamlbuild.install
 	echo '  "LICENSE"' >> ocamlbuild.install
 	echo '  "Changes"' >> ocamlbuild.install
 	echo '  "Readme.md"' >> ocamlbuild.install
