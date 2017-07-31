@@ -96,6 +96,8 @@ src/ocamlbuild_config.ml:
 	echo 'let libdir = "$(OCAMLBUILD_LIBDIR)"'; \
 	echo 'let ocaml_libdir = "$(abspath $(OCAML_LIBDIR))"'; \
 	echo 'let libdir_abs = "$(abspath $(OCAMLBUILD_LIBDIR))"'; \
+	echo 'let ocaml_native = $(OCAML_NATIVE)'; \
+	echo 'let ocaml_native_tools = $(OCAML_NATIVE_TOOLS)'; \
 	echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)';\
 	echo 'let a = "$(A)"'; \
 	echo 'let o = "$(O)"'; \

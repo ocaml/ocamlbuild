@@ -3,6 +3,7 @@
 let () = test "BasicNativeTree"
   ~options:[`no_ocamlfind]
   ~description:"Output tree for native compilation"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "dummy.ml"]
   ~matching:[M.Exact
                 (_build
@@ -37,6 +38,7 @@ let () = test "BasicByteTree"
 let () = test "SeveralTargets"
   ~options:[`no_ocamlfind]
   ~description:"Several targets"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "dummy.ml"]
   ~matching:[_build (M.lf ["dummy.byte"; "dummy.native"])]
   ~targets:("dummy.byte",["dummy.native"]) ();;
@@ -79,6 +81,7 @@ let () = test "Itarget"
 let () = test "PackAcross"
   ~options:[`no_ocamlfind]
   ~description:"Pack using a module from the other tree (PR#4592)"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "main.ml" ~content:"let _ = Pack.Packed.g ()\n";
          T.f "Pack.mlpack" ~content:"pack/Packed";
          T.f "_tags" ~content:"<lib>: include\n<pack/*.cmx>: for-pack(Pack)\n";
@@ -118,6 +121,7 @@ let () = test "NativeMliCmi"
             `tags["native"]]
   ~description:"check that ocamlopt is used for .mli->.cmi \
                 when tag 'native' is set (part of PR#4613)"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "foo.mli" ~content:"val bar : int"]
   ~matching:[_build [M.f "foo.cmi"]]
   ~targets:("foo.cmi",[]) ();;
@@ -157,12 +161,14 @@ let () = test "NoIncludeNoHygiene3"
 let () = test "OutputObj"
   ~options:[`no_ocamlfind]
   ~description:"output_obj targets for native and bytecode (PR #6049)"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\""]
   ~targets:("hello.byte.o",["hello.byte.c";"hello.native.o"]) ();;
 
 let () = test "OutputShared"
   ~options:[`no_ocamlfind]
   ~description:"output_shared targets for native and bytecode (PR #6733)"
+  ~requirements:ocamlopt_available
   ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
          T.f "_tags" ~content:"<*.so>: runtime_variant(_pic)"]
   ~targets:("hello.byte.so",["hello.native.so"]) ();;
@@ -170,6 +176,7 @@ let () = test "OutputShared"
 let () = test "CmxsStubLink"
   ~options:[`no_ocamlfind]
   ~description:".cmxs link rules pass correct -I flags"
+  ~requirements:ocamlopt_available
   ~tree:[T.d "src" [
            T.f "foo_stubs.c" ~content:"";
            T.f "libfoo_stubs.clib" ~content:"foo_stubs.o";
@@ -236,6 +243,7 @@ let () = test "ModularPlugin1"
 let () = test "ModularPlugin2"
   ~description:"check that parametrized tags defined by the plugin \
                 do not warn at plugin-compilation time"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `quiet]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "_tags" ~content:"<main.*>: toto(-g)";
@@ -249,6 +257,7 @@ let () = test "ModularPlugin2"
 let () = test "ModularPlugin3"
   ~description:"check that unknown parametrized tags encountered \
                 during plugin compilation still warn"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `quiet; `plugin_tag "toto(-g)"]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml"
@@ -278,6 +287,7 @@ let () = test "PluginCompilation2"
 let () = test "PluginCompilation3"
   ~description:"check that the plugin is not executed \
                 when -just-plugin is passed"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `quiet; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:"print_endline \"foo\";;"]
@@ -417,6 +427,7 @@ let () = test "JustNoPlugin"
 
 let () = test "CmxsFromMllib1"
   ~description:"Check that a .cmxs file can be built from a .mllib file"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[
     T.f "a.ml" ~content:"let a = 1\n";
@@ -428,6 +439,7 @@ let () = test "CmxsFromMllib1"
 let () = test "CmxsFromMllib2"
   ~description:"Check that a .cmxs file can be built from a .mllib file,
                 even when one of the module has the same name as the library"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[
     T.f "a.ml" ~content:"let a = 1\n";
@@ -441,6 +453,7 @@ let () = test "CmxsFromMllib2"
 let () = test "MldylibOverridesMllib"
   ~description:"Check that the rule producing a cmxs from a .mllib only \
                 triggers if there is no .mldylib"
+  ~requirements:ocamlopt_available
 (*
    GPR #132 (requested by issue #131) adds a new rule which allows producing a
    .cmxs from a .mllib, where previously this was only possible by providing
@@ -460,6 +473,7 @@ let () = test "MldylibOverridesMllib"
 let () = test "MldylibOverridesCmx"
   ~description:"Check that the rule producing foo.cmxs from foo.mldylib \
                 takes precedence over the one that uses foo.cmx"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~matching:[_build [M.f "bar.cmi"]]
   ~tree:[
@@ -472,6 +486,7 @@ let () = test "MldylibOverridesCmx"
 let () = test "MllibOverridesCmx"
   ~description:"Check that the rule producing foo.cmxs from foo.mllib \
                 takes precedence over the one that uses foo.cmx"
+  ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~matching:[_build [M.f "bar.cmi"]]
   ~tree:[
