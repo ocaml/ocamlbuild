@@ -14,6 +14,9 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+- #253: only run native tests if ocamlopt is available.
+  (Ximin Luo, review by whitequark and Gabriel Scherer)
+
 - #234: add "afl_instrument" and "afl_inst_ratio" flags for corresponding
   ocamlopt options.
   (Jeremy Yallop)
