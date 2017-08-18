@@ -25,6 +25,9 @@ NEXT_RELEASE:
   as tweaking the C linker can be required for pure-OCaml projects -- see #236
   (Gabriel Scherer, report by Nathan Rebours)
 
+- #256, #258: -keep-docs and -keep-locs not passed when using -pack
+  (Gabriel Scherer, report by Vincent Jacques)
+
 - #257, #259: add `_opam` to the list of directories ignored by default;
   it is used for package-local opam switches
   (Gabriel Scherer, request by Edwin Török)

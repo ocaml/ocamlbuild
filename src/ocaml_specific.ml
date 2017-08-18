@@ -901,11 +901,15 @@ begin
 end;;
 
 flag ["ocaml"; "native"; "compile"; "no_float_const_prop";] (A "-no-float-const-prop");
-flag ["ocaml"; "compile"; "keep_docs";] (A "-keep-docs");
-flag ["ocaml"; "infer_interface"; "keep_docs";] (A "-keep-docs");
-flag ["ocaml"; "compile"; "keep_locs";] (A "-keep-locs");
-flag ["ocaml"; "absname"; "compile"] (A "-absname");;
-flag ["ocaml"; "absname"; "infer_interface"] (A "-absname");;
+
+["compile"; "link"; "pack"] |> List.iter begin fun phase ->
+  flag ["ocaml"; phase; "keep_docs";] (A "-keep-docs");
+  flag ["ocaml"; phase; "keep_locs";] (A "-keep-locs");
+end;;
+["compile"; "infer_interface"] |> List.iter begin fun phase ->
+  flag ["ocaml"; phase; "absname"] (A "-absname");
+end;;
+
 flag ["ocaml"; "byte"; "compile"; "compat_32";] (A "-compat-32");;
 flag ["ocaml";"compile";"native";"asm"] & S [A "-S"];;
 
