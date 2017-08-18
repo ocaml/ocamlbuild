@@ -364,7 +364,7 @@ That means that if you want to add "foo/bar" (and its files) as part of the sour
 "foo/baz": -traverse
 ----
 
-If the option `-r` (for _recursive_) is passed, then all subdirectories (recursively) are considered part of the source directories by default, except the build directory and directories that look like version-control information (`.svn`, `.bzr`, `.hg`, `.git`, `_darcs`).
+If the option `-r` (for _recursive_) is passed, then all subdirectories (recursively) are considered part of the source directories by default, except the build directory and directories that look like version-control information (`.svn`, `.bzr`, `.hg`, `.git`, `_darcs`) and `_opam`, used for project-local opam switches.
 
 This option is enabled by default _if_ the root directory looks like an OCamlbuild project: either a `myocamlbuild.ml` or a `_tags` file is present.
 

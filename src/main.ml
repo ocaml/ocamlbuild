@@ -96,7 +96,7 @@ let proceed () =
 <**/*.cmi>: ocaml, byte, native
 <**/*.cmx>: ocaml, native
 <**/*.mly>: infer
-<**/.svn>|"CVS"|".bzr"|".hg"|".git"|"_darcs"|"node_modules": -traverse
+<**/.svn>|"CVS"|".bzr"|".hg"|".git"|"_darcs"|"_opam"|"node_modules": -traverse
 |};
 
   List.iter

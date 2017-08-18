@@ -25,6 +25,10 @@ NEXT_RELEASE:
   as tweaking the C linker can be required for pure-OCaml projects -- see #236
   (Gabriel Scherer, report by Nathan Rebours)
 
+- #257, #259: add `_opam` to the list of directories ignored by default;
+  it is used for package-local opam switches
+  (Gabriel Scherer, request by Edwin Török)
+
 0.11.0 (5 Mar 2017):
 --------------------
 

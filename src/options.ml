@@ -136,6 +136,7 @@ let log_file_internal = ref "_log"
 let my_include_dirs = ref [[Filename.current_dir_name]]
 let my_exclude_dirs = ref [
   [".svn"; "CVS"; ".bzr"; ".hg"; ".git"; "_darcs";
+   "_opam";
    "node_modules"]
 ]
 
