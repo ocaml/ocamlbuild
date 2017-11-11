@@ -11,8 +11,11 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.12.0 (11 Nov 2017):
+---------------------
+
+OCamlbuild 0.12.0 is a maintenance release containing mostly bugfixes
+and a few user-contributed features.
 
 - #227: install signatures.{mli,cmi,cmti} to help documentation tools
   (Daniel Bünzli and Gabriel Scherer)
