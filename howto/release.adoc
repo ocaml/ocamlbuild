@@ -147,11 +147,6 @@ git tag <VERSION> -a
 This command should start an editor to ask for a tag message. You can
 use the <<change-summary,release change summary>> as the tag message.
 
-----
-git push
-git push --tags
-----
-
 ==== Post-release changes ====
 
 Create an empty Changes section for the next release,
@@ -165,6 +160,13 @@ Also put NEXT_RELEASE in your VERSION and META file. This will prevent
 you from forgetting to update them at the next release time.
 
 == Making the release visible to our users ==
+
+=== push it upstream ===
+----
+git push
+git push --tags
+----
+
 
 [[opam-repo]]
 === opam-repository update ===
