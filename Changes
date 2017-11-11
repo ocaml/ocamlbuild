@@ -14,8 +14,11 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
-- #253: only run native tests if ocamlopt is available.
-  (Ximin Luo, review by whitequark and Gabriel Scherer)
+- #227: install signatures.{mli,cmi,cmti} to help documentation tools
+  (Daniel Bünzli and Gabriel Scherer)
+
+- #232: fix Windows install rules
+  (David Allsopp)
 
 - #234: add "afl_instrument" and "afl_inst_ratio" flags for corresponding
   ocamlopt options.
@@ -25,7 +28,10 @@ NEXT_RELEASE:
   as tweaking the C linker can be required for pure-OCaml projects -- see #236
   (Gabriel Scherer, report by Nathan Rebours)
 
-- #256, #258: -keep-docs and -keep-locs not passed when using -pack
+- #253: only run native tests if ocamlopt is available.
+  (Ximin Luo, review by whitequark and Gabriel Scherer)
+
+- #256, #258: pass -keep-docs and -keep-locs when using -pack
   (Gabriel Scherer, report by Vincent Jacques)
 
 - #257, #259: add `_opam` to the list of directories ignored by default;
