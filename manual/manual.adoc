@@ -704,7 +704,7 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `no_alias_deps`
 * `no_float_const_prop`
 * `noassert`
-* `noautolink` (since NEXT_RELEASE)
+* `noautolink` (since 0.11.0)
 * `nolabels`
 * `nopervasives`
 * `nostdlib` (since 0.9.4)
@@ -748,6 +748,11 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `unbox_closures`
 * `no_unbox_free_vars_of_closures`
 * `no_unbox_specialized_args`
+
+===== Compiler tags for the AFL instrumentation mode (4.05 and newer)
+
+* `afl_instrument` (since 0.12.0)
+* `afl_inst_ratio` (since 0.12.0)
 
 ===== `ocamlfind` tags
 
