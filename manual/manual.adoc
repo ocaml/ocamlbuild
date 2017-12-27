@@ -309,6 +309,8 @@ Also note that the quoting, `-tag "syntax(camlp4o)"` instead of `-tag syntax(c
 
 If you use `-ppx` preprocessors, you can use the parametrized tag `ppx(...)` (`-tag "ppx(...)"`) to specify the preprocessor to use.
 
+Since ocamlbuild NEXT_RELASE, the tags `ppopt(option)` and `ppxopt(package,option)` are also supported -- if you have set `-use-ocamlfind`.
+
 // TODO: Improve title.
 [[Sec_Archives_documentation]]
 === Archives, documentation
@@ -761,6 +763,8 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `dontlink(pkgname)`
 * `predicate(foo)`
 * `syntax(bar)`
+* `ppopt(camlp4-option)` (since NEXT_RELEASE)
+* `ppxopt(package,option)` (since NEXT_RELEASE)
 
 ===== `ocamllex` tags
 
