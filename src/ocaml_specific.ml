@@ -693,13 +693,19 @@ let () =
       ["c"; "compile"];
     ] in
 
-    (* tags package(X), predicate(X) and syntax(X) *)
+    (* tags package(X), predicate(X) and syntax(X), ppopt(X), ppxopt(X) *)
     List.iter begin fun tags ->
       pflag tags "package" ~doc_param (fun pkg -> S [A "-package"; A pkg]);
       pflag tags "predicate" ~doc_param:"archive"
         (fun pkg -> S [A "-predicates"; A pkg]);
-      if List.mem "ocaml" tags then
-        pflag tags "syntax" ~doc_param:"camlp4o" (fun pkg -> S [A "-syntax"; A pkg])
+      if List.mem "ocaml" tags then begin
+        pflag tags "syntax" ~doc_param:"camlp4o"
+          (fun pkg -> S [A "-syntax"; A pkg]);
+        pflag tags "ppopt" ~doc_param:"pparg"
+          (fun arg -> S [A "-ppopt"; A arg]);
+        pflag tags "ppxopt" ~doc_param:"package,arg"
+          (fun arg -> S [A "-ppxopt"; A arg]);
+      end;
     end all_tags
   end else begin
     try

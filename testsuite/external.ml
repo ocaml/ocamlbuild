@@ -43,4 +43,17 @@ let () = test "SubtoolOptions"
   ~targets:("parser.native",["parser.byte"])
   ();;
 
+let () = test "ppopt"
+  ~description:"Test the -ppopt option"
+  ~requirements:(package_exists "camlp4")
+  ~options:[`use_ocamlfind; `package "camlp4"; `syntax "camlp4o";
+            `tags ["ppopt(-no_quot)"];
+           ]
+  ~tree:[T.f "test.ml"
+           (* <<y>> looks like a camlp4 quotation and
+              will fail to compile unless '-no_quot' is passed *)
+           ~content:"let test (<<) (>>) x y z = x <<y>> z"]
+  ~targets:("test.cmo",[])
+  ();;
+
 run ~root:"_test_external";;
