@@ -884,6 +884,11 @@ flag ["ocaml"; "link"; "library"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "link"; "toplevel"; "custom"; "byte"] (A "-custom");;
 flag ["ocaml"; "compile"; "profile"; "native"] (A "-p");;
 
+flag ["ocamlmklib"; "linkall"] (A "-linkall");;
+flag ["ocamlmklib"; "custom"] (A "-custom");;
+flag ["ocamlmklib"; "failsafe"] (A "-failsafe");;
+flag ["ocamlmklib"; "debug"] (A "-g");;
+
 flag ["ocaml"; "compile"; "no_alias_deps";] (A "-no-alias-deps");;
 flag ["ocaml"; "infer_interface"; "no_alias_deps";] (A "-no-alias-deps");;
 
@@ -1018,6 +1023,16 @@ begin
   ["compile"; "link"] |> List.iter (fun phase ->
   ["cc"; "ccopt"; "cclib"] |> List.iter (fun flag ->
     ccflag ~lang ~phase ~flag)))
+end;;
+
+begin
+  let ocamlmklib_pflag ?doc_param flag =
+    pflag ["ocamlmklib"] flag ?doc_param
+      (fun param -> S [A ("-"^flag); A param]) in
+  ocamlmklib_pflag "cclib";
+  ocamlmklib_pflag "ccopt";
+  ocamlmklib_pflag "rpath";
+  ocamlmklib_pflag "ldopt";
 end;;
 
 end in ()
