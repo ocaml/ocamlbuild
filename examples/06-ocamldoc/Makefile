@@ -1,5 +1,5 @@
 #
-# Pure OCaml, no packages, no _tags, code in serveral directories
+# Pure OCaml, no packages, no _tags, code in several directories
 # Targets starting with "doc_" generate documentation for the Util and Hello
 # modules
 #
