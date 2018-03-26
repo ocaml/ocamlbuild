@@ -1,5 +1,5 @@
 #
-# Pure OCaml, no packages, no _tags, code in serveral directories
+# Pure OCaml, no packages, no _tags, code in several directories
 #
 
 # bin-annot is required for Merlin and other IDE-like tools
