@@ -378,26 +378,26 @@ let byte_debug_library_link_mllib = link_from_file byte_debug_library_link_modul
 
 let byte_pack_modules =
   pack_modules [("cmo",["cmi"]); ("cmi",[])] "cmo" "cma" "cma" ocamlc_p
-    (fun tags -> tags++"ocaml"++"pack"++"byte")
+    (fun tags -> tags++"ocaml"++"link"++"byte"++"pack")
 
 let byte_pack_mlpack = link_from_file byte_pack_modules
 
 let byte_debug_pack_modules =
   pack_modules [("d.cmo",["cmi"]); ("cmi",[])] "d.cmo" "d.cma" "d.cma" ocamlc_p
-    (fun tags -> tags++"ocaml"++"pack"++"byte"++"debug")
+    (fun tags -> tags++"ocaml"++"link"++"byte"++"pack"++"debug")
 
 let byte_debug_pack_mlpack = link_from_file byte_debug_pack_modules
 
 let native_pack_modules x =
   pack_modules [("cmx",["cmi"; !Options.ext_obj]); ("cmi",[])] "cmx" "cmxa" !Options.ext_lib ocamlopt_p
-    (fun tags -> tags++"ocaml"++"pack"++"native") x
+    (fun tags -> tags++"ocaml"++"link"++"native"++"pack") x
 
 let native_pack_mlpack = link_from_file native_pack_modules
 
 let native_profile_pack_modules x =
   pack_modules [("p.cmx",["cmi"; "p" -.- !Options.ext_obj]); ("cmi",[])] "p.cmx" "p.cmxa"
     ("p" -.- !Options.ext_lib) ocamlopt_p
-    (fun tags -> tags++"ocaml"++"pack"++"native"++"profile") x
+    (fun tags -> tags++"ocaml"++"link"++"native"++"pack"++"profile") x
 
 let native_profile_pack_mlpack = link_from_file native_profile_pack_modules
 
