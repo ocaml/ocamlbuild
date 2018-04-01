@@ -1,0 +1,19 @@
+(jbuild_version 1)
+
+(rule
+  (with-stdout-to ocamlbuild.1
+    (progn (cat ${path:ocamlbuild.header.1})
+           (cat ${path:ocamlbuild.options.1})
+           (cat ${path:ocamlbuild.footer.1}))))
+
+(rule (with-stdout-to ocamlbuild.options.1 (run ${path:options_man.exe})))
+
+(executable
+  ((name      options_man)
+   (libraries (ocamlbuild.pack))
+   (flags     (-w L -w R -w Z -safe-string))
+   (modes     (byte))))
+
+(install
+  ((section man)
+   (files   ((ocamlbuild.1 as man1/ocamlbuild.1)))))

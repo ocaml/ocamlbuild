@@ -1,0 +1,35 @@
+(jbuild_version 1)
+
+(rule
+  ((targets (runtest-internal))
+   (deps    ((universe) ../src/ocamlbuild_config.ml internal.ml internal_test_header.ml ocamlbuild_test.ml))
+   (action  (progn (setenv OCAML_COLOR never (run ocaml internal.ml))
+                   (with-stdout-to ${@} (echo 42))))))
+
+(rule
+  ((targets (runtest-findlibonly))
+   (deps    ((universe) ../src/ocamlbuild_config.ml findlibonly.ml findlibonly_test_header.ml internal_test_header.ml ocamlbuild_test.ml))
+   (action  (progn (setenv OCAML_COLOR never (run ocaml findlibonly.ml))
+                   (with-stdout-to ${@} (echo 42))))))
+
+(rule
+  ((targets (runtest-external))
+   (deps    ((universe) ../src/ocamlbuild_config.ml external.ml external_test_header.ml findlibonly_test_header.ml internal_test_header.ml ocamlbuild_test.ml))
+   (action  (progn (setenv OCAML_COLOR never (run ocaml external.ml))
+                   (with-stdout-to ${@} (echo 42))))))
+
+(rule
+  ((targets (runtest-seq-findlibonly))
+   (deps    ((universe) runtest-internal findlibonly.ml findlibonly_test_header.ml))
+   (action  (progn (setenv OCAML_COLOR never (run ocaml findlibonly.ml))
+                   (with-stdout-to ${@} (echo 42))))))
+
+(rule
+  ((targets (runtest-seq-external))
+   (deps    ((universe) runtest-seq-findlibonly external.ml external_test_header.ml))
+   (action  (progn (setenv OCAML_COLOR never (run ocaml external.ml))
+                   (with-stdout-to ${@} (echo 42))))))
+
+(alias
+  ((name runtest)
+   (deps (runtest-seq-external))))

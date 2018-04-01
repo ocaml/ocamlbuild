@@ -91,7 +91,7 @@ module Make(U:sig end) =
             "cma", "cmo", !Options.plugin_ocamlc, "byte"
         in
 
-        let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_module_spec) =
+        let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_pack_spec, ocamlbuild_module_spec) =
 
           let use_light_mode =
             not !Options.native_plugin && !*My_unix.is_degraded in
@@ -177,10 +177,10 @@ module Make(U:sig end) =
             else if use_light_mode then `Nothing
             else `Lib "unix" in
 
-          let ocamlbuild_lib =
-            if use_ocamlfind_pkgs then `Package "ocamlbuild"
-            else if use_light_mode then `Local_lib "ocamlbuildlightlib"
-            else `Local_lib "ocamlbuildlib" in
+          let (ocamlbuild_lib, ocamlbuild_pack) =
+            if use_ocamlfind_pkgs then (`Package "ocamlbuild", `Nothing)
+            else if use_light_mode then (`Local_lib "ocamlbuildlightlib", `Nothing) (* @@DRA TODO *)
+            else (`Local_lib "ocamlbuildlib", `Local_lib "pack/ocamlbuild_pack") in
 
           let ocamlbuild_module =
             if use_light_mode then `Local_mod "ocamlbuildlight"
@@ -199,10 +199,11 @@ module Make(U:sig end) =
             | `Nothing -> N
             | `Package pkg -> S[A "-package"; A pkg]
             | `Lib lib -> P (lib -.- cma)
-            | `Local_lib llib -> S [A "-I"; A dir; P (in_dir (llib -.- cma))]
+            | `Local_lib llib ->
+                S [A "-I"; A (dir/(Filename.dirname llib)); P (in_dir (llib -.- cma))]
             | `Local_mod lmod -> P (in_dir (lmod -.- cmo)) in
 
-          (spec unix_lib, spec ocamlbuild_lib, spec ocamlbuild_module)
+          (spec unix_lib, spec ocamlbuild_lib, spec ocamlbuild_pack, spec ocamlbuild_module)
         in
 
         let plugin_tags =
@@ -232,7 +233,7 @@ module Make(U:sig end) =
              a .cmo that also relies on them), but before the main
              plugin source file and ocamlbuild's initialization. *)
           Cmd(S[compiler;
-                unix_spec; ocamlbuild_lib_spec;
+                unix_spec; ocamlbuild_pack_spec; ocamlbuild_lib_spec;
                 T plugin_tags;
                 plugin_config; P plugin_file;
                 ocamlbuild_module_spec;

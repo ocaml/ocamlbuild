@@ -1,0 +1,67 @@
+(jbuild_version 1)
+
+(library
+  ((name        ocamlbuild_pack)
+   (public_name ocamlbuild.pack)
+   (libraries   (unix))
+   (modules     (:standard ocamlbuild_config \ ocamlbuild_executor ocamlbuildlight ocamlbuild ocamlbuild_plugin ocamlbuild_unix_plugin ppcache))
+   (flags       (-w L -w R -w Z -safe-string))
+   (modules_without_implementation (signatures))))
+
+; This has to be done by hand, because we need myocamlbuild_config.ml to be
+; #use_mod'able in the testsuite
+(rule
+  (with-stdout-to ocamlbuild_config.ml
+                  (run ${bin:cppo}
+                         -D "BINDIR ${read:bindir.probed}"
+                         -D "LIBDIR ${read:libdir.probed}"
+                         -D "LIBDIR_ABS ${read:libdir.probed}"
+                         -D "OCAMLLIB ${ocaml_where}"
+                         -D "EXT_LIB ${ext_lib}"
+                         -D "EXT_OBJ ${ext_obj}"
+                         -D "EXT_SO ${ext_dll}"
+                         -D "EXT_EXE ${ext_exe}"
+                         -D "ARCH ${ocaml-config:architecture}"
+                         -D "VERSION ${read:../VERSION}" ${path:ocamlbuild_config.ml.in})))
+
+(ocamllex (glob_lexer lexers))
+
+; We seem, ahem, to have broken ${ocaml_bin} at some point...
+(rule
+  (ignore-stderr (with-stdout-to bindir.probed (system "opam config var bin || echo ${OCAMLC}"))))
+
+(rule
+  (ignore-stderr (with-stdout-to libdir.probed (system "opam config var lib || ocamlfind printconf destdir || echo ${ocaml_where}"))))
+
+(library
+  ((name        ocamlbuildlib)
+   (public_name ocamlbuild)
+   (libraries   (ocamlbuild.pack))
+   (modules     (ocamlbuild_plugin ocamlbuild_executor ocamlbuild_unix_plugin))
+   (flags       (-w L -w R -w Z -safe-string))
+   (wrapped     false)))
+
+(executable
+  ((name        ocamlbuildlight)
+   (public_name ocamlbuildlight.byte)
+   (libraries   (ocamlbuild.pack unix))
+   (flags       (-w L -w R -w Z -safe-string))
+   (modes       (byte))
+   (modules     (ocamlbuildlight))))
+
+(executable
+  ((name        ocamlbuild)
+   (public_name ocamlbuild)
+   (libraries   (ocamlbuildlib unix))
+   (flags       (-w L -w R -w Z -safe-string))
+   (modes       (native byte))
+   (modules     (ocamlbuild))))
+
+(install
+  ((section bin)
+   (files   ((ocamlbuild.bc as ocamlbuild.byte) (ocamlbuild.exe as ocamlbuild.native)))))
+
+; Ahem...
+(install
+  ((section lib)
+   (files   (ocamlbuild.cmo ocamlbuild.cmx ocamlbuild.o))))
