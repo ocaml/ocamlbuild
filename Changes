@@ -22,6 +22,15 @@ NEXT_RELEASE:
   custom, debug, failsafe, linkall, ccopt(..), cclib(..), rpath(..), ldopt(..)
   (Gabriel Scherer, report by Hannes Mehnert, review by whitequark)
 
+- #272: add the "link" tag to "pack" actions
+  Instead of a separate category, "pack" is now another form of linking
+  like "program", "library", "toplevel" and "output_obj". This fixes
+  the issue that package(...) tags where not passed at pack-production
+  time, spotted by Jérémie Dimino. More generally, this extends
+  the meaning of all "link" flags to "pack", which seems to be the correct
+  behavior for all the rules we inspected.
+  (Gabriel Scherer, original issue diagnosis by Jérémie Dimino)
+
 0.12.0 (11 Nov 2017):
 ---------------------
 
