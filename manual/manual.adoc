@@ -1062,7 +1062,7 @@ We warmly welcome patches to improve this aspect of `ocamlbuild` -- link:../CONT
 
 You can influence the `myocamlbuild.ml` compilation-and-launch process in several ways:
 
-* The `no-plugin` option allows to ignore the `myocamlbuild.ml` file and just run the stock `ocamlbuild` executable on your project.
+* The `-no-plugin` option allows to ignore the `myocamlbuild.ml` file and just run the stock `ocamlbuild` executable on your project.
  This means that fancy new rules introduced by `myocamlbuild.ml` will not be available.
 * The `-just-plugin` option instructs OCamlbuild to stop compilation after having built the plugin.
 It also guarantees that OCamlbuild will try to compile the plugin, which it may not always do, for example when you only ask for cleaning or documentation.
