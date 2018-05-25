@@ -383,17 +383,10 @@ let init () =
   reorder show_tags show_tags_internal;
   reorder plugin_tags plugin_tags_internal;
 
-  let check_dir dir =
-    if Filename.is_implicit dir then
-      sys_file_exists dir
-    else
-      failwith
-        (sprintf "Included or excluded directories must be implicit (not %S)" dir)
-  in
   let dir_reorder my dir =
     let d = !dir in
     reorder dir my;
-    dir := List.filter check_dir (!dir @ d)
+    dir := List.filter sys_file_exists (!dir @ d)
   in
   dir_reorder my_include_dirs include_dirs;
   dir_reorder my_exclude_dirs exclude_dirs;
