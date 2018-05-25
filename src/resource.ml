@@ -27,12 +27,9 @@ let print = Pathname.print
 let equal = (=)
 let compare = compare
 
-let in_source_dir p =
-  if Pathname.is_implicit p then Pathname.pwd/p else invalid_arg (Printf.sprintf "in_source_dir: %S" p)
+let in_source_dir p = Pathname.pwd/p
 
-let in_build_dir p =
-  if Pathname.is_relative p then p
-  else invalid_arg (Printf.sprintf "in_build_dir: %S" p)
+let in_build_dir p = p
 
 let clean_up_links entry =
   if not !Options.make_links then entry else
