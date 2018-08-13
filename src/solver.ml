@@ -14,8 +14,8 @@
 
 (* Original author: Nicolas Pouillard *)
 open My_std
-open Log
 open Format
+open Log
 open Outcome
 
 type backtrace =
