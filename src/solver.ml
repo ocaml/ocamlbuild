@@ -14,7 +14,6 @@
 
 (* Original author: Nicolas Pouillard *)
 open My_std
-open Format
 open Log
 open Outcome
 
@@ -31,6 +30,7 @@ let failed target backtrace =
   raise (Failed backtrace)
 
 let rec pp_repeat f (n, s) =
+  let open Format in
   if n > 0 then (pp_print_string f s; pp_repeat f (n - 1, s))
 
 (* Targets must be normalized pathnames.

@@ -14,7 +14,6 @@
 
 (* Original author: Berke Durak *)
 open My_std
-open Format
 open Log
 open Pathname.Operators
 open Command
