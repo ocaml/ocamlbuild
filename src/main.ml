@@ -14,7 +14,6 @@
 
 (* Original author: Berke Durak *)
 open My_std
-open Log
 open Pathname.Operators
 open Command
 open Tools
@@ -179,7 +178,7 @@ let proceed () =
   let entry = hygiene_entry in
   Hooks.call_hook Hooks.After_hygiene;
   Options.include_dirs := Pathname.current_dir_name :: List.rev !entry_include_dirs;
-  dprintf 3 "include directories are:@ %a" print_string_list !Options.include_dirs;
+  Log.dprintf 3 "include directories are:@ %a" print_string_list !Options.include_dirs;
   Options.entry := Some entry;
 
   Hooks.call_hook Hooks.Before_rules;
@@ -268,9 +267,9 @@ let proceed () =
         match List.rev cmds with
         | [] -> raise (Exit_usage "Using -- requires one target");
         | cmd :: rest ->
-          if rest <> [] then dprintf 0 "Warning: Using -- only run the last target";
+          if rest <> [] then Log.dprintf 0 "Warning: Using -- only run the last target";
           let cmd_spec = S [P cmd; atomize !Options.program_args] in
-          dprintf 3 "Running the user command:@ %a" Pathname.print cmd;
+          Log.dprintf 3 "Running the user command:@ %a" Pathname.print cmd;
           raise (Exit_with_code (call cmd_spec)) (* Exit with the exit code of the called command *)
       end
     else
