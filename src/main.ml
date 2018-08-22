@@ -19,7 +19,6 @@ open Pathname.Operators
 open Command
 open Tools
 open Ocaml_specific
-open Format
 ;;
 
 exception Exit_build_error of string
