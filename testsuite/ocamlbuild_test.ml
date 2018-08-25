@@ -444,10 +444,10 @@ let run ~root =
   let test_tree = Filename.dirname (Sys.argv.(0)) in
   let test_tree = if test_tree = "." then Sys.getcwd () else test_tree in
   let build_tree = Filename.dirname test_tree in
-  let ocamlbuild = Filename.concat build_tree "ocamlbuild.byte" in
+  let ocamlbuild = Filename.concat build_tree "../install/default/bin/ocamlbuild.byte" in
   let testsuite_opts = [
-    (`install_bin_dir build_tree);
-    (`install_lib_dir (Filename.concat build_tree "src"));
+    (`install_bin_dir (Filename.concat build_tree "../install/default/bin"));
+    (`install_lib_dir (Filename.concat build_tree "../install/default/lib/ocamlbuild"));
   ] in
 
   let verbose =

@@ -55,8 +55,6 @@ else
 OCAML_NATIVE ?= true
 endif
 
-OCAML_NATIVE_TOOLS ?= $(OCAML_NATIVE)
-
 all: Makefile.config src/ocamlbuild_config.ml
 
 clean:
@@ -79,7 +77,6 @@ Makefile.config:
 	echo "EXE=$(EXE)"; \
 	echo ;\
 	echo "OCAML_NATIVE=$(OCAML_NATIVE)"; \
-	echo "OCAML_NATIVE_TOOLS=$(OCAML_NATIVE_TOOLS)"; \
 	echo "NATDYNLINK=$(NATDYNLINK)"; \
 	echo "SUPPORT_SHARED_LIBRARIES=$(SUPPORTS_SHARED_LIBRARIES)"; \
 	echo ;\
@@ -97,7 +94,6 @@ src/ocamlbuild_config.ml:
 	echo 'let ocaml_libdir = "$(abspath $(OCAML_LIBDIR))"'; \
 	echo 'let libdir_abs = "$(abspath $(OCAMLBUILD_LIBDIR))"'; \
 	echo 'let ocaml_native = $(OCAML_NATIVE)'; \
-	echo 'let ocaml_native_tools = $(OCAML_NATIVE_TOOLS)'; \
 	echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)';\
 	echo 'let a = "$(A)"'; \
 	echo 'let o = "$(O)"'; \
