@@ -205,9 +205,18 @@ let () = test "StrictSequenceFlag"
   ~description:"strict_sequence tag"
   ~tree:[T.f "hello.ml" ~content:"let () = 1; ()";
          T.f "_tags" ~content:"true: strict_sequence\n"]
-  ~failing_msg:"File \"hello.ml\", line 1, characters 9-10:
+  ~failing_msg:(if Sys.ocaml_version < "4.07.0" then
+"File \"hello.ml\", line 1, characters 9-10:
 Error: This expression has type int but an expression was expected of type
-         unit\nCommand exited with code 2."
+         unit
+Command exited with code 2."
+else
+"File \"hello.ml\", line 1, characters 9-10:
+Error: This expression has type int but an expression was expected of type
+         unit
+       because it is in the left-hand side of a sequence
+Command exited with code 2."
+)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "StrictFormatsFlag"
