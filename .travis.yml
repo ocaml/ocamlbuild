@@ -3,8 +3,11 @@ os: linux
 env:
   - OCAML_VERSION=4.03.0
   - OCAML_VERSION=4.04.0
+  - OCAML_VERSION=4.05.0
+  - OCAML_VERSION=4.06.0
+  - OCAML_VERSION=4.07.0
 install:
-  - echo "yes" | sudo add-apt-repository ppa:avsm/ocaml42+opam12
+  - echo "yes" | sudo add-apt-repository ppa:avsm/ppa
   - sudo apt-get update -qq
   - sudo apt-get install -qq opam
   - export OPAMYES=1
@@ -23,7 +26,7 @@ script:
   - make distclean
   - opam pin add -n -k path ocamlbuild .
   - opam install -v ocamlbuild
-  - opam install -v mtime # this tests topkg, with stub libraries
-  - opam install -v inotify # this tests oasis, with stub libraries
-  - opam install -v cpuid # this tests the ocb-stubblr plugin
-  - opam install -v ppx_deriving # this tests the cppo plugin
+  - opam install -v mtime.1.0.0 # this tests topkg, with stub libraries
+  - opam install -v inotify.2.3 # this tests oasis, with stub libraries
+  - opam install -v cpuid.0.1.1 # this tests the ocb-stubblr plugin
+  - opam install -v shcaml.0.2.1 # this tests the cppo plugin

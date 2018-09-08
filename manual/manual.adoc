@@ -763,8 +763,8 @@ Feel free to look at the implementation and link:../CONTRIBUTING.adoc[send a pat
 * `dontlink(pkgname)`
 * `predicate(foo)`
 * `syntax(bar)`
-* `ppopt(camlp4-option)` (since NEXT_RELEASE)
-* `ppxopt(package,option)` (since NEXT_RELEASE)
+* `ppopt(camlp4-option)` (since 0.13.0)
+* `ppxopt(package,option)` (since 0.13.0)
 
 ===== `ocamllex` tags
 
