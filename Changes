@@ -14,6 +14,9 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+OCamlbuild 0.13.0 contains new features (`ppopt(..)` and `ppxopt(...)` flags,
+ocamlbuild options) and bugfixes (to pack production, for 4.08+dev support).
+
 - #45, #190: add ppopt(arg) and ppxopt(package,arg) when -use-ocamlfind
   (Gabriel Scherer, review by whitequark,
    request by Gabriel Scherer, Gabriel Radanne and Pavel Argentov)
@@ -22,7 +25,7 @@ NEXT_RELEASE:
   custom, debug, failsafe, linkall, ccopt(..), cclib(..), rpath(..), ldopt(..)
   (Gabriel Scherer, report by Hannes Mehnert, review by whitequark)
 
-- #272: add the "link" tag to "pack" actions
+* #272: add the "link" tag to "pack" actions
   Instead of a separate category, "pack" is now another form of linking
   like "program", "library", "toplevel" and "output_obj". This fixes
   the issue that package(...) tags where not passed at pack-production
@@ -30,6 +33,12 @@ NEXT_RELEASE:
   the meaning of all "link" flags to "pack", which seems to be the correct
   behavior for all the rules we inspected.
   (Gabriel Scherer, original issue diagnosis by Jérémie Dimino)
+
+- #278: typo fixes in the manual
+  (Xinzhe Yang)
+
+- #282: fix compilation with trunk OCaml (4.08+dev)
+  (Xavier Clerc and Nandor Licker)
 
 0.12.0 (11 Nov 2017):
 ---------------------
