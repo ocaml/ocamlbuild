@@ -11,8 +11,8 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.13.0 (8 Sep 2018):
+--------------------
 
 OCamlbuild 0.13.0 contains new features (`ppopt(..)` and `ppxopt(...)` flags,
 ocamlbuild options) and bugfixes (to pack production, for 4.08+dev support).
