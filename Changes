@@ -11,8 +11,13 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.13.1 (15 Sep 2018):
+---------------------
+
+This bugfix release attempts to fix a regression due to the change in
+"pack" handling in 0.13.0. It is not clear whether the regression
+should be considered a bug in 0.13.0 or an incorrect _tags file in the
+broken package, but we prefer to fix it anyway.
 
 - #287: change "linkpkg" flag definition to not apply in the
   new "pack"++"link" mode introduced by #272. This avoids
