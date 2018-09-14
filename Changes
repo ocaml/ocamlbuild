@@ -11,6 +11,10 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
+NEXT_RELEASE:
+-------------
+
+
 0.13.1 (15 Sep 2018):
 ---------------------
 
