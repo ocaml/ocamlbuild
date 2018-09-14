@@ -14,6 +14,12 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+- #287: change "linkpkg" flag definition to not apply in the
+  new "pack"++"link" mode introduced by #272. This avoids
+  a build failure in webidl.1.4 and possibly other packages
+  using "true: linkpkg".
+  (Gabriel Scherer, report by Andreas Hauptmann)
+
 0.13.0 (8 Sep 2018):
 --------------------
 

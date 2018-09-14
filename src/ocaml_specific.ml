@@ -676,7 +676,7 @@ let () =
        useful to pass -linkpkg when building archives for example
        (.cma and .cmxa); the "linkpkg" flag allows user to request it
        explicitly. *)
-    flag ["ocaml"; "link"; "linkpkg"] & A"-linkpkg";
+    flag ["ocaml"; "link"; "library"; "linkpkg"] & A"-linkpkg";
     pflag ["ocaml"; "link"] "dontlink" ~doc_param
           (fun pkg -> S[A"-dontlink"; A pkg]);
 
