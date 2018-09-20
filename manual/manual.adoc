@@ -541,7 +541,7 @@ These targets will call the documentation generator `ocamldoc`.
 | `.docdir/man`
 | As `.docdir/index.html` above, but builds the documentation in `man` format.
 
-| `.docdir/bar.tex` or `.docdic/bar.ltx`
+| `.docdir/bar.tex` or `.docdir/bar.ltx`
 | Building the target `foo.docdir/bar.tex` will build the documentation for the modules listed in `foo.odocl`, as a LaTeX file named `foo.docdir/bar.tex`.
  The basename `bar` is not important, but it is the extension `.tex` or `.ltx` that indicates to OCamlbuild that ocamldoc should be asked for a LaTeX output.
 
