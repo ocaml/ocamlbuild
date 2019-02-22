@@ -14,6 +14,13 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+* Revert the change to "pack" handling from 0.13.0 (#272), which turns
+  out to break compatibility with too many projects. At this point in
+  the lifetime of ocamlbuild usage, it's more important to keep
+  building existing projects than to improve the build system for new
+  projects -- of course the latter is also nice, but not when it
+  endangers compatibility.
+  (Gabriel Scherer)
 
 0.13.1 (15 Sep 2018):
 ---------------------
