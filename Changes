@@ -15,6 +15,21 @@ NEXT_RELEASE:
 -------------
 
 
+
+0.14.0 (23 Feb 2019):
+---------------------
+
+Compared to the previous released version (0.12.0), OCamlbuild 0.14.0
+contains new features (`ppopt(..)` and `ppxopt(...)` flags, ocamlbuild
+options) and support for OCaml 4.08+dev.
+
+* Revert the change to "pack" handling from the never-released 0.13
+  (#272), which turns out to break compatibility with too many
+  projects. At this point in the lifetime of ocamlbuild usage, it's
+  more important to keep building existing projects than to improve
+  the build system for new projects -- of course the latter is also
+  nice, but not when it endangers compatibility.  (Gabriel Scherer)
+
 0.13.1 (15 Sep 2018):
 ---------------------
 

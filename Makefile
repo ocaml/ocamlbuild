@@ -283,7 +283,7 @@ install-lib-basics:
 	$(CP) META $(INSTALL_SIGNATURES) $(INSTALL_LIBDIR)/ocamlbuild
 
 install-lib-basics-opam:
-	echo '  "opam"' >> ocamlbuild.install
+	echo '  "ocamlbuild.opam" {"opam"}' >> ocamlbuild.install
 	echo '  "META"' >> ocamlbuild.install
 	for lib in $(INSTALL_SIGNATURES); do \
 	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
