@@ -16,7 +16,7 @@ In particular, if you try to understand the implementation or documentation, and
 This repository also hosts https://github.com/ocaml/ocamlbuild/tree/master/manual/manual.adoc[the OCamlbuild manual].
 Feel free to ask questions about unclear part of the manual, or to contribute extra explanations.
 
-The documentation contains a set of https://github.com/ocaml/ocamlbuild/tree/master/manual/examples[examples] that anyone can help grow.
+The documentation contains a set of https://github.com/ocaml/ocamlbuild/tree/master/examples[examples] that anyone can help grow.
 If there is a typical kind of setting that you've reused across several projects, is clear and informative, and is not represented in existing examples, feel free to submit it.
 
 You can also help complete the documentation by integrating http://ocaml.org/learn/tutorials/ocamlbuild/[ocaml.org Wiki] content in the OCamlbuild manual.
