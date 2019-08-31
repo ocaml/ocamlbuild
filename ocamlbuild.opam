@@ -7,7 +7,7 @@ license: "LGPL-2 with OCaml linking exception"
 doc: "https://github.com/ocaml/ocamlbuild/blob/master/manual/manual.adoc"
 dev-repo: "git+https://github.com/ocaml/ocamlbuild.git"
 synopsis:
-  "OCamlbuild is a build system with builtin rules to easily build most OCaml projects."
+  "OCamlbuild is a build system with builtin rules to easily build most OCaml projects"
 
 build: [
   [
