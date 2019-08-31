@@ -53,7 +53,19 @@ let run args target =
       failwith (Printf.sprintf "Error during command %S: %s" cmd (Printexc.to_string x))
 let rm = sys_remove
 let rm_f x =
-  if sys_file_exists x then rm x
+  if sys_file_exists x then ()
+  else
+    (* We checked that the file does not exist, but we still ignore
+       failures due to the possibility of race conditions --
+       another thread having removed the file at the same time.
+
+       See issue #300 and PR #302 for a race-condition in the wild,
+       and a reproduction script.
+
+       We could reproduce such races due to the Shell.rm_f call on the log file
+       at the start of ocamlbuild's invocation. *)
+    try sys_remove x with _ -> ()
+
 let mkdir dir =
   reset_filesys_cache_for_file dir;
   (*Sys.mkdir dir (* MISSING in ocaml *) *)
