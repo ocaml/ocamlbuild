@@ -30,8 +30,8 @@ OCAMLLEX  ?= ocamllex
 endif
 
 CP        ?= cp
-COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string -bin-annot -strict-sequence
-LINKFLAGS ?= -I +unix -I src
+OCB_COMPFLAGS ?= -w L -w R -w Z -I src -I +unix -safe-string -bin-annot -strict-sequence
+OCB_LINKFLAGS ?= -I +unix -I src
 
 PACK_CMO= $(addprefix src/,\
   const.cmo \
@@ -127,13 +127,13 @@ distclean:: clean
 # The executables
 
 ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
-	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
+	$(OCAMLC) $(OCB_LINKFLAGS) -o $@ unix.cma $^
 
 ocamlbuildlight.byte: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
-	$(OCAMLC) $(LINKFLAGS) -o $@ $^
+	$(OCAMLC) $(OCB_LINKFLAGS) -o $@ $^
 
 ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) src/ocamlbuild.cmx
-	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
+	$(OCAMLOPT) $(OCB_LINKFLAGS) -o $@ unix.cmxa $^
 
 # The libraries
 
@@ -419,13 +419,13 @@ endif
 # The generic rules
 
 %.cmo: %.ml
-	$(OCAMLC) $(COMPFLAGS) -c $<
+	$(OCAMLC) $(OCB_COMPFLAGS) -c $<
 
 %.cmi: %.mli
-	$(OCAMLC) $(COMPFLAGS) -c $<
+	$(OCAMLC) $(OCB_COMPFLAGS) -c $<
 
 %.cmx: %.ml
-	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
+	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(OCB_COMPFLAGS) -c $<
 
 clean::
 	rm -rf tmp/
