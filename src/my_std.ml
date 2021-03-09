@@ -15,6 +15,8 @@
 (* Original author: Nicolas Pouillard *)
 open Format
 
+module Pervasives = Pervasives [@ocaml.warning "-3"]
+
 exception Exit_OK
 exception Exit_usage of string
 exception Exit_system_error of string
