@@ -17,6 +17,8 @@
 
 open Unix;;
 
+module Pervasives = Pervasives [@ocaml.warning "-3"]
+
 type error =
   | Subcommand_failed
   | Subcommand_got_signal
