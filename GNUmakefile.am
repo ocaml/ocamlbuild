@@ -1,0 +1,1043 @@
+@protect@ifeq ($(CHECK_IF_PREINSTALLED),yes)
+@protect@override CHECK_IF_PREINSTALLED:=true
+@protect@endif
+
+@protect@ifeq ($(OCAML_NATIVE_TOOLS),yes)
+@protect@override OCAML_NATIVE_TOOLS:=true
+@protect@endif
+
+# It is important to distinguish OCAML_LIBDIR, which points to the
+# directory of the ocaml compiler distribution, and OCAMLBUILD_LIBDIR,
+# which should be the general library directory of OCaml projects on
+# the user machine.
+
+@protect@ifeq ($(ARCH),none)
+@protect@OCAML_NATIVE ?=false
+@protect@else
+@protect@OCAML_NATIVE ?=true
+@protect@endif
+
+OCAML_NATIVE_TOOLS ?=$(OCAML_NATIVE)
+EXT_OBJ ?=.o
+SUPPORTS_SHARED_LIBRARIES ?=true
+SUPPORT_SHARED_LIBRARIES::=$(SUPPORTS_SHARED_LIBRARIES)
+
+@protect@ifeq ($(OCAML_NATIVE_TOOLS),true)
+@protect@OCAMLC ?=ocamlc.opt
+@protect@OCAMLOPT ?=ocamlopt.opt
+@protect@OCAMLDEP ?=ocamldep.opt
+@protect@OCAMLLEX ?=ocamllex.opt
+@protect@else
+@protect@OCAMLC ?=ocamlc
+@protect@OCAMLOPT ?=ocamlopt
+@protect@OCAMLDEP ?=ocamldep
+@protect@OCAMLLEX ?=ocamllex
+@protect@endif
+
+@protect@ifeq ($(abs_top_srcdir),$(abs_top_builddir))
+@protect@TOOL_BUILD_SUBDIR::=src/
+@protect@TOOL_BUILD_DIR_BIN::=$(TOOL_BUILD_SUBDIR)
+@protect@TOOL_BUILD_DIR_MAN::=man/
+@protect@TOOL_BUILD_DIR_SRC_ABS::=$(abs_top_builddir)/$(TOOL_BUILD_SUBDIR)
+@protect@TOOL_BUILD_DIR_BIN_ABS::=$(abs_top_builddir)/$(TOOL_BUILD_DIR_BIN)
+@protect@TOOL_BUILD_DIR_MAN_ABS::=$(abs_top_builddir)/man/
+
+o_t::=.o-build/
+x_t::=.x-build/
+@protect@else
+@protect@TOOL_BUILD_SUBDIR::=src/
+@protect@TOOL_BUILD_DIR_BIN::=bin/
+@protect@TOOL_BUILD_DIR_MAN::=man/
+@protect@TOOL_BUILD_DIR_SRC_ABS::=$(abs_top_builddir)/$(TOOL_BUILD_SUBDIR)
+@protect@TOOL_BUILD_DIR_BIN_ABS::=$(abs_top_builddir)/$(TOOL_BUILD_DIR_BIN)
+@protect@TOOL_BUILD_DIR_MAN_ABS::=$(abs_top_builddir)/man/
+
+o_t::=o/
+x_t::=x/
+@protect@endif
+
+@protect@ifeq ($(MAKE_RESTARTS),)
+@protect@$(shell $(MKDIR_P) '$(TOOL_BUILD_SUBDIR)' '$(TOOL_BUILD_DIR_BIN)' \
+'$(o_t)' '$(x_t)' '$(TOOL_BUILD_DIR_MAN)')
+@protect@endif
+
+TOOL_SOURCE_DIR::=$(srcdir)/src/
+
+CP ?=cp
+COMP_INC_FLAGS ?=-I '$(TOOL_BUILD_DIR_BIN)' -I +unix
+COMP_BASE_FLAGS ?=-w L -w R -w Z -safe-string -bin-annot
+COMPFLAGS ?=$(COMP_BASE_FLAGS) $(COMP_INC_FLAGS)
+COMPFLAGS_CMO ?=$(COMP_BASE_FLAGS) -I '$(o_t)' $(COMP_INC_FLAGS)
+COMPFLAGS_CMX ?=$(COMP_BASE_FLAGS) -I '$(x_t)' $(COMP_INC_FLAGS)
+COMP_PACK_FLAGS ?=-for-pack Ocamlbuild_pack
+LINKFLAGS ?=-I +unix -I '$(TOOL_BUILD_DIR_BIN)'
+OCAMLDEP_FLAGS ?=-one-line
+
+bin_PROGRAMS::=ocamlbuild.byte ocamlbuild.native
+ocamlbuild_SOURCES::=\
+src/bool.ml \
+src/command.ml \
+src/configuration.ml \
+src/const.ml \
+src/digest_cache.ml \
+src/discard_printf.ml \
+src/display.ml \
+src/exit_codes.ml \
+src/fda.ml \
+src/findlib.ml \
+src/flags.ml \
+src/glob_ast.ml \
+src/glob.ml \
+src/hooks.ml \
+src/hygiene.ml \
+src/loc.ml \
+src/log.ml \
+src/main.ml \
+src/my_std.ml \
+src/my_unix.ml \
+src/ocaml_arch.ml \
+src/ocamlbuild_executor.ml \
+src/ocamlbuildlight.ml \
+src/ocamlbuild.ml \
+src/ocamlbuild_plugin.ml \
+src/ocamlbuild_unix_plugin.ml \
+src/ocamlbuild_where.ml \
+src/ocaml_compiler.ml \
+src/ocaml_dependencies.ml \
+src/ocaml_specific.ml \
+src/ocaml_tools.ml \
+src/ocaml_utils.ml \
+src/options.ml \
+src/param_tags.ml \
+src/pathname.ml \
+src/plugin.ml \
+src/ppcache.ml \
+src/report.ml \
+src/resource.ml \
+src/rule.ml \
+src/shell.ml \
+src/slurp.ml \
+src/solver.ml \
+src/tags.ml \
+src/tools.ml
+
+ocamlbuild_SIGNATURES::=signatures
+
+ocamlbuild_BASE_PACK_HEADER::=\
+const \
+loc \
+discard_printf
+
+ocamlbuild_BASE_PACK_FOOTER::=\
+my_std \
+my_unix \
+tags \
+display \
+log \
+shell \
+bool \
+glob_ast \
+glob_lexer \
+glob \
+lexers \
+param_tags \
+command \
+ocamlbuild_config \
+ocamlbuild_where \
+slurp \
+options \
+pathname \
+configuration \
+flags \
+hygiene \
+digest_cache \
+resource \
+rule \
+solver \
+report \
+tools \
+fda \
+findlib \
+ocaml_arch \
+ocaml_utils \
+ocaml_dependencies \
+ocaml_compiler \
+ocaml_tools \
+ocaml_specific \
+exit_codes \
+plugin \
+hooks \
+main
+
+ocamlbuild_ADDITION=$(addprefix $(3),$(addsuffix .cm$(2),$(ocamlbuild_$(1))))
+ocamlbuild_ADDITION2=$(call ocamlbuild_ADDITION,$(1),$(2),$($(2)_t))
+ocamlbuild_EXTRA::=ocamlbuild_plugin ocamlbuild_executor ocamlbuild_unix_plugin
+ocamlbuild_EXTRA_CMI::=$(call ocamlbuild_ADDITION,EXTRA,i,$(x_t))
+ocamlbuild_EXTRA_CMO::=$(call ocamlbuild_ADDITION2,EXTRA,o)
+ocamlbuild_EXTRA_CMX::=$(call ocamlbuild_ADDITION2,EXTRA,x)
+ocamlbuild_BASE_PACK_HEADER_CMO::=$(call ocamlbuild_ADDITION2,BASE_PACK_HEADER,o)
+ocamlbuild_BASE_PACK_HEADER_CMX::=$(call ocamlbuild_ADDITION2,BASE_PACK_HEADER,x)
+ocamlbuild_BASE_PACK_FOOTER_CMO::=$(call ocamlbuild_ADDITION2,BASE_PACK_FOOTER,o)
+ocamlbuild_BASE_PACK_FOOTER_CMX::=$(call ocamlbuild_ADDITION2,BASE_PACK_FOOTER,x)
+ocamlbuild_SIGNATURES_CMI::=$(call ocamlbuild_ADDITION,SIGNATURES,i,$(TOOL_BUILD_SUBDIR))
+ocamlbuild_PACK_CMO::=$(ocamlbuild_BASE_PACK_HEADER_CMO) \
+                      $(ocamlbuild_SIGNATURES_CMI) \
+                      $(ocamlbuild_BASE_PACK_FOOTER_CMO)
+ocamlbuild_PACK_CMX::=$(ocamlbuild_BASE_PACK_HEADER_CMX) \
+                      $(ocamlbuild_SIGNATURES_CMI) \
+                      $(ocamlbuild_BASE_PACK_FOOTER_CMX)
+ocamlbuild_PACK_CMI_FILE::=$(x_t)ocamlbuild_pack.cmi
+ocamlbuild_PACK_CMI_FILE_O_VARIANT::=$(o_t)ocamlbuild_pack.cmi
+ocamlbuild_PACK_CMO_FILE::=$(o_t)ocamlbuild_pack.cmo
+ocamlbuild_PACK_CMX_FILE::=$(x_t)ocamlbuild_pack.cmx
+ocamlbuild_PACK_OBJ_FILE::=$(x_t)ocamlbuild_pack$(EXT_OBJ)
+ocamlbuild_PACK_FILE_LINKS_CREATED::=$(TOOL_BUILD_DIR_BIN)pack_file_links_were_created.status
+OCAMLBUILD_CMI_FILE::=$(x_t)ocamlbuild.cmi
+OCAMLBUILD_CMO_FILE::=$(o_t)ocamlbuild.cmo
+OCAMLBUILD_CMX_FILE::=$(x_t)ocamlbuild.cmx
+OCAMLBUILD_MLI_FILE::=$(TOOL_SOURCE_DIR)ocamlbuild.mli
+OCAMLBUILD_ML_FILE::=$(TOOL_SOURCE_DIR)ocamlbuild.ml
+OCAMLBUILD_OPTIONS_MAN_BYTE_FILE::=$(TOOL_BUILD_DIR_MAN)options_man.byte
+
+ocamlbuild_ADDITION_MLI=$(addprefix $(TOOL_SOURCE_DIR),$(addsuffix .mli,$(1)))
+ocamlbuild_MLI_FILES_FOR_GENERATED_ML::=$(call ocamlbuild_ADDITION_MLI,\
+glob_lexer lexers)
+ocamlbuild_MLI_FILES_FOR_EXTRA::=$(call ocamlbuild_ADDITION_MLI,$(ocamlbuild_EXTRA))
+ocamlbuild_MLI_FILES_FOR_SIGNATURES::=$(call ocamlbuild_ADDITION_MLI,$(ocamlbuild_SIGNATURES))
+ocamlbuild_MLI_FILES::=$(wildcard $(TOOL_SOURCE_DIR)*.mli)
+ocamlbuild_MLI_FILES_WITHOUT_GENERATED_ML::=\
+$(filter-out $(ocamlbuild_MLI_FILES_FOR_GENERATED_ML),$(ocamlbuild_MLI_FILES))
+ocamlbuild_MLI_FILES_FOR_PACK::=\
+$(filter-out $(ocamlbuild_MLI_FILES_FOR_EXTRA) \
+$(ocamlbuild_MLI_FILES_FOR_SIGNATURES) \
+$(OCAMLBUILD_MLI_FILE),$(ocamlbuild_MLI_FILES_WITHOUT_GENERATED_ML))
+
+INSTALL_LIB=\
+$(TOOL_BUILD_SUBDIR)ocamlbuildlib.cma \
+$(OCAMLBUILD_CMO_FILE) \
+$(ocamlbuild_PACK_CMI_FILE) \
+$(ocamlbuild_EXTRA_CMI)
+
+INSTALL_LIB_OPT=\
+$(TOOL_BUILD_SUBDIR)ocamlbuildlib.cmxa \
+$(TOOL_BUILD_SUBDIR)ocamlbuildlib$(EXT_LIB) \
+$(OCAMLBUILD_CMX_FILE) \
+$(TOOL_BUILD_SUBDIR)ocamlbuild$(EXT_OBJ) \
+$(ocamlbuild_PACK_CMX_FILE) \
+$(ocamlbuild_EXTRA_CMX) \
+$(ocamlbuild_EXTRA_CMO:.cmo=$(EXT_OBJ))
+
+INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
+INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
+INSTALL_MANDIR=$(DESTDIR)$(MANDIR)
+
+INSTALL_SIGNATURES::=\
+$(TOOL_SOURCE_DIR)signatures.mli \
+$(x_t)signatures.cmi \
+$(x_t)signatures.cmti
+
+ocamlbuild_CONFIG_ML::=$(TOOL_BUILD_SUBDIR)ocamlbuild_config.ml
+ocamlbuild_CONFIG_CMO_FILE::=$(o_t)ocamlbuild_config.cmo
+ocamlbuild_CONFIG_CMX_FILE::=$(x_t)ocamlbuild_config.cmx
+
+all: $(ocamlbuild_CONFIG_ML) byte man
+
+byte: ocamlbuild.byte $(TOOL_BUILD_DIR_BIN)ocamlbuildlib.cma
+                 # ocamlbuildlight.byte ocamlbuildlightlib.cma
+native: ocamlbuild.native $(TOOL_BUILD_DIR_BIN)ocamlbuildlib.cmxa
+
+allopt: all # compatibility alias
+
+distclean-local:: clean-local
+	rm -f $(ocamlbuild_CONFIG_ML)
+
+OCAML ?=ocaml
+OCAML_CAT_SCRIPT ?=$(abs_top_srcdir)/scripts/cat.ml
+TOOL_BUILD_VERSION_FILE ?=$(abs_top_srcdir)/VERSION
+
+$(abs_top_builddir)/$(ocamlbuild_CONFIG_ML) \
+$(ocamlbuild_CONFIG_ML): $(OCAML_CAT_SCRIPT) \
+$(TOOL_BUILD_VERSION_FILE) \
+$(OCAML)
+	(echo '(* This file was generated from GNUmakefile.am. *)' &&\
+	echo &&\
+	echo 'let bindir = "$(OCAMLBUILD_BINDIR)"' &&\
+	echo 'let libdir = "$(OCAMLBUILD_LIBDIR)"' &&\
+	echo 'let ocaml_libdir = "$(abspath $(OCAML_LIBDIR))"' &&\
+	echo 'let libdir_abs = "$(abspath $(OCAMLBUILD_LIBDIR))"' &&\
+	echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)' &&\
+	echo 'let a = "$(A)"' &&\
+	echo 'let o = "$(O)"' &&\
+	echo 'let so = "$(SO)"' &&\
+	echo 'let ext_dll = "$(EXT_DLL)"' &&\
+	echo 'let exe = "$(EXE)"' &&\
+	echo 'let version = "$(shell $(OCAML) $(OCAML_CAT_SCRIPT) $(TOOL_BUILD_VERSION_FILE))"' \
+	) > '$@'
+
+$(TOOL_BUILD_DIR_SRC_ABS)glob_lexer.ml \
+$(TOOL_BUILD_SUBDIR)glob_lexer.ml: $(TOOL_SOURCE_DIR)glob_lexer.mll
+	$(OCAMLLEX) -o '$@' '$(TOOL_SOURCE_DIR)glob_lexer.mll'
+
+$(TOOL_BUILD_DIR_SRC_ABS)lexers.ml \
+$(TOOL_BUILD_SUBDIR)lexers.ml: $(TOOL_SOURCE_DIR)lexers.mll
+	$(OCAMLLEX) -o '$@' '$(TOOL_SOURCE_DIR)lexers.mll'
+
+clean-local::
+	rm -f '$(TOOL_BUILD_SUBDIR)glob_lexer.ml' '$(TOOL_BUILD_SUBDIR)lexers.ml'
+
+beforedepend:: $(TOOL_BUILD_SUBDIR)ocamlbuild_config.ml \
+$(TOOL_BUILD_SUBDIR)lexers.ml \
+$(TOOL_BUILD_SUBDIR)glob_lexer.ml
+
+man: man/ocamlbuild.1
+
+man/ocamlbuild.1: man/ocamlbuild.header.1 man/ocamlbuild.options.1 man/ocamlbuild.footer.1
+	cat $^ > $@
+
+man/ocamlbuild.options.1: $(OCAMLBUILD_OPTIONS_MAN_BYTE_FILE)
+	$(OCAMLBUILD_OPTIONS_MAN_BYTE_FILE) > $@
+
+clean-local::
+	rm -f man/ocamlbuild.options.1
+
+distclean-local::
+	rm -f man/ocamlbuild.1
+
+$(OCAMLBUILD_OPTIONS_MAN_BYTE_FILE): man/options_man.ml \
+$(ocamlbuild_PACK_CMO_FILE)
+	$(OCAMLC) -I '$(o_t)' -o '$@' '$(ocamlbuild_PACK_CMO_FILE)' '$(srcdir)/man/options_man.ml'
+
+clean-local::
+	rm -f man/options_man.cm* '$(OCAMLBUILD_OPTIONS_MAN_BYTE_FILE)'
+@protect@ifdef EXT_OBJ
+@protect@	rm -f man/options_man$(EXT_OBJ)
+@protect@endif
+
+# Testing
+
+test-%: testsuite/%.ml all
+	cd testsuite && ocaml $(CURDIR)/$<
+
+test: test-internal test-findlibonly test-external
+
+clean-local::
+	rm -rf testsuite/_test_*
+
+# Installation
+
+# The binaries go in BINDIR. We copy ocamlbuild.byte and
+# ocamlbuild.native (if available), and also copy the best available
+# binary as BINDIR/ocamlbuild.
+
+# The library is put in LIBDIR/ocamlbuild. We copy
+# - the META file (for ocamlfind)
+# - src/signatures.{mli,cmi,cmti} (user documentation)
+# - the files in INSTALL_LIB and INSTALL_LIB_OPT (if available)
+
+# We support three installation methods:
+# - standard {install,uninstall} targets
+# - findlib-{install,uninstall} that uses findlib for the library install
+# - producing an OPAM .install file and not actually installing anything
+
+install-bin-byte:
+	$(MKDIR_P) $(INSTALL_BINDIR)
+	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)
+@protect@ifneq ($(OCAML_NATIVE),true)
+@protect@	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE)
+@protect@endif
+
+install-bin-native:
+	$(MKDIR_P) $(INSTALL_BINDIR)
+	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild$(EXE)
+	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild.native$(EXE)
+
+install-bin-local: install-bin-byte
+
+install-bin-opam:
+	echo 'bin: [' >> ocamlbuild.install
+	echo '  "ocamlbuild.byte" {"ocamlbuild.byte"}' >> ocamlbuild.install
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@	echo '  "ocamlbuild.native" {"ocamlbuild.native"}' >> ocamlbuild.install
+@protect@	echo '  "ocamlbuild.native" {"ocamlbuild"}' >> ocamlbuild.install
+@protect@else
+@protect@	echo '  "ocamlbuild.byte" {"ocamlbuild"}' >> ocamlbuild.install
+@protect@endif
+	echo ']' >> ocamlbuild.install
+	echo >> ocamlbuild.install
+
+install-lib-basics:
+	$(MKDIR_P) $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) META $(INSTALL_SIGNATURES) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-basics-opam:
+	echo '  "opam"' >> ocamlbuild.install
+	echo '  "META"' >> ocamlbuild.install
+	for lib in $(INSTALL_SIGNATURES); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
+
+install-lib-byte:
+	$(MKDIR_P) $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) $(INSTALL_LIB) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-byte-opam:
+	for lib in $(INSTALL_LIB); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
+
+install-lib-native:
+	$(MKDIR_P) $(INSTALL_LIBDIR)/ocamlbuild
+	$(CP) $(INSTALL_LIB_OPT) $(INSTALL_LIBDIR)/ocamlbuild
+
+install-lib-native-opam:
+	for lib in $(INSTALL_LIB_OPT); do \
+	  echo "  \"$$lib\" {\"$$(basename $$lib)\"}" >> ocamlbuild.install; \
+	done
+
+install-lib-local: install-lib-basics install-lib-byte
+
+install-lib-findlib:
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@	ocamlfind install ocamlbuild \
+@protect@	  META $(INSTALL_SIGNATURES) $(INSTALL_LIB) $(INSTALL_LIB_OPT)
+@protect@else
+@protect@	ocamlfind install ocamlbuild \
+@protect@	  META $(INSTALL_SIGNATURES) $(INSTALL_LIB)
+@protect@endif
+
+install-lib-opam:
+	echo 'lib: [' >> ocamlbuild.install
+	$(MAKE) install-lib-basics-opam
+	$(MAKE) install-lib-byte-opam
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@	$(MAKE) install-lib-native-opam
+@protect@endif
+	echo ']' >> ocamlbuild.install
+	echo >> ocamlbuild.install
+
+install-man-local:
+	$(MKDIR_P) $(INSTALL_MANDIR)/man1
+	cp man/ocamlbuild.1 $(INSTALL_MANDIR)/man1/ocamlbuild.1
+
+install-man-opam:
+	echo 'man: [' >> ocamlbuild.install
+	echo '  "man/ocamlbuild.1" {"man1/ocamlbuild.1"}' >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
+	echo >> ocamlbuild.install
+
+install-doc-opam:
+	echo 'doc: [' >> ocamlbuild.install
+	echo '  "LICENSE"' >> ocamlbuild.install
+	echo '  "Changes"' >> ocamlbuild.install
+	echo '  "Readme.md"' >> ocamlbuild.install
+	echo ']' >> ocamlbuild.install
+
+uninstall-bin-local:
+	rm $(BINDIR)/ocamlbuild $(BINDIR)/ocamlbuild.byte
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@	rm $(BINDIR)/ocamlbuild.native
+@protect@endif
+
+uninstall-lib-basics:
+	rm $(LIBDIR)/ocamlbuild/META
+	for lib in $(INSTALL_SIGNATURES); do \
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
+
+uninstall-lib-byte:
+	for lib in $(INSTALL_LIB); do\
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
+
+uninstall-lib-native:
+	for lib in $(INSTALL_LIB_OPT); do\
+	  rm $(LIBDIR)/ocamlbuild/`basename $$lib`;\
+	done
+
+uninstall-lib-local:
+	$(MAKE) uninstall-lib-basics uninstall-lib-byte
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@	$(MAKE) uninstall-lib-native
+@protect@endif
+	ls $(LIBDIR)/ocamlbuild # for easier debugging if rmdir fails
+	rmdir $(LIBDIR)/ocamlbuild
+
+uninstall-lib-findlib:
+	ocamlfind remove ocamlbuild
+
+uninstall-man-local:
+	rm $(INSTALL_MANDIR)/man1/ocamlbuild.1
+
+install-exec-local: check-if-preinstalled
+	$(MAKE) install-bin-local install-lib-local install-man-local
+
+uninstall-local: uninstall-bin-local uninstall-lib-local uninstall-man-local
+
+findlib-install: check-if-preinstalled
+	$(MAKE) install-bin-local install-lib-findlib
+
+findlib-uninstall: uninstall-bin-local uninstall-lib-findlib
+
+opam-install: check-if-preinstalled
+	$(MAKE) ocamlbuild.install
+
+ocamlbuild.install:
+	rm -f $@ && touch $@
+	$(MAKE) install-bin-opam install-lib-opam install-man-opam install-doc-opam
+
+check-if-preinstalled:
+@protect@ifeq ($(CHECK_IF_PREINSTALLED),true)
+@protect@	if test -d $(shell ocamlc -where)/ocamlbuild; then\
+@protect@	  >&2 echo "ERROR: Preinstalled ocamlbuild detected at"\
+@protect@	       "$(shell ocamlc -where)/ocamlbuild";\
+@protect@	  >&2 echo "Installation aborted; if you want to bypass this"\
+@protect@	        "safety check, pass CHECK_IF_PREINSTALLED=false to make";\
+@protect@	  exit 2;\
+@protect@	fi
+@protect@endif
+
+%.ml: %.mll
+	$(OCAMLLEX) -o '$@' '$<'
+
+%.cmi: %.mli
+	$(OCAMLOPT) $(COMPFLAGS) -c -o '$@' '$<'
+
+define rule_pair =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLC) $$(COMP_PACK_FLAGS) $$(COMPFLAGS_CMO) -c -o '$$@' '$$(TOOL_SOURCE_DIR)$(1).ml'
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLOPT) $$(COMP_PACK_FLAGS) $$(COMPFLAGS_CMX) -c -o '$$@' '$$(TOOL_SOURCE_DIR)$(1).ml'
+
+endef
+
+define rule_pair_for_generated_source_file =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLC) $$(COMP_PACK_FLAGS) $$(COMPFLAGS_CMO) -c -o '$$@' '$$(TOOL_BUILD_DIR_SRC_ABS)$(1).ml'
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLOPT) $$(COMP_PACK_FLAGS) $$(COMPFLAGS_CMX) -c -o '$$@' '$$(TOOL_BUILD_DIR_SRC_ABS)$(1).ml'
+
+endef
+
+define rule_pair_without_packs =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLC) $$(COMPFLAGS_CMO) -c -o '$$@' '$$(TOOL_SOURCE_DIR)$(1).ml'
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(TOOL_BUILD_SUBDIR)$(1).ml
+	$$(OCAMLOPT) $$(COMPFLAGS_CMX) -c -o '$$@' '$$(TOOL_SOURCE_DIR)$(1).ml'
+
+endef
+
+x_rule_quartette_name=$(notdir $(1))
+x_rule_quartette_base=$(basename $(call x_rule_quartette_name,$(1)))
+x_rule_quartette_cmi=$(call x_rule_quartette_base,$(1)).cmi
+x_rule_quartette_target=$(x_t)$(call x_rule_quartette_cmi,$(1))
+
+define rule_pair_cmi =
+$$(abs_top_builddir)/$$(o_t)$$(call x_rule_quartette_cmi,$(1)) \
+$$(o_t)$$(call x_rule_quartette_cmi,$(1)): $$(call x_rule_quartette_target,$(1))
+	$$(LN_S) -f '$$(abs_top_builddir)/$$(call x_rule_quartette_target,$(1))' '$$@'
+
+$$(abs_top_builddir)/$$(call x_rule_quartette_target,$(1)) \
+$$(call x_rule_quartette_target,$(1)): $$(TOOL_BUILD_SUBDIR)$$(call x_rule_quartette_name,$(1))
+	$$(OCAMLOPT) $$(COMPFLAGS_CMX) -c -o '$$@' '$$(TOOL_SOURCE_DIR)$$(call x_rule_quartette_name,$(1))'
+
+endef
+
+define dependency_extension_cmi =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(o_t)$(1).cmi
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(x_t)$(1).cmi
+
+endef
+
+define rule_quartette =
+$$(eval $$(call rule_pair_cmi,$(1)))
+$$(eval $$(call rule_pair,$$(call x_rule_quartette_base,$(1))))
+$$(eval $$(call dependency_extension_cmi,$$(call x_rule_quartette_base,$(1))))
+endef
+
+define rule_quartette_for_generated_source_file =
+$$(eval $$(call rule_pair_cmi,$(1)))
+$$(eval $$(call rule_pair_for_generated_source_file,$$(call x_rule_quartette_base,$(1))))
+$$(eval $$(call dependency_extension_cmi,$$(call x_rule_quartette_base,$(1))))
+endef
+
+define rule_quartette_without_packs =
+$$(eval $$(call rule_pair_cmi,$(1)))
+$$(eval $$(call rule_pair_without_packs,$$(call x_rule_quartette_base,$(1))))
+$$(eval $$(call dependency_extension_cmi,$$(call x_rule_quartette_base,$(1))))
+endef
+
+$(eval $(call rule_pair_cmi,$(ocamlbuild_MLI_FILES_FOR_SIGNATURES)))
+$(eval $(call rule_pair_for_generated_source_file,ocamlbuild_config))
+$(eval $(call rule_pair,const))
+
+$(foreach x,$(ocamlbuild_MLI_FILES_FOR_GENERATED_ML),\
+$(eval $(call rule_quartette_for_generated_source_file,$(x))))
+
+$(foreach x,$(ocamlbuild_MLI_FILES_FOR_EXTRA),\
+$(eval $(call rule_quartette_without_packs,$(x))))
+
+$(foreach x,$(ocamlbuild_MLI_FILES_FOR_PACK),\
+$(eval $(call rule_quartette,$(x))))
+
+ocamlbuild_SOURCE_MODULES_WITH_MLI::=$(basename $(subst $(TOOL_SOURCE_DIR),,\
+$(ocamlbuild_MLI_FILES_WITHOUT_GENERATED_ML)))
+ocamlbuild_SELECTED_MODULES_WITH_MLI::=$(ocamlbuild_SOURCE_MODULES_WITH_MLI)
+ocamlbuild_SELECTED_CMI_FILES::=$(addprefix $(x_t),\
+$(addsuffix .cmi,$(ocamlbuild_SELECTED_MODULES_WITH_MLI)))
+
+ocamlbuild_SELECTED_COMPILED_FILES::=$(ocamlbuild_SELECTED_CMI_FILES) \
+$(ocamlbuild_BASE_PACK_HEADER_CMX) \
+$(ocamlbuild_BASE_PACK_FOOTER_CMX) \
+$(ocamlbuild_BASE_PACK_HEADER_CMO) \
+$(ocamlbuild_BASE_PACK_FOOTER_CMO)
+
+$(ocamlbuild_PACK_FILE_LINKS_CREATED): $(ocamlbuild_SELECTED_COMPILED_FILES)
+	$(LN_S) -f $(addprefix $(abs_top_builddir)/,$^) '$(TOOL_BUILD_DIR_BIN)'
+	touch '$@'
+
+create_pack_file_links: $(ocamlbuild_PACK_FILE_LINKS_CREATED)
+
+ocamlbuild.byte: $(ocamlbuild_PACK_CMO_FILE) \
+$(ocamlbuild_EXTRA_CMO) \
+$(OCAMLBUILD_CMO_FILE)
+	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
+
+ocamlbuildlight.byte: $(ocamlbuild_PACK_CMO_FILE) \
+$(TOOL_BUILD_DIR_BIN)ocamlbuildlight.cmo
+	$(OCAMLC) $(LINKFLAGS) -o $@ $^
+
+ocamlbuild.native: $(ocamlbuild_PACK_CMX_FILE) \
+$(ocamlbuild_EXTRA_CMX) \
+$(OCAMLBUILD_CMX_FILE)
+	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
+
+$(OCAMLBUILD_CMI_FILE): $(OCAMLBUILD_MLI_FILE)
+	$(OCAMLOPT) $(COMPFLAGS_CMX) -c -o '$@' '$(OCAMLBUILD_MLI_FILE)'
+
+$(OCAMLBUILD_CMO_FILE): $(OCAMLBUILD_ML_FILE) \
+$(OCAMLBUILD_CMI_FILE) \
+$(ocamlbuild_PACK_CMO_FILE)
+	$(LN_S) -f '$(abs_top_builddir)/$(OCAMLBUILD_CMI_FILE)' '$(o_t)'
+	$(OCAMLC) $(COMPFLAGS_CMO) -c -o '$@' '$(ocamlbuild_PACK_CMO_FILE)' '$(OCAMLBUILD_ML_FILE)'
+
+$(OCAMLBUILD_CMX_FILE): $(OCAMLBUILD_ML_FILE) \
+$(OCAMLBUILD_CMI_FILE) \
+$(ocamlbuild_PACK_CMX_FILE)
+	$(OCAMLOPT) $(COMPFLAGS_CMX) -c -o '$@' '$(ocamlbuild_PACK_CMX_FILE)' '$(OCAMLBUILD_ML_FILE)'
+
+$(TOOL_BUILD_DIR_BIN)ocamlbuildlib.cma: $(ocamlbuild_PACK_CMO_FILE) \
+$(ocamlbuild_EXTRA_CMO)
+	$(OCAMLC) -a -o '$@' $^
+
+$(TOOL_BUILD_DIR_BIN)ocamlbuildlightlib.cma: $(ocamlbuild_PACK_CMO_FILE) \
+$(TOOL_BUILD_DIR_BIN)ocamlbuildlight.cmo
+	$(OCAMLC) -a -o '$@' $^
+
+$(TOOL_BUILD_DIR_BIN)ocamlbuildlib.cmxa: $(ocamlbuild_PACK_CMX_FILE) \
+$(ocamlbuild_EXTRA_CMX)
+	$(OCAMLOPT) -a -o '$@' $^
+
+$(ocamlbuild_PACK_CMI_FILE_O_VARIANT) \
+$(ocamlbuild_PACK_CMO_FILE): $(ocamlbuild_PACK_FILE_LINKS_CREATED) \
+$(ocamlbuild_PACK_CMO)
+	$(OCAMLC) -pack -o '$(ocamlbuild_PACK_CMO_FILE)' $(ocamlbuild_PACK_CMO)
+
+$(ocamlbuild_PACK_CMI_FILE) \
+$(ocamlbuild_PACK_CMX_FILE) \
+$(ocamlbuild_PACK_OBJ_FILE): $(ocamlbuild_PACK_FILE_LINKS_CREATED) \
+$(ocamlbuild_PACK_CMX)
+	$(OCAMLOPT) -pack -o '$(ocamlbuild_PACK_CMX_FILE)' $(ocamlbuild_PACK_CMX)
+
+define i_dependency_extension =
+$$(abs_top_builddir)/$$(o_t)$(1).cmi \
+$$(o_t)$(1).cmi: $$(addprefix $$(o_t),$$(addsuffix .cmi,$(2)))
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmi \
+$$(x_t)$(1).cmi: $$(addprefix $$(x_t),$$(addsuffix .cmi,$(2)))
+
+endef
+
+$(eval $(call i_dependency_extension,command,tags signatures))
+$(eval $(call i_dependency_extension,configuration,loc pathname tags))
+$(eval $(call i_dependency_extension,display,tags))
+$(eval $(call i_dependency_extension,fda,slurp))
+$(eval $(call i_dependency_extension,findlib,command signatures))
+$(eval $(call i_dependency_extension,flags,command tags))
+$(eval $(call i_dependency_extension,glob,bool glob_ast signatures))
+$(eval $(call i_dependency_extension,glob_lexer,glob_ast))
+$(eval $(call i_dependency_extension,hygiene,slurp))
+$(eval $(call i_dependency_extension,lexers,glob loc))
+$(eval $(call i_dependency_extension,log,tags signatures))
+$(eval $(call i_dependency_extension,my_std,signatures))
+$(eval $(call i_dependency_extension,ocamlbuild_plugin,ocamlbuild_pack))
+$(eval $(call i_dependency_extension,ocaml_arch,command signatures))
+$(eval $(call i_dependency_extension,ocaml_compiler,command pathname rule tags))
+$(eval $(call i_dependency_extension,ocaml_dependencies,pathname))
+$(eval $(call i_dependency_extension,ocaml_tools,command pathname rule tags))
+$(eval $(call i_dependency_extension,ocaml_utils,command pathname tags))
+$(eval $(call i_dependency_extension,options,command signatures slurp))
+$(eval $(call i_dependency_extension,param_tags,loc tags))
+$(eval $(call i_dependency_extension,pathname,signatures))
+$(eval $(call i_dependency_extension,report,solver))
+$(eval $(call i_dependency_extension,resource,command my_std pathname slurp))
+$(eval $(call i_dependency_extension,rule,command my_std pathname resource tags))
+$(eval $(call i_dependency_extension,slurp,my_unix))
+$(eval $(call i_dependency_extension,solver,pathname))
+$(eval $(call i_dependency_extension,tags,signatures))
+$(eval $(call i_dependency_extension,tools,pathname tags))
+
+ocamlbuild_CMO_FILES_WITHOUT_MLI::=$(o_t)const.cmo
+ocamlbuild_CMX_FILES_WITHOUT_MLI::=$(x_t)const.cmx
+
+define ox_dependency_extension =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(addprefix $$(o_t),$$(addsuffix .cmi,$(2)))
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(addprefix $$(x_t),$$(addsuffix .cmx,$(2)))
+
+endef
+
+define ox_dependency_extension2 =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(addprefix $$(o_t),$$(addsuffix .cmi,$(2))) \
+$$(ocamlbuild_CMO_FILES_WITHOUT_MLI)
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(addprefix $$(x_t),$$(addsuffix .cmx,$(2))) \
+$$(ocamlbuild_CMX_FILES_WITHOUT_MLI)
+
+endef
+
+define ox_dependency_extension_config =
+$$(abs_top_builddir)/$$(o_t)$(1).cmo \
+$$(o_t)$(1).cmo: $$(ocamlbuild_CONFIG_CMO_FILE)
+
+$$(abs_top_builddir)/$$(x_t)$(1).cmx \
+$$(x_t)$(1).cmx: $$(ocamlbuild_CONFIG_CMX_FILE)
+
+endef
+
+$(eval $(call ox_dependency_extension2,command,\
+lexers \
+log \
+my_std \
+my_unix \
+param_tags \
+shell \
+tags))
+$(eval $(call ox_dependency_extension2,configuration,\
+glob \
+lexers \
+loc \
+log \
+my_std \
+param_tags \
+tags))
+$(eval $(call ox_dependency_extension,digest_cache,\
+my_std \
+my_unix \
+options \
+pathname \
+shell))
+$(eval $(call ox_dependency_extension,display,\
+discard_printf \
+my_std \
+my_unix \
+tags))
+$(eval $(call ox_dependency_extension,fda,\
+hygiene \
+log \
+options \
+pathname))
+$(eval $(call ox_dependency_extension2,findlib,\
+command \
+lexers \
+my_std \
+my_unix))
+$(eval $(call ox_dependency_extension,flags,\
+bool \
+command \
+log \
+param_tags \
+tags))
+$(eval $(call ox_dependency_extension,glob,\
+bool \
+glob_ast \
+glob_lexer \
+my_std))
+$(eval $(call ox_dependency_extension,glob_ast,bool))
+$(eval $(call ox_dependency_extension,glob_lexer,bool glob_ast))
+$(eval $(call ox_dependency_extension,hygiene,\
+log \
+my_std \
+options \
+pathname \
+slurp \
+shell))
+$(eval $(call ox_dependency_extension,lexers,glob loc my_std))
+$(eval $(call ox_dependency_extension,log,display my_std my_unix))
+$(eval $(call ox_dependency_extension2,main,\
+command \
+configuration \
+digest_cache \
+exit_codes \
+fda \
+flags \
+hooks \
+lexers \
+loc \
+log \
+my_std \
+my_unix \
+ocaml_dependencies \
+ocaml_specific \
+ocaml_utils \
+options \
+param_tags \
+pathname \
+plugin \
+resource \
+report \
+rule \
+shell \
+slurp \
+solver \
+tags \
+tools))
+$(eval $(call ox_dependency_extension,my_unix,my_std))
+$(eval $(call ox_dependency_extension,ocamlbuild_plugin,ocamlbuild_pack))
+$(eval $(call ox_dependency_extension,ocaml_arch,command my_std pathname))
+$(eval $(call ox_dependency_extension,ocaml_compiler,\
+command \
+log \
+my_std \
+ocaml_arch \
+ocaml_dependencies \
+ocaml_utils \
+options \
+pathname \
+resource \
+rule \
+tags \
+tools))
+$(eval $(call ox_dependency_extension,ocaml_dependencies,\
+log \
+my_std \
+ocaml_utils \
+options \
+pathname \
+resource \
+tools))
+$(eval $(call ox_dependency_extension,ocaml_specific,\
+command \
+configuration \
+findlib \
+flags \
+log \
+my_std \
+my_unix \
+ocaml_compiler \
+ocaml_tools \
+ocaml_utils \
+options \
+pathname \
+rule \
+tags \
+tools))
+$(eval $(call ox_dependency_extension,ocaml_tools,\
+command \
+flags \
+my_std \
+ocaml_compiler \
+ocaml_utils \
+options \
+pathname \
+rule \
+tags \
+tools))
+$(eval $(call ox_dependency_extension2,ocaml_utils,\
+command \
+flags \
+lexers \
+log \
+my_std \
+options \
+pathname \
+tags \
+tools))
+$(eval $(call ox_dependency_extension,ocamlbuild,ocamlbuild_unix_plugin))
+$(eval $(call ox_dependency_extension,ocamlbuild_unix_plugin,\
+exit_codes \
+my_std \
+my_unix \
+ocamlbuild_executor \
+ocamlbuild_pack))
+$(eval $(call ox_dependency_extension_config,ocamlbuild_where))
+$(eval $(call ox_dependency_extension2,options,\
+command \
+lexers \
+log \
+my_std \
+ocamlbuild_where \
+shell))
+$(eval $(call ox_dependency_extension,param_tags,\
+lexers \
+loc \
+log \
+my_std \
+tags))
+$(eval $(call ox_dependency_extension,pathname,\
+glob \
+my_std \
+my_unix \
+options \
+shell))
+$(eval $(call ox_dependency_extension,plugin,\
+command \
+exit_codes \
+log \
+my_std \
+my_unix \
+ocamlbuild_where \
+options \
+param_tags \
+pathname \
+rule \
+shell \
+tags \
+tools))
+$(eval $(call ox_dependency_extension,ppcache,\
+command \
+log \
+my_std \
+pathname \
+shell))
+$(eval $(call ox_dependency_extension,report,\
+glob \
+log \
+my_std \
+resource \
+solver))
+$(eval $(call ox_dependency_extension2,resource,\
+command \
+digest_cache \
+glob \
+glob_ast \
+lexers \
+log \
+my_std \
+my_unix \
+options \
+pathname \
+shell \
+slurp))
+$(eval $(call ox_dependency_extension,rule,\
+command \
+digest_cache \
+log \
+my_std \
+options \
+pathname \
+resource \
+shell))
+$(eval $(call ox_dependency_extension,shell,\
+log \
+my_std \
+my_unix \
+tags))
+$(eval $(call ox_dependency_extension,slurp,my_std my_unix))
+$(eval $(call ox_dependency_extension,solver,\
+command \
+log \
+my_std \
+pathname \
+resource \
+rule))
+$(eval $(call ox_dependency_extension,tools,\
+configuration \
+log \
+my_std \
+pathname \
+rule \
+tags))
+
+clean-local::
+	rm -rf '$(o_t)' '$(x_t)' '$(ocamlbuild_PACK_FILE_LINKS_CREATED)' 'test/test2/vivi.ml'
+	rm -f $(TOOL_BUILD_DIR_BIN)*.cm* *.cm*
+@protect@ifdef EXT_OBJ
+@protect@	rm -f $(TOOL_BUILD_DIR_BIN)*$(EXT_OBJ) *$(EXT_OBJ)
+@protect@endif
+@protect@ifdef EXT_LIB
+@protect@	rm -f $(TOOL_BUILD_DIR_BIN)*$(EXT_LIB) *$(EXT_LIB)
+@protect@endif
+
+distclean-local::
+	rm -f ocamlbuild.byte ocamlbuild.native ocamlbuild.install
+
+depend: beforedepend
+	$(OCAMLDEP) $(OCAMLDEP_FLAGS) -I '$(TOOL_SOURCE_DIR)' \
+$(TOOL_SOURCE_DIR)*.mli $(TOOL_SOURCE_DIR)*.ml > .depend
+
+$(ocamlbuild_EXTRA_CMI): $(ocamlbuild_PACK_CMI_FILE)
+$(ocamlbuild_EXTRA_CMO): $(ocamlbuild_PACK_CMO_FILE) $(ocamlbuild_PACK_CMI_FILE)
+$(ocamlbuild_EXTRA_CMX): $(ocamlbuild_PACK_CMX_FILE) $(ocamlbuild_PACK_CMI_FILE)
+
+# Omit the direct inclusion of generated dependency data until the issue
+# “Better descriptions (and export parameters) around the dependency generator
+# for OCaml” will be resolved together with appropriate software updates.
+# https://caml.inria.fr/mantis/view.php?id=7576
+
+#include .depend
+
+@protect@ifeq ($(OCAML_NATIVE),true)
+@protect@all: native
+@protect@install-bin-local: install-bin-native
+@protect@install-lib-local: install-lib-native
+@protect@endif
+
+.PHONY: allopt \
+beforedepend \
+clean-local \
+create_pack_file_links \
+depend \
+distclean-local \
+installopt \
+installopt_really \
+install-bin-byte \
+install-bin-native \
+install-exec-local \
+install-lib-basics \
+install-lib-basics-opam \
+install-lib-byte \
+install-lib-byte-opam \
+install-lib-findlib \
+install-lib-local \
+install-lib-native \
+install-lib-native-opam \
+install-lib-opam \
+install-man-local \
+uninstall-bin-local \
+uninstall-lib-basics \
+uninstall-lib-byte \
+uninstall-lib-findlib \
+uninstall-lib-local \
+uninstall-lib-native \
+uninstall-local \
+uninstall-man-local
+
+# The following input files should not need further actions here.
+$(TOOL_BUILD_VERSION_FILE) \
+$(OCAML): ;
