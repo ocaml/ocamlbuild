@@ -1359,7 +1359,7 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
 One cannot define a rule if there already exists a built-in rule of the same name.
 Directly including the rule `"ocaml dependencies ml"` used above in your plugin would result in a failure when loading the plugin:
 
-[source]
+[source,ocaml]
 ----
   Rule.Exit_rule_error("Rule.add_rule: already exists: (ocaml dependencies ml)").
 ----
