@@ -210,8 +210,16 @@ let () = test "StrictSequenceFlag"
 Error: This expression has type int but an expression was expected of type
          unit
 Command exited with code 2."
+else if Sys.ocaml_version < "4.08.0" then
+"File \"hello.ml\", line 1, characters 9-10:
+Error: This expression has type int but an expression was expected of type
+         unit
+       because it is in the left-hand side of a sequence
+Command exited with code 2."
 else
 "File \"hello.ml\", line 1, characters 9-10:
+1 | let () = 1; ()
+             ^
 Error: This expression has type int but an expression was expected of type
          unit
        because it is in the left-hand side of a sequence
@@ -224,10 +232,19 @@ let () = test "StrictFormatsFlag"
   ~description:"strict_format tag"
   ~tree:[T.f "hello.ml" ~content:"let _ = Printf.printf \"%.10s\"";
          T.f "_tags" ~content:"true: strict_formats\n"]
-  ~failing_msg:"File \"hello.ml\", line 1, characters 22-29:
+  ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
+"File \"hello.ml\", line 1, characters 22-29:
 Error: invalid format \"%.10s\": at character number 0, \
 `precision' is incompatible with 's' in sub-format \"%.10s\"
 Command exited with code 2."
+else
+"File \"hello.ml\", line 1, characters 22-29:
+1 | let _ = Printf.printf \"%.10s\"
+                          ^^^^^^^
+Error: invalid format \"%.10s\": at character number 0, \
+`precision' is incompatible with 's' in sub-format \"%.10s\"
+Command exited with code 2."
+)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "PrincipalFlag"
@@ -237,8 +254,20 @@ let () = test "PrincipalFlag"
             ~content:"type s={foo:int;bar:unit} type t={foo:int}
                       let f x = (x.bar; x.foo)";
          T.f "_tags" ~content:"true: principal\n"]
-  ~failing_msg:"File \"hello.ml\", line 2, characters 42-45:
+  ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
+"File \"hello.ml\", line 2, characters 42-45:
 Warning 18: this type-based field disambiguation is not principal."
+else if Sys.ocaml_version < "4.12.0" then
+"File \"hello.ml\", line 2, characters 42-45:
+2 |                       let f x = (x.bar; x.foo)
+                                              ^^^
+Warning 18: this type-based field disambiguation is not principal."
+else
+"File \"hello.ml\", line 2, characters 42-45:
+2 |                       let f x = (x.bar; x.foo)
+                                              ^^^
+Warning 18 [not-principal]: this type-based field disambiguation is not principal."
+)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "ModularPlugin1"
