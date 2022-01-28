@@ -17,7 +17,7 @@
 
 open Unix;;
 
-module Pervasives = Pervasives [@ocaml.warning "-3"]
+module Pervasives = Stdlib
 
 type error =
   | Subcommand_failed

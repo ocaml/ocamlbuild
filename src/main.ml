@@ -21,7 +21,7 @@ open Tools
 open Ocaml_specific
 ;;
 
-module Pervasives = Pervasives [@ocaml.warning "-3"]
+module Pervasives = Stdlib
 
 exception Exit_build_error of string
 exception Exit_silently
