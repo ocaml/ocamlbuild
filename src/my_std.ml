@@ -11,11 +11,13 @@
 (*                                                                     *)
 (***********************************************************************)
 
+(* Compatibility with both OCaml < 4.08 and >= 5.00 *)
+module Pervasives = struct
+  let compare = compare
+end
 
 (* Original author: Nicolas Pouillard *)
 open Format
-
-module Pervasives = Pervasives [@ocaml.warning "-3"]
 
 exception Exit_OK
 exception Exit_usage of string

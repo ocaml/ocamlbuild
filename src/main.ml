@@ -11,6 +11,10 @@
 (*                                                                     *)
 (***********************************************************************)
 
+(* Compatibility with both OCaml < 4.08 and >= 5.00 *)
+module Pervasives = struct
+  let exit = exit
+end
 
 (* Original author: Berke Durak *)
 open My_std
@@ -20,8 +24,6 @@ open Command
 open Tools
 open Ocaml_specific
 ;;
-
-module Pervasives = Pervasives [@ocaml.warning "-3"]
 
 exception Exit_build_error of string
 exception Exit_silently

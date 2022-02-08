@@ -11,13 +11,15 @@
 (*                                                                     *)
 (***********************************************************************)
 
+(* Compatibility with both OCaml < 4.08 and >= 5.00 *)
+module Pervasives = struct
+  let stdout = stdout
+end
 
 (* Original author: Berke Durak *)
 (* Ocamlbuild_executor *)
 
 open Unix;;
-
-module Pervasives = Pervasives [@ocaml.warning "-3"]
 
 type error =
   | Subcommand_failed
