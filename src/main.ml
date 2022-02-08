@@ -11,6 +11,7 @@
 (*                                                                     *)
 (***********************************************************************)
 
+(* Compatibility with both OCaml < 4.08 and >= 5.00 *)
 module Pervasives = struct
   let exit = exit
 end
