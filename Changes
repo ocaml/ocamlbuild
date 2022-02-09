@@ -11,10 +11,15 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.14.1 (09 Feb 2021):
+---------------------
 
-
+- Add OCaml 5.00 support
+  (#315 by Kate Deplaix, reviewed by Gabriel Scherer)
+- Fix race conditions when invoking ocamlbuild in parallel from a makefile
+  (#302 by Gabriel Scherer)
+- Removes .so from products of all cmxs rules
+  (#305 by Ivan Gotovchits, reviewed by Gabriel Scherer)
 
 0.14.0 (23 Feb 2019):
 ---------------------
