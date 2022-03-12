@@ -819,9 +819,19 @@ camlp4_flags' ["camlp4orr", S[A"camlp4of"; A"-parser"; A"reloaded"];
 
 flag ["ocaml"; "pp"; "camlp4:no_quot"] (A"-no_quot");;
 
-ocaml_lib ~extern:true "dynlink";;
-ocaml_lib ~extern:true "unix";;
-ocaml_lib ~extern:true "str";;
+let ocaml_otherlibs_lib =
+  match split_ocaml_version with
+  | Some (major, minor, _, _) when (major, minor) >= (5, 0) ->
+    fun name ->
+      let dir = "+" ^ name in
+      ocaml_lib ~extern:true ~dir name;
+      flag ["ocaml"; "compile"; "use_" ^ name] (S[A"-I"; A dir])
+  | _ ->
+    fun name -> ocaml_lib ~extern:true name;;
+
+ocaml_otherlibs_lib "dynlink";;
+ocaml_otherlibs_lib "unix";;
+ocaml_otherlibs_lib "str";;
 ocaml_lib ~extern:true "bigarray";;
 ocaml_lib ~extern:true "nums";;
 ocaml_lib ~extern:true "dbm";;

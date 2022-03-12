@@ -175,7 +175,12 @@ module Make(U:sig end) =
           let unix_lib =
             if use_ocamlfind_pkgs then `Package "unix"
             else if use_light_mode then `Nothing
-            else `Lib "unix" in
+            else let dir = match split_ocaml_version with
+                 | Some (major, minor, _, _) when (major, minor) >= (5, 0) ->
+                    Some "unix"
+                 | _ -> None
+                 in
+                 `Lib ("unix", dir) in
 
           let ocamlbuild_lib =
             if use_ocamlfind_pkgs then `Package "ocamlbuild"
@@ -198,7 +203,8 @@ module Make(U:sig end) =
           let spec = function
             | `Nothing -> N
             | `Package pkg -> S[A "-package"; A pkg]
-            | `Lib lib -> P (lib -.- cma)
+            | `Lib (lib, Some dir) -> S[A "-I"; A ("+" ^ dir); P (lib -.- cma)]
+            | `Lib (lib, None) -> P (lib -.- cma)
             | `Local_lib llib -> S [A "-I"; A dir; P (in_dir (llib -.- cma))]
             | `Local_mod lmod -> P (in_dir (lmod -.- cmo)) in
 
