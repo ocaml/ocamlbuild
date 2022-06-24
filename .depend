@@ -8,9 +8,9 @@ src/exit_codes.cmi :
 src/fda.cmi : src/slurp.cmi
 src/findlib.cmi : src/signatures.cmi src/command.cmi
 src/flags.cmi : src/tags.cmi src/command.cmi
-src/glob.cmi : src/signatures.cmi src/glob_ast.cmi src/bool.cmi
 src/glob_ast.cmi : src/bool.cmi
 src/glob_lexer.cmi : src/glob_ast.cmi
+src/glob.cmi : src/signatures.cmi src/glob_ast.cmi src/bool.cmi
 src/hooks.cmi :
 src/hygiene.cmi : src/slurp.cmi
 src/lexers.cmi : src/loc.cmi src/glob.cmi
@@ -20,6 +20,12 @@ src/main.cmi :
 src/my_std.cmi : src/signatures.cmi
 src/my_unix.cmi :
 src/ocaml_arch.cmi : src/signatures.cmi src/command.cmi
+src/ocamlbuild_executor.cmi :
+src/ocamlbuildlight.cmi :
+src/ocamlbuild.cmi :
+src/ocamlbuild_plugin.cmi :
+src/ocamlbuild_unix_plugin.cmi :
+src/ocamlbuild_where.cmi :
 src/ocaml_compiler.cmi : src/tags.cmi src/rule.cmi src/pathname.cmi \
     src/command.cmi
 src/ocaml_dependencies.cmi : src/pathname.cmi
@@ -27,12 +33,6 @@ src/ocaml_specific.cmi :
 src/ocaml_tools.cmi : src/tags.cmi src/rule.cmi src/pathname.cmi \
     src/command.cmi
 src/ocaml_utils.cmi : src/tags.cmi src/pathname.cmi src/command.cmi
-src/ocamlbuild.cmi :
-src/ocamlbuild_executor.cmi :
-src/ocamlbuild_plugin.cmi :
-src/ocamlbuild_unix_plugin.cmi :
-src/ocamlbuild_where.cmi :
-src/ocamlbuildlight.cmi :
 src/options.cmi : src/slurp.cmi src/signatures.cmi src/command.cmi
 src/param_tags.cmi : src/tags.cmi src/loc.cmi
 src/pathname.cmi : src/signatures.cmi
@@ -89,14 +89,14 @@ src/flags.cmo : src/tags.cmi src/param_tags.cmi src/log.cmi src/command.cmi \
     src/bool.cmi src/flags.cmi
 src/flags.cmx : src/tags.cmx src/param_tags.cmx src/log.cmx src/command.cmx \
     src/bool.cmx src/flags.cmi
-src/glob.cmo : src/my_std.cmi src/glob_lexer.cmi src/glob_ast.cmi \
-    src/bool.cmi src/glob.cmi
-src/glob.cmx : src/my_std.cmx src/glob_lexer.cmx src/glob_ast.cmx \
-    src/bool.cmx src/glob.cmi
 src/glob_ast.cmo : src/bool.cmi src/glob_ast.cmi
 src/glob_ast.cmx : src/bool.cmx src/glob_ast.cmi
 src/glob_lexer.cmo : src/glob_ast.cmi src/bool.cmi src/glob_lexer.cmi
 src/glob_lexer.cmx : src/glob_ast.cmx src/bool.cmx src/glob_lexer.cmi
+src/glob.cmo : src/my_std.cmi src/glob_lexer.cmi src/glob_ast.cmi \
+    src/bool.cmi src/glob.cmi
+src/glob.cmx : src/my_std.cmx src/glob_lexer.cmx src/glob_ast.cmx \
+    src/bool.cmx src/glob.cmi
 src/hooks.cmo : src/hooks.cmi
 src/hooks.cmx : src/hooks.cmi
 src/hygiene.cmo : src/slurp.cmi src/shell.cmi src/pathname.cmi \
@@ -133,6 +133,24 @@ src/ocaml_arch.cmo : src/pathname.cmi src/my_std.cmi src/command.cmi \
     src/ocaml_arch.cmi
 src/ocaml_arch.cmx : src/pathname.cmx src/my_std.cmx src/command.cmx \
     src/ocaml_arch.cmi
+src/ocamlbuild_config.cmo :
+src/ocamlbuild_config.cmx :
+src/ocamlbuild_executor.cmo : src/ocamlbuild_executor.cmi
+src/ocamlbuild_executor.cmx : src/ocamlbuild_executor.cmi
+src/ocamlbuildlight.cmo : src/ocamlbuildlight.cmi
+src/ocamlbuildlight.cmx : src/ocamlbuildlight.cmi
+src/ocamlbuild.cmo : src/ocamlbuild_unix_plugin.cmi src/ocamlbuild.cmi
+src/ocamlbuild.cmx : src/ocamlbuild_unix_plugin.cmx src/ocamlbuild.cmi
+src/ocamlbuild_plugin.cmo : src/ocamlbuild_plugin.cmi
+src/ocamlbuild_plugin.cmx : src/ocamlbuild_plugin.cmi
+src/ocamlbuild_unix_plugin.cmo : src/ocamlbuild_executor.cmi src/my_unix.cmi \
+    src/my_std.cmi src/exit_codes.cmi src/ocamlbuild_unix_plugin.cmi
+src/ocamlbuild_unix_plugin.cmx : src/ocamlbuild_executor.cmx src/my_unix.cmx \
+    src/my_std.cmx src/exit_codes.cmx src/ocamlbuild_unix_plugin.cmi
+src/ocamlbuild_where.cmo : src/ocamlbuild_config.cmo \
+    src/ocamlbuild_where.cmi
+src/ocamlbuild_where.cmx : src/ocamlbuild_config.cmx \
+    src/ocamlbuild_where.cmi
 src/ocaml_compiler.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
     src/resource.cmi src/pathname.cmi src/options.cmi src/ocaml_utils.cmi \
     src/ocaml_dependencies.cmi src/ocaml_arch.cmi src/my_std.cmi src/log.cmi \
@@ -148,12 +166,12 @@ src/ocaml_dependencies.cmx : src/tools.cmx src/resource.cmx src/pathname.cmx \
 src/ocaml_specific.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
     src/pathname.cmi src/options.cmi src/ocamlbuild_config.cmo \
     src/ocaml_utils.cmi src/ocaml_tools.cmi src/ocaml_compiler.cmi \
-    src/my_std.cmi src/log.cmi src/flags.cmi src/findlib.cmi \
+    src/my_unix.cmi src/my_std.cmi src/log.cmi src/flags.cmi src/findlib.cmi \
     src/configuration.cmi src/command.cmi src/ocaml_specific.cmi
 src/ocaml_specific.cmx : src/tools.cmx src/tags.cmx src/rule.cmx \
     src/pathname.cmx src/options.cmx src/ocamlbuild_config.cmx \
     src/ocaml_utils.cmx src/ocaml_tools.cmx src/ocaml_compiler.cmx \
-    src/my_std.cmx src/log.cmx src/flags.cmx src/findlib.cmx \
+    src/my_unix.cmx src/my_std.cmx src/log.cmx src/flags.cmx src/findlib.cmx \
     src/configuration.cmx src/command.cmx src/ocaml_specific.cmi
 src/ocaml_tools.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
     src/pathname.cmi src/options.cmi src/ocaml_utils.cmi \
@@ -164,31 +182,11 @@ src/ocaml_tools.cmx : src/tools.cmx src/tags.cmx src/rule.cmx \
     src/ocaml_compiler.cmx src/my_std.cmx src/flags.cmx src/command.cmx \
     src/ocaml_tools.cmi
 src/ocaml_utils.cmo : src/tools.cmi src/tags.cmi src/pathname.cmi \
-    src/param_tags.cmi src/options.cmi src/my_std.cmi src/log.cmi \
-    src/lexers.cmi src/flags.cmi src/const.cmo src/command.cmi \
-    src/ocaml_utils.cmi
+    src/options.cmi src/my_std.cmi src/log.cmi src/lexers.cmi src/flags.cmi \
+    src/const.cmo src/command.cmi src/ocaml_utils.cmi
 src/ocaml_utils.cmx : src/tools.cmx src/tags.cmx src/pathname.cmx \
-    src/param_tags.cmx src/options.cmx src/my_std.cmx src/log.cmx \
-    src/lexers.cmx src/flags.cmx src/const.cmx src/command.cmx \
-    src/ocaml_utils.cmi
-src/ocamlbuild.cmo : src/ocamlbuild_unix_plugin.cmi src/ocamlbuild.cmi
-src/ocamlbuild.cmx : src/ocamlbuild_unix_plugin.cmx src/ocamlbuild.cmi
-src/ocamlbuild_config.cmo :
-src/ocamlbuild_config.cmx :
-src/ocamlbuild_executor.cmo : src/ocamlbuild_executor.cmi
-src/ocamlbuild_executor.cmx : src/ocamlbuild_executor.cmi
-src/ocamlbuild_plugin.cmo : src/ocamlbuild_plugin.cmi
-src/ocamlbuild_plugin.cmx : src/ocamlbuild_plugin.cmi
-src/ocamlbuild_unix_plugin.cmo : src/ocamlbuild_executor.cmi src/my_unix.cmi \
-    src/my_std.cmi src/exit_codes.cmi src/ocamlbuild_unix_plugin.cmi
-src/ocamlbuild_unix_plugin.cmx : src/ocamlbuild_executor.cmx src/my_unix.cmx \
-    src/my_std.cmx src/exit_codes.cmx src/ocamlbuild_unix_plugin.cmi
-src/ocamlbuild_where.cmo : src/ocamlbuild_config.cmo \
-    src/ocamlbuild_where.cmi
-src/ocamlbuild_where.cmx : src/ocamlbuild_config.cmx \
-    src/ocamlbuild_where.cmi
-src/ocamlbuildlight.cmo : src/ocamlbuildlight.cmi
-src/ocamlbuildlight.cmx : src/ocamlbuildlight.cmi
+    src/options.cmx src/my_std.cmx src/log.cmx src/lexers.cmx src/flags.cmx \
+    src/const.cmx src/command.cmx src/ocaml_utils.cmi
 src/options.cmo : src/shell.cmi src/ocamlbuild_where.cmi \
     src/ocamlbuild_config.cmo src/my_std.cmi src/log.cmi src/lexers.cmi \
     src/const.cmo src/command.cmi src/options.cmi
@@ -206,11 +204,11 @@ src/pathname.cmx : src/shell.cmx src/options.cmx src/my_unix.cmx \
 src/plugin.cmo : src/tools.cmi src/tags.cmi src/shell.cmi src/rule.cmi \
     src/pathname.cmi src/param_tags.cmi src/options.cmi \
     src/ocamlbuild_where.cmi src/my_unix.cmi src/my_std.cmi src/log.cmi \
-    src/const.cmo src/command.cmi src/plugin.cmi
+    src/exit_codes.cmi src/const.cmo src/command.cmi src/plugin.cmi
 src/plugin.cmx : src/tools.cmx src/tags.cmx src/shell.cmx src/rule.cmx \
     src/pathname.cmx src/param_tags.cmx src/options.cmx \
     src/ocamlbuild_where.cmx src/my_unix.cmx src/my_std.cmx src/log.cmx \
-    src/const.cmx src/command.cmx src/plugin.cmi
+    src/exit_codes.cmx src/const.cmx src/command.cmx src/plugin.cmi
 src/ppcache.cmo : src/shell.cmi src/pathname.cmi src/my_std.cmi src/log.cmi \
     src/command.cmi src/ppcache.cmi
 src/ppcache.cmx : src/shell.cmx src/pathname.cmx src/my_std.cmx src/log.cmx \
