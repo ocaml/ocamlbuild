@@ -30,7 +30,7 @@ OCAMLLEX  ?= ocamllex
 endif
 
 CP        ?= cp
-COMPFLAGS ?= -w +L -w +R -w +Z -I src -I +unix -safe-string -bin-annot -strict-sequence
+COMPFLAGS ?= -w +L -w +R -w +Z -I src -I plugin-lib -I bin -I +unix -safe-string -bin-annot -strict-sequence
 LINKFLAGS ?= -I +unix -I src
 
 PACK_CMO= $(addprefix src/,\
@@ -79,7 +79,7 @@ PACK_CMO= $(addprefix src/,\
   main.cmo \
   )
 
-EXTRA_CMO=$(addprefix src/,\
+EXTRA_CMO=$(addprefix plugin-lib/,\
   ocamlbuild_plugin.cmo \
   ocamlbuild_executor.cmo \
   ocamlbuild_unix_plugin.cmo \
@@ -90,14 +90,14 @@ EXTRA_CMX=$(EXTRA_CMO:.cmo=.cmx)
 EXTRA_CMI=$(EXTRA_CMO:.cmo=.cmi)
 
 INSTALL_LIB=\
-  src/ocamlbuildlib.cma \
-  src/ocamlbuild.cmo \
+  plugin-lib/ocamlbuildlib.cma \
+  bin/ocamlbuild.cmo \
   src/ocamlbuild_pack.cmi \
   $(EXTRA_CMO:.cmo=.cmi)
 
 INSTALL_LIB_OPT=\
-  src/ocamlbuildlib.cmxa src/ocamlbuildlib$(EXT_LIB) \
-  src/ocamlbuild.cmx src/ocamlbuild$(EXT_OBJ) \
+  plugin-lib/ocamlbuildlib.cmxa plugin-lib/ocamlbuildlib$(EXT_LIB) \
+  bin/ocamlbuild.cmx bin/ocamlbuild$(EXT_OBJ) \
   src/ocamlbuild_pack.cmx \
   $(EXTRA_CMO:.cmo=.cmx) $(EXTRA_CMO:.cmo=$(EXT_OBJ))
 
@@ -116,9 +116,9 @@ else
 all: byte man
 endif
 
-byte: ocamlbuild.byte src/ocamlbuildlib.cma
+byte: ocamlbuild.byte plugin-lib/ocamlbuildlib.cma
                  # ocamlbuildlight.byte ocamlbuildlightlib.cma
-native: ocamlbuild.native src/ocamlbuildlib.cmxa
+native: ocamlbuild.native plugin-lib/ocamlbuildlib.cmxa
 
 allopt: all # compatibility alias
 
@@ -126,24 +126,24 @@ distclean:: clean
 
 # The executables
 
-ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) src/ocamlbuild.cmo
+ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) bin/ocamlbuild.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
 
 ocamlbuildlight.byte: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ $^
 
-ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) src/ocamlbuild.cmx
+ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
 	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
 
 # The libraries
 
-src/ocamlbuildlib.cma: src/ocamlbuild_pack.cmo $(EXTRA_CMO)
+plugin-lib/ocamlbuildlib.cma: src/ocamlbuild_pack.cmo $(EXTRA_CMO)
 	$(OCAMLC) -a -o $@ $^
 
 src/ocamlbuildlightlib.cma: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
 	$(OCAMLC) -a -o $@ $^
 
-src/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
+plugin-lib/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
 	$(OCAMLOPT) -a -o $@ $^
 
 # The packs
@@ -424,8 +424,14 @@ endif
 %.cmi: %.mli
 	$(OCAMLC) $(COMPFLAGS) -c $<
 
-%.cmx: %.ml
+src/%.cmx: src/%.ml
 	$(OCAMLOPT) -for-pack Ocamlbuild_pack $(COMPFLAGS) -c $<
+
+bin/%.cmx: bin/%.ml
+	$(OCAMLOPT) $(COMPFLAGS) -c $<
+
+plugin-lib/%.cmx: plugin-lib/%.ml
+	$(OCAMLOPT) $(COMPFLAGS) -c $<
 
 clean::
 	rm -rf tmp/
@@ -445,7 +451,7 @@ distclean::
 # The dependencies
 
 depend: beforedepend
-	$(OCAMLDEP) -I src src/*.mli src/*.ml > .depend
+	$(OCAMLDEP) -I src -I plugin-lib src/*.mli src/*.ml plugin-lib/*.mli plugin-lib/*.ml bin/*.mli bin/*.ml > .depend
 
 $(EXTRA_CMI): src/ocamlbuild_pack.cmi
 $(EXTRA_CMO): src/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmi
