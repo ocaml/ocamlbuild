@@ -11,9 +11,11 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.14.2 (28 Sep 2022):
+---------------------
 
+- Add OCaml 5.1 support
+  (#319 by Kate Deplaix, reviewed by Gabriel Scherer)
 
 0.14.1 (09 Feb 2021):
 ---------------------
