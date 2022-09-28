@@ -14,13 +14,14 @@
 # OCamlbuild tags file
 true: debug
 "src": include
+"bin": include
+"plugin-lib": include
 <**/*.ml> or <**/*.mli>: warn_L, warn_R, warn_Z, annot
 "src/discard_printf.ml": rectypes
 "ocamlbuildlib.cma" or "ocamlbuildlightlib.cma": linkall
 <**/*.byte> or <**/*.native> or <**/*.top>: use_unix
 "ocamlbuildlight.byte": -use_unix, nopervasives
-<**/*.cmx>: for-pack(Ocamlbuild_pack)
-<**/{ocamlbuild_{pack,unix_plugin,plugin,executor},ppcache}{,.p}.cmx>: -for-pack(Ocamlbuild_pack)
+<src/*.cmx>: for-pack(Ocamlbuild_pack)
 
 # we have several build stages using different build directories,
 # so each build must ignore each other's build dir.

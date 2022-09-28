@@ -4,6 +4,6 @@ ocamlbuildlightlib.cma
 ocamlbuildlib.cma
 ocamlbuild.top
 ocamlbuild.docdir/index.html
-src/ocamlbuildlight.byte
-src/ocamlbuild.byte
-src/ocamlbuild.native
+bin/ocamlbuildlight.byte
+bin/ocamlbuild.byte
+bin/ocamlbuild.native
