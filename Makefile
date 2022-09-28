@@ -129,7 +129,7 @@ distclean:: clean
 ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) bin/ocamlbuild.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
 
-ocamlbuildlight.byte: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
+ocamlbuildlight.byte: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ $^
 
 ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
@@ -140,7 +140,7 @@ ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
 plugin-lib/ocamlbuildlib.cma: src/ocamlbuild_pack.cmo $(EXTRA_CMO)
 	$(OCAMLC) -a -o $@ $^
 
-src/ocamlbuildlightlib.cma: src/ocamlbuild_pack.cmo src/ocamlbuildlight.cmo
+bin/ocamlbuildlightlib.cma: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
 	$(OCAMLC) -a -o $@ $^
 
 plugin-lib/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)

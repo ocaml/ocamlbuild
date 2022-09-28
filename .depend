@@ -5,6 +5,26 @@ bin/ocamlbuild.cmx : \
     plugin-lib/ocamlbuild_unix_plugin.cmx \
     bin/ocamlbuild.cmi
 bin/ocamlbuild.cmi :
+bin/ocamlbuildlight.cmo : \
+    bin/ocamlbuildlight.cmi
+bin/ocamlbuildlight.cmx : \
+    bin/ocamlbuildlight.cmi
+bin/ocamlbuildlight.cmi :
+bin/ppcache.cmo : \
+    src/shell.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/command.cmi \
+    bin/ppcache.cmi
+bin/ppcache.cmx : \
+    src/shell.cmx \
+    src/pathname.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/command.cmx \
+    bin/ppcache.cmi
+bin/ppcache.cmi :
 plugin-lib/ocamlbuild_executor.cmo : \
     plugin-lib/ocamlbuild_executor.cmi
 plugin-lib/ocamlbuild_executor.cmx : \
@@ -502,11 +522,6 @@ src/ocamlbuild_where.cmx : \
     src/ocamlbuild_config.cmx \
     src/ocamlbuild_where.cmi
 src/ocamlbuild_where.cmi :
-src/ocamlbuildlight.cmo : \
-    src/ocamlbuildlight.cmi
-src/ocamlbuildlight.cmx : \
-    src/ocamlbuildlight.cmi
-src/ocamlbuildlight.cmi :
 src/options.cmo : \
     src/shell.cmi \
     src/ocamlbuild_where.cmi \
@@ -599,21 +614,6 @@ src/plugin.cmx : \
     src/command.cmx \
     src/plugin.cmi
 src/plugin.cmi :
-src/ppcache.cmo : \
-    src/shell.cmi \
-    src/pathname.cmi \
-    src/my_std.cmi \
-    src/log.cmi \
-    src/command.cmi \
-    src/ppcache.cmi
-src/ppcache.cmx : \
-    src/shell.cmx \
-    src/pathname.cmx \
-    src/my_std.cmx \
-    src/log.cmx \
-    src/command.cmx \
-    src/ppcache.cmi
-src/ppcache.cmi :
 src/report.cmo : \
     src/solver.cmi \
     src/resource.cmi \
