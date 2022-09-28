@@ -1,251 +1,760 @@
+bin/ocamlbuild.cmo : \
+    plugin-lib/ocamlbuild_unix_plugin.cmi \
+    bin/ocamlbuild.cmi
+bin/ocamlbuild.cmx : \
+    plugin-lib/ocamlbuild_unix_plugin.cmx \
+    bin/ocamlbuild.cmi
+bin/ocamlbuild.cmi :
+bin/ocamlbuildlight.cmo : \
+    bin/ocamlbuildlight.cmi
+bin/ocamlbuildlight.cmx : \
+    bin/ocamlbuildlight.cmi
+bin/ocamlbuildlight.cmi :
+bin/ppcache.cmo : \
+    src/shell.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/command.cmi \
+    bin/ppcache.cmi
+bin/ppcache.cmx : \
+    src/shell.cmx \
+    src/pathname.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/command.cmx \
+    bin/ppcache.cmi
+bin/ppcache.cmi :
+plugin-lib/ocamlbuild_executor.cmo : \
+    plugin-lib/ocamlbuild_executor.cmi
+plugin-lib/ocamlbuild_executor.cmx : \
+    plugin-lib/ocamlbuild_executor.cmi
+plugin-lib/ocamlbuild_executor.cmi :
+plugin-lib/ocamlbuild_plugin.cmo : \
+    plugin-lib/ocamlbuild_plugin.cmi
+plugin-lib/ocamlbuild_plugin.cmx : \
+    plugin-lib/ocamlbuild_plugin.cmi
+plugin-lib/ocamlbuild_plugin.cmi :
+plugin-lib/ocamlbuild_unix_plugin.cmo : \
+    plugin-lib/ocamlbuild_executor.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/exit_codes.cmi \
+    plugin-lib/ocamlbuild_unix_plugin.cmi
+plugin-lib/ocamlbuild_unix_plugin.cmx : \
+    plugin-lib/ocamlbuild_executor.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/exit_codes.cmx \
+    plugin-lib/ocamlbuild_unix_plugin.cmi
+plugin-lib/ocamlbuild_unix_plugin.cmi :
+src/bool.cmo : \
+    src/bool.cmi
+src/bool.cmx : \
+    src/bool.cmi
 src/bool.cmi :
-src/command.cmi : src/tags.cmi src/signatures.cmi
-src/configuration.cmi : src/tags.cmi src/pathname.cmi src/loc.cmi
-src/digest_cache.cmi :
-src/discard_printf.cmi :
-src/display.cmi : src/tags.cmi
-src/exit_codes.cmi :
-src/fda.cmi : src/slurp.cmi
-src/findlib.cmi : src/signatures.cmi src/command.cmi
-src/flags.cmi : src/tags.cmi src/command.cmi
-src/glob.cmi : src/signatures.cmi src/glob_ast.cmi src/bool.cmi
-src/glob_ast.cmi : src/bool.cmi
-src/glob_lexer.cmi : src/glob_ast.cmi
-src/hooks.cmi :
-src/hygiene.cmi : src/slurp.cmi
-src/lexers.cmi : src/loc.cmi src/glob.cmi
-src/loc.cmi :
-src/log.cmi : src/tags.cmi src/signatures.cmi
-src/main.cmi :
-src/my_std.cmi : src/signatures.cmi
-src/my_unix.cmi :
-src/ocaml_arch.cmi : src/signatures.cmi src/command.cmi
-src/ocaml_compiler.cmi : src/tags.cmi src/rule.cmi src/pathname.cmi \
+src/command.cmo : \
+    src/tags.cmi \
+    src/shell.cmi \
+    src/param_tags.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/lexers.cmi \
+    src/const.cmo \
     src/command.cmi
-src/ocaml_dependencies.cmi : src/pathname.cmi
-src/ocaml_specific.cmi :
-src/ocaml_tools.cmi : src/tags.cmi src/rule.cmi src/pathname.cmi \
+src/command.cmx : \
+    src/tags.cmx \
+    src/shell.cmx \
+    src/param_tags.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/lexers.cmx \
+    src/const.cmx \
     src/command.cmi
-src/ocaml_utils.cmi : src/tags.cmi src/pathname.cmi src/command.cmi
-src/ocamlbuild.cmi :
-src/ocamlbuild_executor.cmi :
-src/ocamlbuild_plugin.cmi :
-src/ocamlbuild_unix_plugin.cmi :
-src/ocamlbuild_where.cmi :
-src/ocamlbuildlight.cmi :
-src/options.cmi : src/slurp.cmi src/signatures.cmi src/command.cmi
-src/param_tags.cmi : src/tags.cmi src/loc.cmi
-src/pathname.cmi : src/signatures.cmi
-src/plugin.cmi :
-src/ppcache.cmi :
-src/report.cmi : src/solver.cmi
-src/resource.cmi : src/slurp.cmi src/pathname.cmi src/my_std.cmi \
-    src/command.cmi
-src/rule.cmi : src/tags.cmi src/resource.cmi src/pathname.cmi src/my_std.cmi \
-    src/command.cmi
-src/shell.cmi :
-src/signatures.cmi :
-src/slurp.cmi : src/my_unix.cmi
-src/solver.cmi : src/pathname.cmi
-src/tags.cmi : src/signatures.cmi
-src/tools.cmi : src/tags.cmi src/pathname.cmi
-src/bool.cmo : src/bool.cmi
-src/bool.cmx : src/bool.cmi
-src/command.cmo : src/tags.cmi src/shell.cmi src/param_tags.cmi \
-    src/my_unix.cmi src/my_std.cmi src/log.cmi src/lexers.cmi src/const.cmo \
-    src/command.cmi
-src/command.cmx : src/tags.cmx src/shell.cmx src/param_tags.cmx \
-    src/my_unix.cmx src/my_std.cmx src/log.cmx src/lexers.cmx src/const.cmx \
-    src/command.cmi
-src/configuration.cmo : src/tags.cmi src/param_tags.cmi src/my_std.cmi \
-    src/log.cmi src/loc.cmi src/lexers.cmi src/glob.cmi src/const.cmo \
+src/command.cmi : \
+    src/tags.cmi \
+    src/signatures.cmi
+src/configuration.cmo : \
+    src/tags.cmi \
+    src/param_tags.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/loc.cmi \
+    src/lexers.cmi \
+    src/glob.cmi \
+    src/const.cmo \
     src/configuration.cmi
-src/configuration.cmx : src/tags.cmx src/param_tags.cmx src/my_std.cmx \
-    src/log.cmx src/loc.cmx src/lexers.cmx src/glob.cmx src/const.cmx \
+src/configuration.cmx : \
+    src/tags.cmx \
+    src/param_tags.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/loc.cmx \
+    src/lexers.cmx \
+    src/glob.cmx \
+    src/const.cmx \
     src/configuration.cmi
+src/configuration.cmi : \
+    src/tags.cmi \
+    src/pathname.cmi \
+    src/loc.cmi
 src/const.cmo :
 src/const.cmx :
-src/digest_cache.cmo : src/shell.cmi src/pathname.cmi src/options.cmi \
-    src/my_unix.cmi src/my_std.cmi src/digest_cache.cmi
-src/digest_cache.cmx : src/shell.cmx src/pathname.cmx src/options.cmx \
-    src/my_unix.cmx src/my_std.cmx src/digest_cache.cmi
-src/discard_printf.cmo : src/discard_printf.cmi
-src/discard_printf.cmx : src/discard_printf.cmi
-src/display.cmo : src/tags.cmi src/my_unix.cmi src/my_std.cmi \
-    src/discard_printf.cmi src/display.cmi
-src/display.cmx : src/tags.cmx src/my_unix.cmx src/my_std.cmx \
-    src/discard_printf.cmx src/display.cmi
-src/exit_codes.cmo : src/exit_codes.cmi
-src/exit_codes.cmx : src/exit_codes.cmi
-src/fda.cmo : src/pathname.cmi src/options.cmi src/log.cmi src/hygiene.cmi \
+src/digest_cache.cmo : \
+    src/shell.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/digest_cache.cmi
+src/digest_cache.cmx : \
+    src/shell.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/digest_cache.cmi
+src/digest_cache.cmi :
+src/discard_printf.cmo : \
+    src/discard_printf.cmi
+src/discard_printf.cmx : \
+    src/discard_printf.cmi
+src/discard_printf.cmi :
+src/display.cmo : \
+    src/tags.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/discard_printf.cmi \
+    src/display.cmi
+src/display.cmx : \
+    src/tags.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/discard_printf.cmx \
+    src/display.cmi
+src/display.cmi : \
+    src/tags.cmi
+src/exit_codes.cmo : \
+    src/exit_codes.cmi
+src/exit_codes.cmx : \
+    src/exit_codes.cmi
+src/exit_codes.cmi :
+src/fda.cmo : \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/log.cmi \
+    src/hygiene.cmi \
     src/fda.cmi
-src/fda.cmx : src/pathname.cmx src/options.cmx src/log.cmx src/hygiene.cmx \
+src/fda.cmx : \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/log.cmx \
+    src/hygiene.cmx \
     src/fda.cmi
-src/findlib.cmo : src/my_unix.cmi src/my_std.cmi src/lexers.cmi \
-    src/const.cmo src/command.cmi src/findlib.cmi
-src/findlib.cmx : src/my_unix.cmx src/my_std.cmx src/lexers.cmx \
-    src/const.cmx src/command.cmx src/findlib.cmi
-src/flags.cmo : src/tags.cmi src/param_tags.cmi src/log.cmi src/command.cmi \
-    src/bool.cmi src/flags.cmi
-src/flags.cmx : src/tags.cmx src/param_tags.cmx src/log.cmx src/command.cmx \
-    src/bool.cmx src/flags.cmi
-src/glob.cmo : src/my_std.cmi src/glob_lexer.cmi src/glob_ast.cmi \
-    src/bool.cmi src/glob.cmi
-src/glob.cmx : src/my_std.cmx src/glob_lexer.cmx src/glob_ast.cmx \
-    src/bool.cmx src/glob.cmi
-src/glob_ast.cmo : src/bool.cmi src/glob_ast.cmi
-src/glob_ast.cmx : src/bool.cmx src/glob_ast.cmi
-src/glob_lexer.cmo : src/glob_ast.cmi src/bool.cmi src/glob_lexer.cmi
-src/glob_lexer.cmx : src/glob_ast.cmx src/bool.cmx src/glob_lexer.cmi
-src/hooks.cmo : src/hooks.cmi
-src/hooks.cmx : src/hooks.cmi
-src/hygiene.cmo : src/slurp.cmi src/shell.cmi src/pathname.cmi \
-    src/options.cmi src/my_std.cmi src/log.cmi src/hygiene.cmi
-src/hygiene.cmx : src/slurp.cmx src/shell.cmx src/pathname.cmx \
-    src/options.cmx src/my_std.cmx src/log.cmx src/hygiene.cmi
-src/lexers.cmo : src/my_std.cmi src/loc.cmi src/glob_ast.cmi src/glob.cmi \
-    src/bool.cmi src/lexers.cmi
-src/lexers.cmx : src/my_std.cmx src/loc.cmx src/glob_ast.cmx src/glob.cmx \
-    src/bool.cmx src/lexers.cmi
-src/loc.cmo : src/loc.cmi
-src/loc.cmx : src/loc.cmi
-src/log.cmo : src/my_unix.cmi src/my_std.cmi src/display.cmi src/log.cmi
-src/log.cmx : src/my_unix.cmx src/my_std.cmx src/display.cmx src/log.cmi
-src/main.cmo : src/tools.cmi src/tags.cmi src/solver.cmi src/slurp.cmi \
-    src/shell.cmi src/rule.cmi src/resource.cmi src/report.cmi src/plugin.cmi \
-    src/pathname.cmi src/param_tags.cmi src/options.cmi src/ocaml_utils.cmi \
-    src/ocaml_specific.cmi src/ocaml_dependencies.cmi src/my_unix.cmi \
-    src/my_std.cmi src/log.cmi src/loc.cmi src/lexers.cmi src/hooks.cmi \
-    src/flags.cmi src/fda.cmi src/exit_codes.cmi src/digest_cache.cmi \
-    src/const.cmo src/configuration.cmi src/command.cmi src/main.cmi
-src/main.cmx : src/tools.cmx src/tags.cmx src/solver.cmx src/slurp.cmx \
-    src/shell.cmx src/rule.cmx src/resource.cmx src/report.cmx src/plugin.cmx \
-    src/pathname.cmx src/param_tags.cmx src/options.cmx src/ocaml_utils.cmx \
-    src/ocaml_specific.cmx src/ocaml_dependencies.cmx src/my_unix.cmx \
-    src/my_std.cmx src/log.cmx src/loc.cmx src/lexers.cmx src/hooks.cmx \
-    src/flags.cmx src/fda.cmx src/exit_codes.cmx src/digest_cache.cmx \
-    src/const.cmx src/configuration.cmx src/command.cmx src/main.cmi
-src/my_std.cmo : src/my_std.cmi
-src/my_std.cmx : src/my_std.cmi
-src/my_unix.cmo : src/my_std.cmi src/my_unix.cmi
-src/my_unix.cmx : src/my_std.cmx src/my_unix.cmi
-src/ocaml_arch.cmo : src/pathname.cmi src/my_std.cmi src/command.cmi \
+src/fda.cmi : \
+    src/slurp.cmi
+src/findlib.cmo : \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/lexers.cmi \
+    src/const.cmo \
+    src/command.cmi \
+    src/findlib.cmi
+src/findlib.cmx : \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/lexers.cmx \
+    src/const.cmx \
+    src/command.cmx \
+    src/findlib.cmi
+src/findlib.cmi : \
+    src/signatures.cmi \
+    src/command.cmi
+src/flags.cmo : \
+    src/tags.cmi \
+    src/param_tags.cmi \
+    src/log.cmi \
+    src/command.cmi \
+    src/bool.cmi \
+    src/flags.cmi
+src/flags.cmx : \
+    src/tags.cmx \
+    src/param_tags.cmx \
+    src/log.cmx \
+    src/command.cmx \
+    src/bool.cmx \
+    src/flags.cmi
+src/flags.cmi : \
+    src/tags.cmi \
+    src/command.cmi
+src/glob.cmo : \
+    src/my_std.cmi \
+    src/glob_lexer.cmi \
+    src/glob_ast.cmi \
+    src/bool.cmi \
+    src/glob.cmi
+src/glob.cmx : \
+    src/my_std.cmx \
+    src/glob_lexer.cmx \
+    src/glob_ast.cmx \
+    src/bool.cmx \
+    src/glob.cmi
+src/glob.cmi : \
+    src/signatures.cmi \
+    src/glob_ast.cmi \
+    src/bool.cmi
+src/glob_ast.cmo : \
+    src/bool.cmi \
+    src/glob_ast.cmi
+src/glob_ast.cmx : \
+    src/bool.cmx \
+    src/glob_ast.cmi
+src/glob_ast.cmi : \
+    src/bool.cmi
+src/glob_lexer.cmo : \
+    src/glob_ast.cmi \
+    src/bool.cmi \
+    src/glob_lexer.cmi
+src/glob_lexer.cmx : \
+    src/glob_ast.cmx \
+    src/bool.cmx \
+    src/glob_lexer.cmi
+src/glob_lexer.cmi : \
+    src/glob_ast.cmi
+src/hooks.cmo : \
+    src/hooks.cmi
+src/hooks.cmx : \
+    src/hooks.cmi
+src/hooks.cmi :
+src/hygiene.cmo : \
+    src/slurp.cmi \
+    src/shell.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/hygiene.cmi
+src/hygiene.cmx : \
+    src/slurp.cmx \
+    src/shell.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/hygiene.cmi
+src/hygiene.cmi : \
+    src/slurp.cmi
+src/lexers.cmo : \
+    src/my_std.cmi \
+    src/loc.cmi \
+    src/glob_ast.cmi \
+    src/glob.cmi \
+    src/bool.cmi \
+    src/lexers.cmi
+src/lexers.cmx : \
+    src/my_std.cmx \
+    src/loc.cmx \
+    src/glob_ast.cmx \
+    src/glob.cmx \
+    src/bool.cmx \
+    src/lexers.cmi
+src/lexers.cmi : \
+    src/loc.cmi \
+    src/glob.cmi
+src/loc.cmo : \
+    src/loc.cmi
+src/loc.cmx : \
+    src/loc.cmi
+src/loc.cmi :
+src/log.cmo : \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/display.cmi \
+    src/log.cmi
+src/log.cmx : \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/display.cmx \
+    src/log.cmi
+src/log.cmi : \
+    src/tags.cmi \
+    src/signatures.cmi
+src/main.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/solver.cmi \
+    src/slurp.cmi \
+    src/shell.cmi \
+    src/rule.cmi \
+    src/resource.cmi \
+    src/report.cmi \
+    src/plugin.cmi \
+    src/pathname.cmi \
+    src/param_tags.cmi \
+    src/options.cmi \
+    src/ocaml_utils.cmi \
+    src/ocaml_specific.cmi \
+    src/ocaml_dependencies.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/loc.cmi \
+    src/lexers.cmi \
+    src/hooks.cmi \
+    src/flags.cmi \
+    src/fda.cmi \
+    src/exit_codes.cmi \
+    src/digest_cache.cmi \
+    src/const.cmo \
+    src/configuration.cmi \
+    src/command.cmi \
+    src/main.cmi
+src/main.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/solver.cmx \
+    src/slurp.cmx \
+    src/shell.cmx \
+    src/rule.cmx \
+    src/resource.cmx \
+    src/report.cmx \
+    src/plugin.cmx \
+    src/pathname.cmx \
+    src/param_tags.cmx \
+    src/options.cmx \
+    src/ocaml_utils.cmx \
+    src/ocaml_specific.cmx \
+    src/ocaml_dependencies.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/loc.cmx \
+    src/lexers.cmx \
+    src/hooks.cmx \
+    src/flags.cmx \
+    src/fda.cmx \
+    src/exit_codes.cmx \
+    src/digest_cache.cmx \
+    src/const.cmx \
+    src/configuration.cmx \
+    src/command.cmx \
+    src/main.cmi
+src/main.cmi :
+src/my_std.cmo : \
+    src/my_std.cmi
+src/my_std.cmx : \
+    src/my_std.cmi
+src/my_std.cmi : \
+    src/signatures.cmi
+src/my_unix.cmo : \
+    src/my_std.cmi \
+    src/my_unix.cmi
+src/my_unix.cmx : \
+    src/my_std.cmx \
+    src/my_unix.cmi
+src/my_unix.cmi :
+src/ocaml_arch.cmo : \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/command.cmi \
     src/ocaml_arch.cmi
-src/ocaml_arch.cmx : src/pathname.cmx src/my_std.cmx src/command.cmx \
+src/ocaml_arch.cmx : \
+    src/pathname.cmx \
+    src/my_std.cmx \
+    src/command.cmx \
     src/ocaml_arch.cmi
-src/ocaml_compiler.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
-    src/resource.cmi src/pathname.cmi src/options.cmi src/ocaml_utils.cmi \
-    src/ocaml_dependencies.cmi src/ocaml_arch.cmi src/my_std.cmi src/log.cmi \
-    src/command.cmi src/ocaml_compiler.cmi
-src/ocaml_compiler.cmx : src/tools.cmx src/tags.cmx src/rule.cmx \
-    src/resource.cmx src/pathname.cmx src/options.cmx src/ocaml_utils.cmx \
-    src/ocaml_dependencies.cmx src/ocaml_arch.cmx src/my_std.cmx src/log.cmx \
-    src/command.cmx src/ocaml_compiler.cmi
-src/ocaml_dependencies.cmo : src/tools.cmi src/resource.cmi src/pathname.cmi \
-    src/ocaml_utils.cmi src/my_std.cmi src/log.cmi src/ocaml_dependencies.cmi
-src/ocaml_dependencies.cmx : src/tools.cmx src/resource.cmx src/pathname.cmx \
-    src/ocaml_utils.cmx src/my_std.cmx src/log.cmx src/ocaml_dependencies.cmi
-src/ocaml_specific.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
-    src/pathname.cmi src/options.cmi src/ocamlbuild_config.cmo \
-    src/ocaml_utils.cmi src/ocaml_tools.cmi src/ocaml_compiler.cmi \
-    src/my_std.cmi src/log.cmi src/flags.cmi src/findlib.cmi \
-    src/configuration.cmi src/command.cmi src/ocaml_specific.cmi
-src/ocaml_specific.cmx : src/tools.cmx src/tags.cmx src/rule.cmx \
-    src/pathname.cmx src/options.cmx src/ocamlbuild_config.cmx \
-    src/ocaml_utils.cmx src/ocaml_tools.cmx src/ocaml_compiler.cmx \
-    src/my_std.cmx src/log.cmx src/flags.cmx src/findlib.cmx \
-    src/configuration.cmx src/command.cmx src/ocaml_specific.cmi
-src/ocaml_tools.cmo : src/tools.cmi src/tags.cmi src/rule.cmi \
-    src/pathname.cmi src/options.cmi src/ocaml_utils.cmi \
-    src/ocaml_compiler.cmi src/my_std.cmi src/flags.cmi src/command.cmi \
+src/ocaml_arch.cmi : \
+    src/signatures.cmi \
+    src/command.cmi
+src/ocaml_compiler.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/resource.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/ocaml_utils.cmi \
+    src/ocaml_dependencies.cmi \
+    src/ocaml_arch.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/command.cmi \
+    src/ocaml_compiler.cmi
+src/ocaml_compiler.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/rule.cmx \
+    src/resource.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/ocaml_utils.cmx \
+    src/ocaml_dependencies.cmx \
+    src/ocaml_arch.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/command.cmx \
+    src/ocaml_compiler.cmi
+src/ocaml_compiler.cmi : \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/command.cmi
+src/ocaml_dependencies.cmo : \
+    src/tools.cmi \
+    src/resource.cmi \
+    src/pathname.cmi \
+    src/ocaml_utils.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/ocaml_dependencies.cmi
+src/ocaml_dependencies.cmx : \
+    src/tools.cmx \
+    src/resource.cmx \
+    src/pathname.cmx \
+    src/ocaml_utils.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/ocaml_dependencies.cmi
+src/ocaml_dependencies.cmi : \
+    src/pathname.cmi
+src/ocaml_specific.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/ocamlbuild_config.cmo \
+    src/ocaml_utils.cmi \
+    src/ocaml_tools.cmi \
+    src/ocaml_compiler.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/flags.cmi \
+    src/findlib.cmi \
+    src/configuration.cmi \
+    src/command.cmi \
+    src/ocaml_specific.cmi
+src/ocaml_specific.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/rule.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/ocamlbuild_config.cmx \
+    src/ocaml_utils.cmx \
+    src/ocaml_tools.cmx \
+    src/ocaml_compiler.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/flags.cmx \
+    src/findlib.cmx \
+    src/configuration.cmx \
+    src/command.cmx \
+    src/ocaml_specific.cmi
+src/ocaml_specific.cmi :
+src/ocaml_tools.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/ocaml_utils.cmi \
+    src/ocaml_compiler.cmi \
+    src/my_std.cmi \
+    src/flags.cmi \
+    src/command.cmi \
     src/ocaml_tools.cmi
-src/ocaml_tools.cmx : src/tools.cmx src/tags.cmx src/rule.cmx \
-    src/pathname.cmx src/options.cmx src/ocaml_utils.cmx \
-    src/ocaml_compiler.cmx src/my_std.cmx src/flags.cmx src/command.cmx \
+src/ocaml_tools.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/rule.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/ocaml_utils.cmx \
+    src/ocaml_compiler.cmx \
+    src/my_std.cmx \
+    src/flags.cmx \
+    src/command.cmx \
     src/ocaml_tools.cmi
-src/ocaml_utils.cmo : src/tools.cmi src/tags.cmi src/pathname.cmi \
-    src/param_tags.cmi src/options.cmi src/my_std.cmi src/log.cmi \
-    src/lexers.cmi src/flags.cmi src/const.cmo src/command.cmi \
+src/ocaml_tools.cmi : \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/command.cmi
+src/ocaml_utils.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/lexers.cmi \
+    src/flags.cmi \
+    src/const.cmo \
+    src/command.cmi \
     src/ocaml_utils.cmi
-src/ocaml_utils.cmx : src/tools.cmx src/tags.cmx src/pathname.cmx \
-    src/param_tags.cmx src/options.cmx src/my_std.cmx src/log.cmx \
-    src/lexers.cmx src/flags.cmx src/const.cmx src/command.cmx \
+src/ocaml_utils.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/lexers.cmx \
+    src/flags.cmx \
+    src/const.cmx \
+    src/command.cmx \
     src/ocaml_utils.cmi
-src/ocamlbuild.cmo : src/ocamlbuild_unix_plugin.cmi src/ocamlbuild.cmi
-src/ocamlbuild.cmx : src/ocamlbuild_unix_plugin.cmx src/ocamlbuild.cmi
+src/ocaml_utils.cmi : \
+    src/tags.cmi \
+    src/pathname.cmi \
+    src/command.cmi
 src/ocamlbuild_config.cmo :
 src/ocamlbuild_config.cmx :
-src/ocamlbuild_executor.cmo : src/ocamlbuild_executor.cmi
-src/ocamlbuild_executor.cmx : src/ocamlbuild_executor.cmi
-src/ocamlbuild_plugin.cmo : src/ocamlbuild_plugin.cmi
-src/ocamlbuild_plugin.cmx : src/ocamlbuild_plugin.cmi
-src/ocamlbuild_unix_plugin.cmo : src/ocamlbuild_executor.cmi src/my_unix.cmi \
-    src/my_std.cmi src/exit_codes.cmi src/ocamlbuild_unix_plugin.cmi
-src/ocamlbuild_unix_plugin.cmx : src/ocamlbuild_executor.cmx src/my_unix.cmx \
-    src/my_std.cmx src/exit_codes.cmx src/ocamlbuild_unix_plugin.cmi
-src/ocamlbuild_where.cmo : src/ocamlbuild_config.cmo \
+src/ocamlbuild_where.cmo : \
+    src/ocamlbuild_config.cmo \
     src/ocamlbuild_where.cmi
-src/ocamlbuild_where.cmx : src/ocamlbuild_config.cmx \
+src/ocamlbuild_where.cmx : \
+    src/ocamlbuild_config.cmx \
     src/ocamlbuild_where.cmi
-src/ocamlbuildlight.cmo : src/ocamlbuildlight.cmi
-src/ocamlbuildlight.cmx : src/ocamlbuildlight.cmi
-src/options.cmo : src/shell.cmi src/ocamlbuild_where.cmi \
-    src/ocamlbuild_config.cmo src/my_std.cmi src/log.cmi src/lexers.cmi \
-    src/const.cmo src/command.cmi src/options.cmi
-src/options.cmx : src/shell.cmx src/ocamlbuild_where.cmx \
-    src/ocamlbuild_config.cmx src/my_std.cmx src/log.cmx src/lexers.cmx \
-    src/const.cmx src/command.cmx src/options.cmi
-src/param_tags.cmo : src/tags.cmi src/my_std.cmi src/log.cmi src/loc.cmi \
-    src/lexers.cmi src/param_tags.cmi
-src/param_tags.cmx : src/tags.cmx src/my_std.cmx src/log.cmx src/loc.cmx \
-    src/lexers.cmx src/param_tags.cmi
-src/pathname.cmo : src/shell.cmi src/options.cmi src/my_unix.cmi \
-    src/my_std.cmi src/log.cmi src/glob.cmi src/pathname.cmi
-src/pathname.cmx : src/shell.cmx src/options.cmx src/my_unix.cmx \
-    src/my_std.cmx src/log.cmx src/glob.cmx src/pathname.cmi
-src/plugin.cmo : src/tools.cmi src/tags.cmi src/shell.cmi src/rule.cmi \
-    src/pathname.cmi src/param_tags.cmi src/options.cmi \
-    src/ocamlbuild_where.cmi src/my_unix.cmi src/my_std.cmi src/log.cmi \
-    src/const.cmo src/command.cmi src/plugin.cmi
-src/plugin.cmx : src/tools.cmx src/tags.cmx src/shell.cmx src/rule.cmx \
-    src/pathname.cmx src/param_tags.cmx src/options.cmx \
-    src/ocamlbuild_where.cmx src/my_unix.cmx src/my_std.cmx src/log.cmx \
-    src/const.cmx src/command.cmx src/plugin.cmi
-src/ppcache.cmo : src/shell.cmi src/pathname.cmi src/my_std.cmi src/log.cmi \
-    src/command.cmi src/ppcache.cmi
-src/ppcache.cmx : src/shell.cmx src/pathname.cmx src/my_std.cmx src/log.cmx \
-    src/command.cmx src/ppcache.cmi
-src/report.cmo : src/solver.cmi src/resource.cmi src/my_std.cmi src/log.cmi \
-    src/glob.cmi src/report.cmi
-src/report.cmx : src/solver.cmx src/resource.cmx src/my_std.cmx src/log.cmx \
-    src/glob.cmx src/report.cmi
-src/resource.cmo : src/slurp.cmi src/shell.cmi src/pathname.cmi \
-    src/options.cmi src/my_unix.cmi src/my_std.cmi src/log.cmi src/lexers.cmi \
-    src/glob_ast.cmi src/glob.cmi src/digest_cache.cmi src/const.cmo \
-    src/command.cmi src/resource.cmi
-src/resource.cmx : src/slurp.cmx src/shell.cmx src/pathname.cmx \
-    src/options.cmx src/my_unix.cmx src/my_std.cmx src/log.cmx src/lexers.cmx \
-    src/glob_ast.cmx src/glob.cmx src/digest_cache.cmx src/const.cmx \
-    src/command.cmx src/resource.cmi
-src/rule.cmo : src/shell.cmi src/resource.cmi src/pathname.cmi \
-    src/options.cmi src/my_std.cmi src/log.cmi src/digest_cache.cmi \
-    src/command.cmi src/rule.cmi
-src/rule.cmx : src/shell.cmx src/resource.cmx src/pathname.cmx \
-    src/options.cmx src/my_std.cmx src/log.cmx src/digest_cache.cmx \
-    src/command.cmx src/rule.cmi
-src/shell.cmo : src/tags.cmi src/my_unix.cmi src/my_std.cmi src/log.cmi \
+src/ocamlbuild_where.cmi :
+src/options.cmo : \
+    src/shell.cmi \
+    src/ocamlbuild_where.cmi \
+    src/ocamlbuild_config.cmo \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/lexers.cmi \
+    src/const.cmo \
+    src/command.cmi \
+    src/options.cmi
+src/options.cmx : \
+    src/shell.cmx \
+    src/ocamlbuild_where.cmx \
+    src/ocamlbuild_config.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/lexers.cmx \
+    src/const.cmx \
+    src/command.cmx \
+    src/options.cmi
+src/options.cmi : \
+    src/slurp.cmi \
+    src/signatures.cmi \
+    src/command.cmi
+src/param_tags.cmo : \
+    src/tags.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/loc.cmi \
+    src/lexers.cmi \
+    src/param_tags.cmi
+src/param_tags.cmx : \
+    src/tags.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/loc.cmx \
+    src/lexers.cmx \
+    src/param_tags.cmi
+src/param_tags.cmi : \
+    src/tags.cmi \
+    src/loc.cmi
+src/pathname.cmo : \
+    src/shell.cmi \
+    src/options.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/glob.cmi \
+    src/pathname.cmi
+src/pathname.cmx : \
+    src/shell.cmx \
+    src/options.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/glob.cmx \
+    src/pathname.cmi
+src/pathname.cmi : \
+    src/signatures.cmi
+src/plugin.cmo : \
+    src/tools.cmi \
+    src/tags.cmi \
+    src/shell.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/param_tags.cmi \
+    src/options.cmi \
+    src/ocamlbuild_where.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/exit_codes.cmi \
+    src/const.cmo \
+    src/command.cmi \
+    src/plugin.cmi
+src/plugin.cmx : \
+    src/tools.cmx \
+    src/tags.cmx \
+    src/shell.cmx \
+    src/rule.cmx \
+    src/pathname.cmx \
+    src/param_tags.cmx \
+    src/options.cmx \
+    src/ocamlbuild_where.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/exit_codes.cmx \
+    src/const.cmx \
+    src/command.cmx \
+    src/plugin.cmi
+src/plugin.cmi :
+src/report.cmo : \
+    src/solver.cmi \
+    src/resource.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/glob.cmi \
+    src/report.cmi
+src/report.cmx : \
+    src/solver.cmx \
+    src/resource.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/glob.cmx \
+    src/report.cmi
+src/report.cmi : \
+    src/solver.cmi
+src/resource.cmo : \
+    src/slurp.cmi \
+    src/shell.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/lexers.cmi \
+    src/glob_ast.cmi \
+    src/glob.cmi \
+    src/digest_cache.cmi \
+    src/const.cmo \
+    src/command.cmi \
+    src/resource.cmi
+src/resource.cmx : \
+    src/slurp.cmx \
+    src/shell.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/lexers.cmx \
+    src/glob_ast.cmx \
+    src/glob.cmx \
+    src/digest_cache.cmx \
+    src/const.cmx \
+    src/command.cmx \
+    src/resource.cmi
+src/resource.cmi : \
+    src/slurp.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/command.cmi
+src/rule.cmo : \
+    src/shell.cmi \
+    src/resource.cmi \
+    src/pathname.cmi \
+    src/options.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/digest_cache.cmi \
+    src/command.cmi \
+    src/rule.cmi
+src/rule.cmx : \
+    src/shell.cmx \
+    src/resource.cmx \
+    src/pathname.cmx \
+    src/options.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/digest_cache.cmx \
+    src/command.cmx \
+    src/rule.cmi
+src/rule.cmi : \
+    src/tags.cmi \
+    src/resource.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/command.cmi
+src/shell.cmo : \
+    src/tags.cmi \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
     src/shell.cmi
-src/shell.cmx : src/tags.cmx src/my_unix.cmx src/my_std.cmx src/log.cmx \
+src/shell.cmx : \
+    src/tags.cmx \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
     src/shell.cmi
-src/slurp.cmo : src/my_unix.cmi src/my_std.cmi src/slurp.cmi
-src/slurp.cmx : src/my_unix.cmx src/my_std.cmx src/slurp.cmi
-src/solver.cmo : src/rule.cmi src/resource.cmi src/pathname.cmi \
-    src/my_std.cmi src/log.cmi src/command.cmi src/solver.cmi
-src/solver.cmx : src/rule.cmx src/resource.cmx src/pathname.cmx \
-    src/my_std.cmx src/log.cmx src/command.cmx src/solver.cmi
-src/tags.cmo : src/tags.cmi
-src/tags.cmx : src/tags.cmi
-src/tools.cmo : src/tags.cmi src/rule.cmi src/pathname.cmi src/my_std.cmi \
-    src/log.cmi src/configuration.cmi src/tools.cmi
-src/tools.cmx : src/tags.cmx src/rule.cmx src/pathname.cmx src/my_std.cmx \
-    src/log.cmx src/configuration.cmx src/tools.cmi
+src/shell.cmi :
+src/signatures.cmi :
+src/slurp.cmo : \
+    src/my_unix.cmi \
+    src/my_std.cmi \
+    src/slurp.cmi
+src/slurp.cmx : \
+    src/my_unix.cmx \
+    src/my_std.cmx \
+    src/slurp.cmi
+src/slurp.cmi : \
+    src/my_unix.cmi
+src/solver.cmo : \
+    src/rule.cmi \
+    src/resource.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/command.cmi \
+    src/solver.cmi
+src/solver.cmx : \
+    src/rule.cmx \
+    src/resource.cmx \
+    src/pathname.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/command.cmx \
+    src/solver.cmi
+src/solver.cmi : \
+    src/pathname.cmi
+src/tags.cmo : \
+    src/tags.cmi
+src/tags.cmx : \
+    src/tags.cmi
+src/tags.cmi : \
+    src/signatures.cmi
+src/tools.cmo : \
+    src/tags.cmi \
+    src/rule.cmi \
+    src/pathname.cmi \
+    src/my_std.cmi \
+    src/log.cmi \
+    src/configuration.cmi \
+    src/tools.cmi
+src/tools.cmx : \
+    src/tags.cmx \
+    src/rule.cmx \
+    src/pathname.cmx \
+    src/my_std.cmx \
+    src/log.cmx \
+    src/configuration.cmx \
+    src/tools.cmi
+src/tools.cmi : \
+    src/tags.cmi \
+    src/pathname.cmi
