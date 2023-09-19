@@ -249,16 +249,16 @@ clean::
 # - producing an OPAM .install file and not actually installing anything
 
 install-bin-byte:
-	mkdir -p $(INSTALL_BINDIR)
-	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)
+	mkdir -p "$(INSTALL_BINDIR)"
+	$(CP) ocamlbuild.byte "$(INSTALL_BINDIR)/ocamlbuild.byte$(EXE)"
 ifneq ($(OCAML_NATIVE), true)
-	$(CP) ocamlbuild.byte $(INSTALL_BINDIR)/ocamlbuild$(EXE)
+	$(CP) ocamlbuild.byte "$(INSTALL_BINDIR)/ocamlbuild$(EXE)"
 endif
 
 install-bin-native:
-	mkdir -p $(INSTALL_BINDIR)
-	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild$(EXE)
-	$(CP) ocamlbuild.native $(INSTALL_BINDIR)/ocamlbuild.native$(EXE)
+	mkdir -p "$(INSTALL_BINDIR)"
+	$(CP) ocamlbuild.native "$(INSTALL_BINDIR)/ocamlbuild$(EXE)"
+	$(CP) ocamlbuild.native "$(INSTALL_BINDIR)/ocamlbuild.native$(EXE)"
 
 ifeq ($(OCAML_NATIVE), true)
 install-bin: install-bin-byte install-bin-native
@@ -279,8 +279,8 @@ endif
 	echo >> ocamlbuild.install
 
 install-lib-basics:
-	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
-	$(CP) META $(INSTALL_SIGNATURES) $(INSTALL_LIBDIR)/ocamlbuild
+	mkdir -p "$(INSTALL_LIBDIR)/ocamlbuild"
+	$(CP) META $(INSTALL_SIGNATURES) "$(INSTALL_LIBDIR)/ocamlbuild"
 
 install-lib-basics-opam:
 	echo '  "ocamlbuild.opam" {"opam"}' >> ocamlbuild.install
@@ -290,8 +290,8 @@ install-lib-basics-opam:
 	done
 
 install-lib-byte:
-	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
-	$(CP) $(INSTALL_LIB) $(INSTALL_LIBDIR)/ocamlbuild
+	mkdir -p "$(INSTALL_LIBDIR)/ocamlbuild"
+	$(CP) $(INSTALL_LIB) "$(INSTALL_LIBDIR)/ocamlbuild"
 
 install-lib-byte-opam:
 	for lib in $(INSTALL_LIB); do \
@@ -299,8 +299,8 @@ install-lib-byte-opam:
 	done
 
 install-lib-native:
-	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
-	$(CP) $(INSTALL_LIB_OPT) $(INSTALL_LIBDIR)/ocamlbuild
+	mkdir -p "$(INSTALL_LIBDIR)/ocamlbuild"
+	$(CP) $(INSTALL_LIB_OPT) "$(INSTALL_LIBDIR)/ocamlbuild"
 
 install-lib-native-opam:
 	for lib in $(INSTALL_LIB_OPT); do \
@@ -333,8 +333,8 @@ endif
 	echo >> ocamlbuild.install
 
 install-man:
-	mkdir -p $(INSTALL_MANDIR)/man1
-	cp man/ocamlbuild.1 $(INSTALL_MANDIR)/man1/ocamlbuild.1
+	mkdir -p "$(INSTALL_MANDIR)/man1"
+	cp man/ocamlbuild.1 "$(INSTALL_MANDIR)/man1/ocamlbuild.1"
 
 install-man-opam:
 	echo 'man: [' >> ocamlbuild.install
@@ -377,14 +377,14 @@ uninstall-lib:
 ifeq ($(OCAML_NATIVE), true)
 	$(MAKE) uninstall-lib-native
 endif
-	ls $(LIBDIR)/ocamlbuild # for easier debugging if rmdir fails
-	rmdir $(LIBDIR)/ocamlbuild
+	ls "$(LIBDIR)/ocamlbuild" # for easier debugging if rmdir fails
+	rmdir "$(LIBDIR)/ocamlbuild"
 
 uninstall-lib-findlib:
 	ocamlfind remove ocamlbuild
 
 uninstall-man:
-	rm $(INSTALL_MANDIR)/man1/ocamlbuild.1
+	rm "$(INSTALL_MANDIR)/man1/ocamlbuild.1"
 
 install: check-if-preinstalled
 	$(MAKE) install-bin install-lib install-man
