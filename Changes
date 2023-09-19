@@ -16,6 +16,9 @@ NEXT_RELEASE:
 
 - Quote Makefile arguments to allow spaces in paths, especially on Windows.
   Documented in #321 (#324 by Jonah Beckford)
+- Use forward slashes and quoted OCaml strings to avoid unescaping
+  of Windows backslashes documented in #321
+  (#323 by Jonah Beckford)
 
 0.14.2 (28 Sep 2022):
 ---------------------

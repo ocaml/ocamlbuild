@@ -64,13 +64,15 @@ clean:
 distclean:
 	rm -f Makefile.config src/ocamlbuild_config.ml
 
+# Convert Makefile paths into Unix-style forward slashes. This avoids
+# escaping backslashes when the Makefile prints into OCaml strings.
 Makefile.config:
 	(echo "# This file was generated from configure.make"; \
 	echo ;\
-	echo "OCAML_PREFIX=$(OCAML_PREFIX)"; \
-	echo "OCAML_BINDIR=$(OCAML_BINDIR)"; \
-	echo "OCAML_LIBDIR=$(OCAML_LIBDIR)"; \
-	echo "OCAML_MANDIR=$(OCAML_MANDIR)"; \
+	echo "OCAML_PREFIX=$(shell printf '%s' '$(OCAML_PREFIX)' | tr '\' /)"; \
+	echo "OCAML_BINDIR=$(shell printf '%s' '$(OCAML_BINDIR)' | tr '\' /)"; \
+	echo "OCAML_LIBDIR=$(shell printf '%s' '$(OCAML_LIBDIR)' | tr '\' /)"; \
+	echo "OCAML_MANDIR=$(shell printf '%s' '$(OCAML_MANDIR)' | tr '\' /)"; \
 	echo ;\
 	echo "EXT_OBJ=$(EXT_OBJ)"; \
 	echo "EXT_ASM=$(EXT_ASM)"; \
@@ -83,19 +85,19 @@ Makefile.config:
 	echo "NATDYNLINK=$(NATDYNLINK)"; \
 	echo "SUPPORT_SHARED_LIBRARIES=$(SUPPORTS_SHARED_LIBRARIES)"; \
 	echo ;\
-	echo "PREFIX=$(OCAMLBUILD_PREFIX)"; \
-	echo "BINDIR=$(OCAMLBUILD_BINDIR)"; \
-	echo "LIBDIR=$(OCAMLBUILD_LIBDIR)"; \
-	echo "MANDIR=$(OCAMLBUILD_MANDIR)"; \
+	echo "PREFIX=$(shell printf '%s' '$(OCAMLBUILD_PREFIX)' | tr '\' /)"; \
+	echo "BINDIR=$(shell printf '%s' '$(OCAMLBUILD_BINDIR)' | tr '\' /)"; \
+	echo "LIBDIR=$(shell printf '%s' '$(OCAMLBUILD_LIBDIR)' | tr '\' /)"; \
+	echo "MANDIR=$(shell printf '%s' '$(OCAMLBUILD_MANDIR)' | tr '\' /)"; \
 	) > $@
 
 src/ocamlbuild_config.ml:
 	(echo "(* This file was generated from ../configure.make *)"; \
 	echo ;\
-	echo 'let bindir = "$(OCAMLBUILD_BINDIR)"'; \
-	echo 'let libdir = "$(OCAMLBUILD_LIBDIR)"'; \
-	echo 'let ocaml_libdir = "$(abspath $(OCAML_LIBDIR))"'; \
-	echo 'let libdir_abs = "$(abspath $(OCAMLBUILD_LIBDIR))"'; \
+	echo 'let bindir = {|$(OCAMLBUILD_BINDIR)|}'; \
+	echo 'let libdir = {|$(OCAMLBUILD_LIBDIR)|}'; \
+	echo 'let ocaml_libdir = {|$(abspath $(OCAML_LIBDIR))|}'; \
+	echo 'let libdir_abs = {|$(abspath $(OCAMLBUILD_LIBDIR))|}'; \
 	echo 'let ocaml_native = $(OCAML_NATIVE)'; \
 	echo 'let ocaml_native_tools = $(OCAML_NATIVE_TOOLS)'; \
 	echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)';\
