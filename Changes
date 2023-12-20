@@ -11,9 +11,11 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.14.3 (20 Dec 2023):
+---------------------
 
+- Add OCaml 5.2 support
+  (#325 by Hugo Heuzard)
 - Quote Makefile arguments to allow spaces in paths, especially on Windows.
   Documented in #321 (#324 by Jonah Beckford)
 
