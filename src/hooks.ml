@@ -21,8 +21,26 @@ type message =
   | Before_rules
   | After_rules
 
-let hooks = ref ignore
+let hooks = ref None
 
-let setup_hooks f = hooks := f
+let setup_hooks f =
+  match !hooks with
+  | None -> hooks := Some f
+  | Some _ ->
+      Log.eprintf "%a" Format.pp_print_text
+        "Warning: your myocamlbuild.ml plugin seems to be setting \
+         up several dispatch hooks through several calls to \
+         Ocamlbuild_plugin.dispatch. This is not supported, \
+         all dispatch functions but the last one will be discarded.\n\
+         \n\
+         You should not install several hook handlers, but rather \
+         combine several handler functions explicitly in a single \
+         dispatch call. This lets you declare the order between \
+         sub-hooks instead of relying on some implicit evaluation \
+         effect order.\n";
+      hooks := Some f
 
-let call_hook m = !hooks m
+let call_hook m =
+  match !hooks with
+  | None -> ()
+  | Some hook -> hook m
