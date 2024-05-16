@@ -5,3 +5,10 @@ let package_exists package =
   try ignore (package_directory package); Fullfilled
   with No_such_package _ ->
     Missing (Printf.sprintf "the ocamlfind package %s" package)
+
+let req_and a b =
+  match a, b with
+  | Fullfilled, Fullfilled -> Fullfilled
+  | Missing _ as x, Fullfilled
+  | Fullfilled, (Missing _ as x) -> x
+  | Missing a, Missing b -> Missing (Printf.sprintf "%s, %s" a b)
