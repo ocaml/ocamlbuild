@@ -16,6 +16,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - windows-latest
         ocaml-compiler:
           - "4.08"
           - "4.09"
@@ -66,7 +67,7 @@ jobs:
 
       - run: opam install . --with-test --deps-only
 
-      - run: VERBOSE=1 opam exec -- make test
+      - run: opam exec -- make test
 
       - run: OCAMLBUILD=$(pwd)/ocamlbuild.native opam exec -- make -C bootstrap
 
