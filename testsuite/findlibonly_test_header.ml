@@ -1,4 +1,4 @@
-match Sys.command "ocamlfind ocamlc" with
+match Sys.command "ocamlfind ocamlc -version" with
     | 0 -> ()
     | _ ->
       prerr_endline "Having ocamlfind installed is a prerequisite \
