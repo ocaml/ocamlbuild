@@ -435,7 +435,8 @@ plugin-lib/%.cmx: plugin-lib/%.ml
 
 clean::
 	rm -rf tmp/
-	rm -f src/*.cm* *.cm*
+	rm -f src/*.cm* *.cm* bin/*.cm* plugin-lib/*.cm*
+	rm -f src/*.o *.o bin/*.o plugin-lib/*.o plugin-lib/*.a
 ifdef EXT_OBJ
 	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
 endif
