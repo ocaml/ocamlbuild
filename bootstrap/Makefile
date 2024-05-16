@@ -11,11 +11,11 @@ setup:
 
 stage1: setup
 	@echo "BOOTSTRAP (1): building local ocamlbuild from '$(OCAMLBUILD)'"
-	@$(OCAMLBUILD) -build-dir _build_stage1 bootstrap.otarget
+	@$(OCAMLBUILD) -build-dir _build_stage1 bootstrap.otarget -no-plugin
 
 stage2: stage1
 	@echo "BOOTSTRAP (2): building local ocamlbuild from local ocamlbuild"
-	@_build_stage1/bin/ocamlbuild.native -build-dir _build_stage2 bootstrap.otarget
+	@_build_stage1/bin/ocamlbuild.native -build-dir _build_stage2 bootstrap.otarget -no-plugin
 
 clean:
 	@$(OCAMLBUILD) -clean
