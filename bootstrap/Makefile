@@ -8,7 +8,6 @@ setup:
 	ln -sf ../src
 	ln -sf ../bin
 	ln -sf ../plugin-lib
-	mkdir -p dest
 
 stage1: setup
 	@echo "BOOTSTRAP (1): building local ocamlbuild from '$(OCAMLBUILD)'"
@@ -24,5 +23,4 @@ clean:
 	@$(OCAMLBUILD) -build-dir _build_stage2 -clean
 	@rm -f src bin plugin-lib
 	@rm -f dest/ocamlbuild_{stage1,stage2}.native
-	@rmdir dest
 
