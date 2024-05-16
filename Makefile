@@ -127,13 +127,13 @@ distclean:: clean
 # The executables
 
 ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) bin/ocamlbuild.cmo
-	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
+	$(OCAMLC) $(LINKFLAGS) -o $@ -I +unix unix.cma $^
 
 ocamlbuildlight.byte: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ $^
 
 ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
-	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
+	$(OCAMLOPT) $(LINKFLAGS) -o $@ -I +unix unix.cmxa $^
 
 # The libraries
 
