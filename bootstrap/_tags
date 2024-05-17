@@ -20,6 +20,7 @@ true: debug
 "src/discard_printf.ml": rectypes
 "ocamlbuildlib.cma" or "ocamlbuildlightlib.cma": linkall
 <**/*.byte> or <**/*.native> or <**/*.top>: use_unix
+<plugin-lib/*.ml>: use_unix
 "ocamlbuildlight.byte": -use_unix, nopervasives
 <src/*.cmx>: for-pack(Ocamlbuild_pack)
 

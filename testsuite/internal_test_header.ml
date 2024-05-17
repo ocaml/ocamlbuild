@@ -1,3 +1,4 @@
+#directory "+unix";;
 #load "unix.cma";;
 
 #mod_use "../src/ocamlbuild_config.ml";;

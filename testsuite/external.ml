@@ -31,7 +31,7 @@ let () = test "SubtoolOptions"
                 to the subtool invocation (PR#5763)"
   (* testing for the 'menhir' executable directly
      is too hard to do in a portable way; test the ocamlfind package instead *)
-  ~requirements:(package_exists "menhirLib")
+  ~requirements:(req_and (package_exists "menhirLib") (package_exists "camlp4"))
   ~options:[`use_ocamlfind; `use_menhir; `tags ["package(camlp4.fulllib)"]]
   ~tree:[T.f "parser.mly"
             ~content:"%{ %}

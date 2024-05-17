@@ -32,4 +32,6 @@ conflicts: [
 
 depends: [
   "ocaml" {>= "4.03"}
+  "ocamlfind" {with-test}
+  "menhirLib" {with-test}
 ]

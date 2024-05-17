@@ -435,19 +435,51 @@ let print_colored header_color header name body_color body =
     (color_code header_color) header name
     (color_code body_color) body
 
+
 let run ~root =
   let dir = Sys.getcwd () in
   let root = dir ^ "/" ^ root in
   rm root;
   Unix.mkdir root 0o750;
+  let install_lib_dir = Filename.concat root "install-lib" in
+  let install_bin_dir = Filename.concat root "install-bin" in
 
   let test_tree = Filename.dirname (Sys.argv.(0)) in
   let test_tree = if test_tree = "." then Sys.getcwd () else test_tree in
   let build_tree = Filename.dirname test_tree in
-  let ocamlbuild = Filename.concat build_tree "ocamlbuild.byte" in
+
+  let copy l dest =
+    ignore(Sys.command (Printf.sprintf "mkdir -p %s" dest));
+    List.iter (fun f -> ignore(Sys.command (Printf.sprintf "cp %s/%s %s" build_tree f dest))) l
+  in
+  let ocamlbuild = Printf.sprintf "%s/ocamlbuild.byte" install_bin_dir in
+  copy
+    [ "plugin-lib/ocamlbuildlib.cma";
+      "plugin-lib/ocamlbuildlib.cmxa";
+      "plugin-lib/ocamlbuildlib.a";
+      "bin/ocamlbuild.cmo";
+      "bin/ocamlbuild.cmx";
+      "bin/ocamlbuild.o";
+      "src/ocamlbuild_pack.cmi";
+      "src/ocamlbuild_pack.cmx";
+      "src/ocamlbuild_pack.o";
+      "plugin-lib/ocamlbuild_plugin.cmi";
+      "plugin-lib/ocamlbuild_plugin.cmx";
+      "plugin-lib/ocamlbuild_plugin.o";
+      "plugin-lib/ocamlbuild_executor.cmi";
+      "plugin-lib/ocamlbuild_executor.cmx";
+      "plugin-lib/ocamlbuild_executor.o";
+      "plugin-lib/ocamlbuild_unix_plugin.cmi";
+      "plugin-lib/ocamlbuild_unix_plugin.cmx";
+      "plugin-lib/ocamlbuild_unix_plugin.o"]
+    install_lib_dir;
+  copy
+    [ "ocamlbuild.byte";
+      "ocamlbuild.native" ]
+    install_bin_dir;
   let testsuite_opts = [
-    (`install_bin_dir build_tree);
-    (`install_lib_dir (Filename.concat build_tree "src"));
+    (`install_bin_dir install_bin_dir);
+    (`install_lib_dir install_lib_dir);
   ] in
 
   let verbose =

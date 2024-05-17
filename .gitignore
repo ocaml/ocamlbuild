@@ -23,6 +23,8 @@ ocamlbuild.install
 Makefile.config
 
 /bootstrap/src
+/bootstrap/bin
+/bootstrap/plugin-lib
 /bootstrap/_build*
 
 /src/ocamlbuild_config.ml

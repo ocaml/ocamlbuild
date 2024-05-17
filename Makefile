@@ -127,13 +127,13 @@ distclean:: clean
 # The executables
 
 ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) bin/ocamlbuild.cmo
-	$(OCAMLC) $(LINKFLAGS) -o $@ unix.cma $^
+	$(OCAMLC) $(LINKFLAGS) -o $@ -I +unix unix.cma $^
 
 ocamlbuildlight.byte: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ $^
 
 ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
-	$(OCAMLOPT) $(LINKFLAGS) -o $@ unix.cmxa $^
+	$(OCAMLOPT) $(LINKFLAGS) -o $@ -I +unix unix.cmxa $^
 
 # The libraries
 
@@ -435,7 +435,8 @@ plugin-lib/%.cmx: plugin-lib/%.ml
 
 clean::
 	rm -rf tmp/
-	rm -f src/*.cm* *.cm*
+	rm -f src/*.cm* *.cm* bin/*.cm* plugin-lib/*.cm*
+	rm -f src/*.o *.o bin/*.o plugin-lib/*.o plugin-lib/*.a
 ifdef EXT_OBJ
 	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
 endif
