@@ -30,9 +30,7 @@ let print_string_list = print_list_com pp_print_string
 let print_string_list_com = print_list_com pp_print_string
 let print_string_list_blank = print_list_blank pp_print_string
 
-let exists filename =
-  try ignore(Unix.stat filename); true
-  with Unix.Unix_error ((Unix.ENOENT),_,_) -> false
+let exists filename = Sys.file_exists filename
 
 let execute cmd =
   let ic = Unix.open_process_in cmd and lst = ref [] in
