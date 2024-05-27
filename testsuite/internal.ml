@@ -165,13 +165,15 @@ let () = test "OutputObj"
   ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\""]
   ~targets:("hello.byte.o",["hello.byte.c";"hello.native.o"]) ();;
 
+let so = if Sys.win32 then "dll" else "so"
+
 let () = test "OutputShared"
   ~options:[`no_ocamlfind]
   ~description:"output_shared targets for native and bytecode (PR #6733)"
   ~requirements:ocamlopt_available
   ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
          T.f "_tags" ~content:"<*.so>: runtime_variant(_pic)"]
-  ~targets:("hello.byte.so",["hello.native.so"]) ();;
+  ~targets:("hello.byte."^so,["hello.native."^so]) ();;
 
 let () = test "CmxsStubLink"
   ~options:[`no_ocamlfind]
@@ -314,12 +316,14 @@ let () = test "ModularPlugin3"
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
 
+let exe_suf = if Sys.win32 then ".exe" else ""
+
 let () = test "PluginCompilation1"
   ~description:"check that the plugin is not compiled when -no-plugin is passed"
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:"prerr_endline \"foo\";;"]
-  ~matching:[_build [M.Not (M.f "myocamlbuild")]]
+  ~matching:[_build [M.Not (M.f ("myocamlbuild" ^ exe_suf))]]
   ~targets:("main.byte",[]) ();;
 
 let () = test "PluginCompilation2"
@@ -327,7 +331,7 @@ let () = test "PluginCompilation2"
   ~options:[`no_ocamlfind; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:"print_endline \"foo\";;"]
-  ~matching:[_build [M.f "myocamlbuild"]]
+  ~matching:[_build [M.f ("myocamlbuild" ^ exe_suf)]]
   ~targets:("", []) ();;
 
 let () = test "PluginCompilation3"
