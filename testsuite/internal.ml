@@ -184,21 +184,21 @@ let () = test "CmxsStubLink"
            T.f "libfoo_stubs.clib" ~content:"foo_stubs.o";
            T.f "foo.ml" ~content:"";
          ];
-         T.f "_tags" ~content:"
-<src/foo.{cma,cmxa}> : record_foo_stubs
-<src/foo.cmxs> : link_foo_stubs";
-         T.f "myocamlbuild.ml" ~content:"
-open Ocamlbuild_plugin
-let () =
-  dispatch begin function
-  | After_rules ->
-      dep [\"record_foo_stubs\"] [\"src/libfoo_stubs.a\"];
-      flag_and_dep
-        [\"link\"; \"ocaml\"; \"link_foo_stubs\"] (P \"src/libfoo_stubs.a\");
-      flag [\"library\"; \"ocaml\";           \"record_foo_stubs\"]
-        (S ([A \"-cclib\"; A \"-lfoo_stubs\"]));
-  | _ -> ()
-  end
+         T.f "_tags" ~content:"\
+<src/foo.{cma,cmxa}> : record_foo_stubs\n\
+<src/foo.cmxs> : link_foo_stubs\n";
+         T.f "myocamlbuild.ml" ~content:"\
+open Ocamlbuild_plugin\n\
+let () =\n\
+  dispatch begin function\n\
+  | After_rules ->\n\
+      dep [\"record_foo_stubs\"] [\"src/libfoo_stubs.a\"];\n\
+      flag_and_dep\n\
+        [\"link\"; \"ocaml\"; \"link_foo_stubs\"] (P \"src/libfoo_stubs.a\");\n\
+      flag [\"library\"; \"ocaml\";           \"record_foo_stubs\"]\n\
+        (S ([A \"-cclib\"; A \"-lfoo_stubs\"]));\n\
+  | _ -> ()\n\
+  end\n\
 "]
   ~targets:("src/foo.cmxs",[]) ();;
 
@@ -208,31 +208,31 @@ let () = test "StrictSequenceFlag"
   ~tree:[T.f "hello.ml" ~content:"let () = 1; ()";
          T.f "_tags" ~content:"true: strict_sequence\n"]
   ~failing_msg:(if Sys.ocaml_version < "4.07.0" then
-"File \"hello.ml\", line 1, characters 9-10:
-Error: This expression has type int but an expression was expected of type
-         unit
+"File \"hello.ml\", line 1, characters 9-10:\n\
+Error: This expression has type int but an expression was expected of type\n\
+\         unit\n\
 Command exited with code 2."
 else if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 1, characters 9-10:
-Error: This expression has type int but an expression was expected of type
-         unit
-       because it is in the left-hand side of a sequence
+"File \"hello.ml\", line 1, characters 9-10:\n\
+Error: This expression has type int but an expression was expected of type\n\
+\         unit\n\
+\       because it is in the left-hand side of a sequence\n\
 Command exited with code 2."
 else if Sys.ocaml_version < "5.2.0" then
-"File \"hello.ml\", line 1, characters 9-10:
-1 | let () = 1; ()
-             ^
-Error: This expression has type int but an expression was expected of type
-         unit
-       because it is in the left-hand side of a sequence
+"File \"hello.ml\", line 1, characters 9-10:\n\
+1 | let () = 1; ()\n\
+\             ^\n\
+Error: This expression has type int but an expression was expected of type\n\
+\         unit\n\
+\       because it is in the left-hand side of a sequence\n\
 Command exited with code 2."
 else
-"File \"hello.ml\", line 1, characters 9-10:
-1 | let () = 1; ()
-             ^
-Error: This expression has type \"int\" but an expression was expected of type
-         \"unit\"
-       because it is in the left-hand side of a sequence
+"File \"hello.ml\", line 1, characters 9-10:\n\
+1 | let () = 1; ()\n\
+\             ^\n\
+Error: This expression has type \"int\" but an expression was expected of type\n\
+\         \"unit\"\n\
+\       because it is in the left-hand side of a sequence\n\
 Command exited with code 2."
 )
   ~targets:("hello.byte",[]) ();;
@@ -243,16 +243,16 @@ let () = test "StrictFormatsFlag"
   ~tree:[T.f "hello.ml" ~content:"let _ = Printf.printf \"%.10s\"";
          T.f "_tags" ~content:"true: strict_formats\n"]
   ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 1, characters 22-29:
+"File \"hello.ml\", line 1, characters 22-29:\n\
 Error: invalid format \"%.10s\": at character number 0, \
-`precision' is incompatible with 's' in sub-format \"%.10s\"
+`precision' is incompatible with 's' in sub-format \"%.10s\"\n\
 Command exited with code 2."
 else
-"File \"hello.ml\", line 1, characters 22-29:
-1 | let _ = Printf.printf \"%.10s\"
-                          ^^^^^^^
+"File \"hello.ml\", line 1, characters 22-29:\n\
+1 | let _ = Printf.printf \"%.10s\"\n\
+\                          ^^^^^^^\n\
 Error: invalid format \"%.10s\": at character number 0, \
-`precision' is incompatible with 's' in sub-format \"%.10s\"
+`precision' is incompatible with 's' in sub-format \"%.10s\"\n\
 Command exited with code 2."
 )
   ~targets:("hello.byte",[]) ();;
@@ -261,21 +261,21 @@ let () = test "PrincipalFlag"
   ~options:[`no_ocamlfind; `quiet]
   ~description:"-principal tag"
   ~tree:[T.f "hello.ml"
-            ~content:"type s={foo:int;bar:unit} type t={foo:int}
+            ~content:"type s={foo:int;bar:unit} type t={foo:int}\n\
                       let f x = (x.bar; x.foo)";
          T.f "_tags" ~content:"true: principal\n"]
   ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 2, characters 42-45:
+"File \"hello.ml\", line 2, characters 20-23:\n\
 Warning 18: this type-based field disambiguation is not principal."
 else if Sys.ocaml_version < "4.12.0" then
-"File \"hello.ml\", line 2, characters 42-45:
-2 |                       let f x = (x.bar; x.foo)
-                                              ^^^
+"File \"hello.ml\", line 2, characters 20-23:\n\
+2 | let f x = (x.bar; x.foo)\n\
+\                        ^^^\n\
 Warning 18: this type-based field disambiguation is not principal."
 else
-"File \"hello.ml\", line 2, characters 42-45:
-2 |                       let f x = (x.bar; x.foo)
-                                              ^^^
+"File \"hello.ml\", line 2, characters 20-23:\n\
+2 | let f x = (x.bar; x.foo)\n\
+\                        ^^^\n\
 Warning 18 [not-principal]: this type-based field disambiguation is not principal."
 )
   ~targets:("hello.byte",[]) ();;
@@ -296,7 +296,7 @@ let () = test "ModularPlugin2"
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "_tags" ~content:"<main.*>: toto(-g)";
          T.f "myocamlbuild.ml"
-           ~content:"open Ocamlbuild_plugin;;
+           ~content:"open Ocamlbuild_plugin;;\n\
                      pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
   ~failing_msg:""
   ~matching:[M.f "main.byte"]
@@ -309,7 +309,7 @@ let () = test "ModularPlugin3"
   ~options:[`no_ocamlfind; `quiet; `plugin_tag "toto(-g)"]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml"
-           ~content:"open Ocamlbuild_plugin;;
+           ~content:"open Ocamlbuild_plugin;;\n\
                      pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
   ~failing_msg:"Warning: tag \"toto\" does not expect a parameter, \
                 but is used with parameter \"-g\""
@@ -375,12 +375,12 @@ let () = test "TagsNewlines"
   ~tree:[
     T.f "main.ml" ~content:"";
     T.f "_tags" ~content:
-"<foo>: debug,\\
-rectypes
-<bar>: \\
-debug, rectypes
-<baz>\\
-: debug, rectypes
+"<foo>: debug,\\\n\
+rectypes\n\
+<bar>: \\\n\
+debug, rectypes\n\
+<baz>\\\n\
+: debug, rectypes\n\
 ";
   ]
   ~matching:[M.f "main.byte"]
@@ -487,7 +487,7 @@ let () = test "CmxsFromMllib1"
   ~targets:("foo.cmxs", []) ();;
 
 let () = test "CmxsFromMllib2"
-  ~description:"Check that a .cmxs file can be built from a .mllib file,
+  ~description:"Check that a .cmxs file can be built from a .mllib file, \
                 even when one of the module has the same name as the library"
   ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]

@@ -225,7 +225,7 @@ endif
 # Testing
 
 test-%: testsuite/%.ml all
-	cd testsuite && ocaml "../$<"
+	cd testsuite && ocaml -w @14@29 "../$<"
 
 test: test-internal test-findlibonly test-external
 

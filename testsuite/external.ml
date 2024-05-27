@@ -34,10 +34,10 @@ let () = test "SubtoolOptions"
   ~requirements:(req_and (package_exists "menhirLib") (package_exists "camlp4"))
   ~options:[`use_ocamlfind; `use_menhir; `tags ["package(camlp4.fulllib)"]]
   ~tree:[T.f "parser.mly"
-            ~content:"%{ %}
-                      %token DUMMY
-                      %start<Camlp4.PreCast.Syntax.Ast.expr option> test
-                      %%
+            ~content:"%{ %}\n\
+                      %token DUMMY\n\
+                      %start<Camlp4.PreCast.Syntax.Ast.expr option> test\n\
+                      %%\n\
                       test: DUMMY {None}"]
   ~matching:[M.f "parser.native"; M.f "parser.byte"]
   ~targets:("parser.native",["parser.byte"])
