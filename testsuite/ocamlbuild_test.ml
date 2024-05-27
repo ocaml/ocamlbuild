@@ -34,6 +34,7 @@ let exists filename = Sys.file_exists filename
 
 let execute cmd =
   let ic = Unix.open_process_in cmd and lst = ref [] in
+  set_binary_mode_in ic false;
   try while true do lst := input_line ic :: !lst done; assert false
   with End_of_file ->
     let ret_code = Unix.close_process_in ic
