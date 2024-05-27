@@ -25,15 +25,14 @@ jobs:
           - "4.12"
           - "4.13"
           - "4.14"
-          - "5.0"
-          - "5.1"
-          - "5.2"
+          - "5.0.0"
+          - "5.1.1"
+          - "5.2.0"
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Set git to use LF
-        if: matrix.ocaml-compiler < 5.2
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
@@ -43,10 +42,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && ! startsWith(matrix.ocaml-compiler, '5')
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          opam-repositories: |
+            default: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
+            opam: https://github.com/ocaml/opam-repository.git
+          dune-cache: true
+          opam-depext: ${{ !matrix.skip-test }}
+          opam-depext-flags: --with-test
+
+      - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
+        if: runner.os == 'Windows' && startsWith(matrix.ocaml-compiler, '5')
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ocaml-variants.${{ matrix.ocaml-compiler }}+options,ocaml-option-mingw
           opam-repositories: |
             dra27: https://github.com/dra27/opam-repository.git#windows-5.0
             default: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
@@ -70,13 +81,14 @@ jobs:
       - run: opam exec -- make test
 
       - run: OCAMLBUILD=$(pwd)/ocamlbuild.native opam exec -- make -C bootstrap
+        if: runner.os != 'Windows'
 
       - run: opam exec -- make distclean
-      - run: opam exec -- opam pin add -n -k path ocamlbuild .
+      - run: opam exec -- opam pin add -n ocamlbuild .
       - run: opam exec -- opam install -v ocamlbuild
       - run: opam exec -- opam install -v mtime.1.0.0 # this tests topkg, with stub libraries
       - run: opam exec -- opam install -v inotify.2.3 # this tests oasis, with stub libraries
-        if: matrix.ocaml-compiler < 5
+        if: (! startsWith(matrix.ocaml-compiler, '5')) && runner.os != 'Windows'
       - run: opam exec -- opam install -v cpuid.0.1.1 # this tests the ocb-stubblr plugin
       - run: opam exec -- opam install -v shcaml.0.2.1 # this tests the cppo plugin
-        if: matrix.ocaml-compiler < 5
+        if: (! startsWith(matrix.ocaml-compiler, '5')) && runner.os != 'Windows'
