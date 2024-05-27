@@ -171,7 +171,7 @@ let set_cmd rcmd = String (fun s -> rcmd := Sh s)
 let set_build_dir s =
   make_links := false;
   if Filename.is_relative s then
-    build_dir := Filename.concat (Sys.getcwd ()) s
+    build_dir := filename_concat (Sys.getcwd ()) s
   else
     build_dir := s
 let spec = ref (
