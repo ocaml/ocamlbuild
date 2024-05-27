@@ -269,7 +269,7 @@ let rule name ?tags ?(prods=[]) ?(deps=[]) ?prod ?dep ?stamp ?(insert = `bottom)
     match tags with
       | None -> ()
       | Some _ ->
-        Log.eprintf "Warning: your ocamlbuild rule %S uses the ~tags parameter,
+        Log.eprintf "Warning: your ocamlbuild rule %S uses the ~tags parameter, \
                      which is deprecated and ignored."
           name
   in

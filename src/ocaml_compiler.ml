@@ -125,9 +125,9 @@ let prepare_compile build ml =
           "Warning: Failed to build the module %s requested by ocamldep."
           name;
         if not (!Options.recursive || Options.ocamlbuild_project_heuristic ())
-        then Log.at_failure ~name:"a module failed to build,
-           while recursive traversal was disabled by fragile heuristic;
-           hint that having a _tags or myocamlbuild.ml would maybe solve
+        then Log.at_failure ~name:"a module failed to build, \
+           while recursive traversal was disabled by fragile heuristic;\n\
+           hint that having a _tags or myocamlbuild.ml would maybe solve \
            the build error"
           (fun `Error ->
             eprintf "Hint:@ Recursive@ traversal@ of@ subdirectories@ \

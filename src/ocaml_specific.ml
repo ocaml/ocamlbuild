@@ -109,14 +109,12 @@ rule "ocaml: mlpack & cmo* & cmi -> cmo"
   ~doc:"If foo.mlpack contains a list of capitalized module names, \
   the target foo.cmo will produce a packed module containing \
   those modules as submodules. You can also have a foo.mli file \
-  to restrict the interface of the resulting module.
-
-\
+  to restrict the interface of the resulting module.\n\
+  \n\
   Warning: to produce a native foo.cmx out of a foo.mlpack, you must \
   manually tag the included compilation units with for-pack(foo). \
-  See the documentation of the corresponding rules for more details.
-
-\
+  See the documentation of the corresponding rules for more details.\n\
+  \n\
   The modules named in the .mlpack \
   will be dynamic dependencies of the compilation action. \
   You cannot give the .mlpack the same name as one of the module \
@@ -132,10 +130,9 @@ rule "ocaml: ml & cmi -> d.cmo"
   ~prod:"%.d.cmo"
   ~deps:["%.mli"(* This one is inserted to force this rule to be skiped when
     a .ml is provided without a .mli *); "%.ml"; "%.ml.depends"; "%.cmi"]
-  ~doc:"The foo.d.cmo target compiles foo.ml with the 'debug' tag enabled (-g).\
-        See also foo.d.byte.
-
-\
+  ~doc:"The foo.d.cmo target compiles foo.ml with the 'debug' tag enabled (-g). \
+        See also foo.d.byte.\n\
+        \n\
         For technical reason, .d.cmx and .d.native are not yet supported, \
         so you should explicitly add the 'debug' tag \
         to native targets (both compilation and linking)."
@@ -159,15 +156,13 @@ rule "ocaml: mlpack & cmi & cmx* & o* -> cmx & o"
   ~deps:["%.mlpack"; "%.cmi"]
   ~doc:"If foo.mlpack contains a list of capitalized module names, \
   the target foo.cmx will produce a packed module containing \
-  those modules as submodules.
-
-\
+  those modules as submodules.\n\
+  \n\
   Warning: The .cmx files that will be included must be manually tagged \
   with the tag \"for-pack(foo)\". This means that you cannot include \
   the same bar.cmx in several .mlpack files, and that you should not \
-  use an included .cmx as a separate module on its own.
-
-\
+  use an included .cmx as a separate module on its own.\n\
+  \n\
   This requirement comes from a technical limitation of \
   native module packing: ocamlopt needs the -for-pack argument to be passed \
   ahead of time, when compiling each included submodule, \
@@ -197,9 +192,8 @@ rule "ocaml: ml -> cmo & cmi"
   ~prods:["%.cmo"; "%.cmi"]
   ~deps:["%.ml"; "%.ml.depends"]
   ~doc:"This rule allows to produce a .cmi from a .ml file \
-        when the corresponding .mli is missing.
-
-\
+        when the corresponding .mli is missing.\n\
+        \n\
         Note: you are strongly encourage to have a .mli file \
         for each of your .ml module, as it is a good development \
         practice which also simplifies the way build systems work, \
@@ -408,9 +402,8 @@ rule "ocaml dependencies ml"
   ~dep:"%.ml"
   ~doc:"OCamlbuild will use ocamldep to approximate dependencies \
         of a source file. The ocamldep tool being purely syntactic, \
-        it only computes an over-approximation of the dependencies.
-
-\
+        it only computes an over-approximation of the dependencies.\n\
+        \n\
         If you manipulate a module Foo that is in fact a submodule Bar.Foo \
         (after 'open Bar'), ocamldep may believe that your module depends \
         on foo.ml -- when such a file also exists in your project. This can \
@@ -590,9 +583,8 @@ rule "preprocess: ml -> pp.ml"
   ~prod:"%.pp.ml"
   ~doc:"The target foo.pp.ml should generate a source file equivalent \
         to foo.ml after syntactic preprocessors (camlp4, etc.) have been \
-        applied.
-
-\
+        applied.\n\
+        \n\
         Warning: This option is currently known to malfunction \
         when used together with -use-ocamlfind (for syntax extensions \
         coming from ocamlfind packages). Direct compilation of the \
