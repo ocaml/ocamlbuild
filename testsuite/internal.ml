@@ -53,14 +53,17 @@ let () = test "BuildDir"
   ~targets:("dummy.byte",[]) ();;
 
 let tag_pat_msgs =
-  ["*:a", "File \"_tags\", line 1, characters 0-2:\n\
-           Lexing error: Invalid globbing pattern \"*\".";
+  ["*:a",
+{|File "_tags", line 1, characters 0-2:
+Lexing error: Invalid globbing pattern "*".|};
 
-   "\n<*{>:a", "File \"_tags\", line 2, characters 0-5:\n\
-                Lexing error: Invalid globbing pattern \"<*{>\".";
+   "\n<*{>:a",
+{|File "_tags", line 2, characters 0-5:
+Lexing error: Invalid globbing pattern "<*{>".|};
 
-   "<*>: ~@a,# ~a", "File \"_tags\", line 1, characters 10-11:\n\
-                     Lexing error: Only ',' separated tags are allowed."];;
+   "<*>: ~@a,# ~a",
+{|File "_tags", line 1, characters 10-11:
+Lexing error: Only ',' separated tags are allowed.|}];;
 
 List.iteri (fun i (content,failing_msg) ->
   let () = test (Printf.sprintf "TagsErrorMessage_%d" (i+1))
@@ -74,7 +77,12 @@ List.iteri (fun i (content,failing_msg) ->
 let () = test "Itarget"
   ~options:[`no_ocamlfind]
   ~description:".itarget building with dependencies between the modules (PR#5686)"
-  ~tree:[T.f "foo.itarget" ~content:"a.cma\nb.byte\n"; T.f "a.ml"; T.f "b.ml" ~content:"open A\n"]
+  ~tree:[T.f "foo.itarget" ~content:{|
+a.cma
+b.byte
+|};
+         T.f "a.ml";
+         T.f "b.ml" ~content:"open A"]
   ~matching:[M.f "a.cma"; M.f "b.byte"]
   ~targets:("foo.otarget",[]) ();;
 
@@ -82,9 +90,12 @@ let () = test "PackAcross"
   ~options:[`no_ocamlfind]
   ~description:"Pack using a module from the other tree (PR#4592)"
   ~requirements:ocamlopt_available
-  ~tree:[T.f "main.ml" ~content:"let _ = Pack.Packed.g ()\n";
+  ~tree:[T.f "main.ml" ~content:"let _ = Pack.Packed.g ()";
          T.f "Pack.mlpack" ~content:"pack/Packed";
-         T.f "_tags" ~content:"<lib>: include\n<pack/*.cmx>: for-pack(Pack)\n";
+         T.f "_tags" ~content:{|
+<lib>: include
+<pack/*.cmx>: for-pack(Pack)
+|};
          T.d "lib" [T.f "Lib.ml" ~content:"let f()=()";
                     T.f "Lib.mli" ~content:"val f : unit -> unit"];
          T.d "pack" [T.f "Packed.ml" ~content:"let g() = Lib.f ()"]]
@@ -111,7 +122,7 @@ let () = test "PackAcross3"
          T.f "foo.mlpack" ~content:"foo/Bar";
          T.f "main.ml" ~content:"prerr_endline Foo.Bar.baz";
          T.f "myocamlbuild.ml";
-         T.f "quux.ml" ~content:"let xyzzy = \"xyzzy\"";
+         T.f "quux.ml" ~content:{|let xyzzy = "xyzzy"|};
          T.f "quux.mli" ~content:"val xyzzy : string"]
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
@@ -131,7 +142,7 @@ let () = test "NoIncludeNoHygiene1"
   ~description:"check that hygiene checks are only done in traversed directories\
                 (PR#4502)"
   ~tree:[T.d "must_ignore" [ T.f "dirty.mli" ~content:"val bug : int"];
-         T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
+         T.f "hello.ml" ~content:{|print_endline "Hello, World!"|};
          T.f "_tags" ~content:"<must_ignore>: -traverse"]
   ~pre_cmd:"ocamlc -c must_ignore/dirty.mli"
             (* will make hygiene fail if must_ignore/ is checked *)
@@ -142,7 +153,7 @@ let () = test "NoIncludeNoHygiene2"
   ~description:"check that hygiene checks are not done on the -build-dir \
                 (PR#4502)"
   ~tree:[T.d "must_ignore" [ T.f "dirty.mli" ~content:"val bug : int"];
-         T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
+         T.f "hello.ml" ~content:{|print_endline "Hello, World!"|};
          T.f "_tags" ~content:""]
   ~pre_cmd:"ocamlc -c must_ignore/dirty.mli"
             (* will make hygiene fail if must_ignore/ is checked *)
@@ -152,7 +163,7 @@ let () = test "NoIncludeNoHygiene3"
   ~options:[`no_ocamlfind; `X "must_ignore"]
   ~description:"check that hygiene checks are not done on excluded dirs (PR#4502)"
   ~tree:[T.d "must_ignore" [ T.f "dirty.mli" ~content:"val bug : int"];
-         T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
+         T.f "hello.ml" ~content:{|print_endline "Hello, World!"|};
          T.f "_tags" ~content:""]
   ~pre_cmd:"ocamlc -c must_ignore/dirty.mli"
             (* will make hygiene fail if must_ignore/ is checked *)
@@ -162,16 +173,18 @@ let () = test "OutputObj"
   ~options:[`no_ocamlfind]
   ~description:"output_obj targets for native and bytecode (PR #6049)"
   ~requirements:ocamlopt_available
-  ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\""]
+  ~tree:[T.f "hello.ml" ~content:{|print_endline "Hello, World!"|}]
   ~targets:("hello.byte.o",["hello.byte.c";"hello.native.o"]) ();;
+
+let so = if Sys.win32 then "dll" else "so"
 
 let () = test "OutputShared"
   ~options:[`no_ocamlfind]
   ~description:"output_shared targets for native and bytecode (PR #6733)"
   ~requirements:ocamlopt_available
-  ~tree:[T.f "hello.ml" ~content:"print_endline \"Hello, World!\"";
+  ~tree:[T.f "hello.ml" ~content:{|print_endline "Hello, World!"|};
          T.f "_tags" ~content:"<*.so>: runtime_variant(_pic)"]
-  ~targets:("hello.byte.so",["hello.native.so"]) ();;
+  ~targets:("hello.byte."^so,["hello.native."^so]) ();;
 
 let () = test "CmxsStubLink"
   ~options:[`no_ocamlfind]
@@ -182,76 +195,79 @@ let () = test "CmxsStubLink"
            T.f "libfoo_stubs.clib" ~content:"foo_stubs.o";
            T.f "foo.ml" ~content:"";
          ];
-         T.f "_tags" ~content:"
+         T.f "_tags" ~content:{|
 <src/foo.{cma,cmxa}> : record_foo_stubs
-<src/foo.cmxs> : link_foo_stubs";
-         T.f "myocamlbuild.ml" ~content:"
+<src/foo.cmxs> : link_foo_stubs
+|};
+         T.f "myocamlbuild.ml" ~content:{|
 open Ocamlbuild_plugin
 let () =
   dispatch begin function
   | After_rules ->
-      dep [\"record_foo_stubs\"] [\"src/libfoo_stubs.a\"];
+      dep ["record_foo_stubs"] ["src/libfoo_stubs.a"];
       flag_and_dep
-        [\"link\"; \"ocaml\"; \"link_foo_stubs\"] (P \"src/libfoo_stubs.a\");
-      flag [\"library\"; \"ocaml\";           \"record_foo_stubs\"]
-        (S ([A \"-cclib\"; A \"-lfoo_stubs\"]));
+        ["link"; "ocaml"; "link_foo_stubs"] (P "src/libfoo_stubs.a");
+      flag ["library"; "ocaml"; "record_foo_stubs"]
+        (S ([A "-cclib"; A "-lfoo_stubs"]));
   | _ -> ()
   end
-"]
+|}]
   ~targets:("src/foo.cmxs",[]) ();;
 
 let () = test "StrictSequenceFlag"
   ~options:[`no_ocamlfind; `quiet]
   ~description:"strict_sequence tag"
   ~tree:[T.f "hello.ml" ~content:"let () = 1; ()";
-         T.f "_tags" ~content:"true: strict_sequence\n"]
+         T.f "_tags" ~content:{|
+true: strict_sequence
+|}]
   ~failing_msg:(if Sys.ocaml_version < "4.07.0" then
-"File \"hello.ml\", line 1, characters 9-10:
+{|File "hello.ml", line 1, characters 9-10:
 Error: This expression has type int but an expression was expected of type
          unit
-Command exited with code 2."
+Command exited with code 2.|}
 else if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 1, characters 9-10:
+{|File "hello.ml", line 1, characters 9-10:
 Error: This expression has type int but an expression was expected of type
          unit
        because it is in the left-hand side of a sequence
-Command exited with code 2."
+Command exited with code 2.|}
 else if Sys.ocaml_version < "5.2.0" then
-"File \"hello.ml\", line 1, characters 9-10:
+{|File "hello.ml", line 1, characters 9-10:
 1 | let () = 1; ()
              ^
 Error: This expression has type int but an expression was expected of type
          unit
        because it is in the left-hand side of a sequence
-Command exited with code 2."
+Command exited with code 2.|}
 else
-"File \"hello.ml\", line 1, characters 9-10:
+{|File "hello.ml", line 1, characters 9-10:
 1 | let () = 1; ()
              ^
-Error: This expression has type \"int\" but an expression was expected of type
-         \"unit\"
+Error: This expression has type "int" but an expression was expected of type
+         "unit"
        because it is in the left-hand side of a sequence
-Command exited with code 2."
+Command exited with code 2.|}
 )
   ~targets:("hello.byte",[]) ();;
 
 let () = test "StrictFormatsFlag"
   ~options:[`no_ocamlfind; `quiet]
   ~description:"strict_format tag"
-  ~tree:[T.f "hello.ml" ~content:"let _ = Printf.printf \"%.10s\"";
-         T.f "_tags" ~content:"true: strict_formats\n"]
+  ~tree:[T.f "hello.ml" ~content:{|let _ = Printf.printf "%.10s"|};
+         T.f "_tags" ~content:{|
+true: strict_formats
+|}]
   ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 1, characters 22-29:
-Error: invalid format \"%.10s\": at character number 0, \
-`precision' is incompatible with 's' in sub-format \"%.10s\"
-Command exited with code 2."
+{|File "hello.ml", line 1, characters 22-29:
+Error: invalid format "%.10s": at character number 0, `precision' is incompatible with 's' in sub-format "%.10s"
+Command exited with code 2.|}
 else
-"File \"hello.ml\", line 1, characters 22-29:
-1 | let _ = Printf.printf \"%.10s\"
+{|File "hello.ml", line 1, characters 22-29:
+1 | let _ = Printf.printf "%.10s"
                           ^^^^^^^
-Error: invalid format \"%.10s\": at character number 0, \
-`precision' is incompatible with 's' in sub-format \"%.10s\"
-Command exited with code 2."
+Error: invalid format "%.10s": at character number 0, `precision' is incompatible with 's' in sub-format "%.10s"
+Command exited with code 2.|}
 )
   ~targets:("hello.byte",[]) ();;
 
@@ -259,22 +275,26 @@ let () = test "PrincipalFlag"
   ~options:[`no_ocamlfind; `quiet]
   ~description:"-principal tag"
   ~tree:[T.f "hello.ml"
-            ~content:"type s={foo:int;bar:unit} type t={foo:int}
-                      let f x = (x.bar; x.foo)";
-         T.f "_tags" ~content:"true: principal\n"]
+           ~content:
+{|type s={foo:int;bar:unit} type t={foo:int}
+let f x = (x.bar; x.foo)
+|};
+         T.f "_tags" ~content:{|
+true: principal
+|}]
   ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-"File \"hello.ml\", line 2, characters 42-45:
-Warning 18: this type-based field disambiguation is not principal."
+{|File "hello.ml", line 2, characters 20-23:
+Warning 18: this type-based field disambiguation is not principal.|}
 else if Sys.ocaml_version < "4.12.0" then
-"File \"hello.ml\", line 2, characters 42-45:
-2 |                       let f x = (x.bar; x.foo)
-                                              ^^^
-Warning 18: this type-based field disambiguation is not principal."
+{|File "hello.ml", line 2, characters 20-23:
+2 | let f x = (x.bar; x.foo)
+                        ^^^
+Warning 18: this type-based field disambiguation is not principal.|}
 else
-"File \"hello.ml\", line 2, characters 42-45:
-2 |                       let f x = (x.bar; x.foo)
-                                              ^^^
-Warning 18 [not-principal]: this type-based field disambiguation is not principal."
+{|File "hello.ml", line 2, characters 20-23:
+2 | let f x = (x.bar; x.foo)
+                        ^^^
+Warning 18 [not-principal]: this type-based field disambiguation is not principal.|}
 )
   ~targets:("hello.byte",[]) ();;
 
@@ -282,7 +302,7 @@ let () = test "ModularPlugin1"
   ~description:"test a plugin with dependency on external libraries"
   ~options:[`no_ocamlfind; `quiet; `plugin_tag "use_str"]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
-         T.f "myocamlbuild.ml" ~content:"ignore (Str.quote \"\");;"]
+         T.f "myocamlbuild.ml" ~content:{|ignore (Str.quote "");;|}]
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
 
@@ -294,8 +314,10 @@ let () = test "ModularPlugin2"
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "_tags" ~content:"<main.*>: toto(-g)";
          T.f "myocamlbuild.ml"
-           ~content:"open Ocamlbuild_plugin;;
-                     pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
+           ~content:{|
+open Ocamlbuild_plugin;;
+pflag ["link"] "toto" (fun arg -> A arg);;
+|}]
   ~failing_msg:""
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
@@ -307,27 +329,31 @@ let () = test "ModularPlugin3"
   ~options:[`no_ocamlfind; `quiet; `plugin_tag "toto(-g)"]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml"
-           ~content:"open Ocamlbuild_plugin;;
-                     pflag [\"link\"] \"toto\" (fun arg -> A arg);;"]
-  ~failing_msg:"Warning: tag \"toto\" does not expect a parameter, \
-                but is used with parameter \"-g\""
+           ~content:{|
+open Ocamlbuild_plugin;;
+pflag ["link"] "toto" (fun arg -> A arg);;
+|} ]
+  ~failing_msg:
+{|Warning: tag "toto" does not expect a parameter, but is used with parameter "-g"|}
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
+
+let exe_suf = if Sys.win32 then ".exe" else ""
 
 let () = test "PluginCompilation1"
   ~description:"check that the plugin is not compiled when -no-plugin is passed"
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
-         T.f "myocamlbuild.ml" ~content:"prerr_endline \"foo\";;"]
-  ~matching:[_build [M.Not (M.f "myocamlbuild")]]
+         T.f "myocamlbuild.ml" ~content:{|prerr_endline "foo";;|}]
+  ~matching:[_build [M.Not (M.f ("myocamlbuild" ^ exe_suf))]]
   ~targets:("main.byte",[]) ();;
 
 let () = test "PluginCompilation2"
   ~description:"check that the plugin is compiled when -just-plugin is passed"
   ~options:[`no_ocamlfind; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
-         T.f "myocamlbuild.ml" ~content:"print_endline \"foo\";;"]
-  ~matching:[_build [M.f "myocamlbuild"]]
+         T.f "myocamlbuild.ml" ~content:{|print_endline "foo";;|}]
+  ~matching:[_build [M.f ("myocamlbuild" ^ exe_suf)]]
   ~targets:("", []) ();;
 
 let () = test "PluginCompilation3"
@@ -336,7 +362,7 @@ let () = test "PluginCompilation3"
   ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `quiet; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
-         T.f "myocamlbuild.ml" ~content:"print_endline \"foo\";;"]
+         T.f "myocamlbuild.ml" ~content:{|print_endline "foo";;|}]
   (* if the plugin were executed we'd get "foo" in failing_msg *)
   ~failing_msg:""
   ~targets:("main.byte", []) ();;
@@ -347,8 +373,7 @@ let () = test "PluginTagsWarning"
   ~options:[`no_ocamlfind; `plugin_tag "use_str"]
   ~tree:[T.f "main.ml" ~content:""]
   ~matching:[_build [M.f "main.cmo"]]
-  ~failing_msg:"Warning: option -plugin-tag(s) has no effect \
-                in absence of plugin file \"myocamlbuild.ml\""
+  ~failing_msg:{|Warning: option -plugin-tag(s) has no effect in absence of plugin file "myocamlbuild.ml"|}
   ~targets:("main.ml", []) ();;
 
 let () = test "TagsInNonHygienic"
@@ -359,7 +384,9 @@ let () = test "TagsInNonHygienic"
   ~tree:[
     T.f "main.ml" ~content:"";
     T.d "deps" [T.f "_tags" ~content:""];
-    T.f "_tags" ~content:"<deps>: not_hygienic\n";
+    T.f "_tags" ~content:{|
+<deps>: not_hygienic
+|};
   ]
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
@@ -370,14 +397,14 @@ let () = test "TagsNewlines"
   ~options:[`no_ocamlfind]
   ~tree:[
     T.f "main.ml" ~content:"";
-    T.f "_tags" ~content:
-"<foo>: debug,\\
+    T.f "_tags" ~content:{|
+<foo>: debug,\
 rectypes
-<bar>: \\
+<bar>: \
 debug, rectypes
-<baz>\\
+<baz>\
 : debug, rectypes
-";
+|};
   ]
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
@@ -476,22 +503,29 @@ let () = test "CmxsFromMllib1"
   ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[
-    T.f "a.ml" ~content:"let a = 1\n";
-    T.f "b.ml" ~content:"let b = true\n";
-    T.f "foo.mllib" ~content:"A\nB\n";
+    T.f "a.ml" ~content:"let a = 1";
+    T.f "b.ml" ~content:"let b = true";
+    T.f "foo.mllib" ~content:{|
+A
+B
+|};
   ]
   ~targets:("foo.cmxs", []) ();;
 
 let () = test "CmxsFromMllib2"
-  ~description:"Check that a .cmxs file can be built from a .mllib file,
+  ~description:"Check that a .cmxs file can be built from a .mllib file, \
                 even when one of the module has the same name as the library"
   ~requirements:ocamlopt_available
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[
-    T.f "a.ml" ~content:"let a = 1\n";
-    T.f "b.ml" ~content:"let b = true\n";
-    T.f "foo.ml" ~content:"let foo = (A.a, B.b)\n";
-    T.f "foo.mllib" ~content:"A\nB\nFoo\n";
+    T.f "a.ml" ~content:"let a = 1";
+    T.f "b.ml" ~content:"let b = true";
+    T.f "foo.ml" ~content:"let foo = (A.a, B.b)";
+    T.f "foo.mllib" ~content:{|
+A
+B
+Foo
+|};
   ]
   ~targets:("foo.cmxs", []) ();;
 
@@ -511,7 +545,9 @@ let () = test "MldylibOverridesMllib"
   ~tree:[
     T.f "foo.ml";
     T.f "bar.ml";
-    T.f "mylib.mllib" ~content:"Foo\nBar";
+    T.f "mylib.mllib" ~content:{|
+FooBar
+|};
     T.f "mylib.mldylib" ~content:"Foo";
   ]
   ~targets:("mylib.cmxs", []) ();;
@@ -525,7 +561,10 @@ let () = test "MldylibOverridesCmx"
   ~tree:[
     T.f "foo.ml";
     T.f "bar.ml";
-    T.f "foo.mldylib" ~content:"Foo\nBar";
+    T.f "foo.mldylib" ~content:{|
+Foo
+Bar
+|};
   ]
   ~targets:("foo.cmx", ["foo.cmxs"]) ();;
 
@@ -538,7 +577,10 @@ let () = test "MllibOverridesCmx"
   ~tree:[
     T.f "foo.ml";
     T.f "bar.ml";
-    T.f "foo.mllib" ~content:"Foo\nBar";
+    T.f "foo.mllib" ~content:{|
+Foo
+Bar
+|};
   ]
   ~targets:("foo.cmx", ["foo.cmxs"]) ();;
 

@@ -370,7 +370,7 @@ let event di ?(pretend=false) command target tags =
           if di.di_log_level >= 2 then Format.fprintf di.di_formatter "[cache hit] %s\n%!" command
         end
       else
-        (if di.di_log_level >= 1 then Format.fprintf di.di_formatter "%s\n%!" command)
+        (if di.di_log_level >= 1 then Format.fprintf di.di_formatter "+ %s\n%!" command)
   | Sophisticated ds ->
       set_target_sophisticated ds target tags pretend;
       update_sophisticated ds

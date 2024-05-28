@@ -6,7 +6,12 @@ let () = test "SyntaxFlag"
   ~options:[`use_ocamlfind; `package "camlp4.macro"; `syntax "camlp4o"]
   ~requirements:(package_exists "camlp4.macro")
   ~description:"-syntax for ocamlbuild"
-  ~tree:[T.f "dummy.ml" ~content:"IFDEF TEST THEN\nprint_endline \"Hello\";;\nENDIF;;"]
+  ~tree:[T.f "dummy.ml" ~content:
+{|
+IFDEF TEST THEN
+print_endline "Hello";;
+ENDIF;;
+|}]
   ~matching:[M.f "dummy.native"]
   ~targets:("dummy.native",[]) ();;
 
@@ -34,11 +39,13 @@ let () = test "SubtoolOptions"
   ~requirements:(req_and (package_exists "menhirLib") (package_exists "camlp4"))
   ~options:[`use_ocamlfind; `use_menhir; `tags ["package(camlp4.fulllib)"]]
   ~tree:[T.f "parser.mly"
-            ~content:"%{ %}
-                      %token DUMMY
-                      %start<Camlp4.PreCast.Syntax.Ast.expr option> test
-                      %%
-                      test: DUMMY {None}"]
+            ~content:{|
+%{ %}
+%token DUMMY
+%start<Camlp4.PreCast.Syntax.Ast.expr option> test
+%%
+test: DUMMY {None}
+|}]
   ~matching:[M.f "parser.native"; M.f "parser.byte"]
   ~targets:("parser.native",["parser.byte"])
   ();;

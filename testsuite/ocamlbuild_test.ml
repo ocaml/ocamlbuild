@@ -30,12 +30,11 @@ let print_string_list = print_list_com pp_print_string
 let print_string_list_com = print_list_com pp_print_string
 let print_string_list_blank = print_list_blank pp_print_string
 
-let exists filename =
-  try ignore(Unix.stat filename); true
-  with Unix.Unix_error ((Unix.ENOENT),_,_) -> false
+let exists filename = Sys.file_exists filename
 
 let execute cmd =
   let ic = Unix.open_process_in cmd and lst = ref [] in
+  set_binary_mode_in ic false;
   try while true do lst := input_line ic :: !lst done; assert false
   with End_of_file ->
     let ret_code = Unix.close_process_in ic
@@ -435,6 +434,11 @@ let print_colored header_color header name body_color body =
     (color_code header_color) header name
     (color_code body_color) body
 
+let rec mkdir_p dir =
+  if not (Sys.file_exists dir) then begin
+    mkdir_p (Filename.dirname dir);
+    Unix.mkdir dir 0o750;
+  end
 
 let run ~root =
   let dir = Sys.getcwd () in
@@ -449,7 +453,7 @@ let run ~root =
   let build_tree = Filename.dirname test_tree in
 
   let copy l dest =
-    ignore(Sys.command (Printf.sprintf "mkdir -p %s" dest));
+    mkdir_p dest;
     List.iter (fun f -> ignore(Sys.command (Printf.sprintf "cp %s/%s %s" build_tree f dest))) l
   in
   let ocamlbuild = Printf.sprintf "%s/ocamlbuild.byte" install_bin_dir in

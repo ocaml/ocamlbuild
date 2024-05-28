@@ -30,7 +30,7 @@ OCAMLLEX  ?= ocamllex
 endif
 
 CP        ?= cp
-COMPFLAGS ?= -w +L -w +R -w +Z -I src -I plugin-lib -I bin -I +unix -safe-string -bin-annot -strict-sequence
+COMPFLAGS ?= -w @14@29 -w +L -w +R -w +Z -I src -I plugin-lib -I bin -I +unix -safe-string -bin-annot -strict-sequence
 LINKFLAGS ?= -I +unix -I src
 
 PACK_CMO= $(addprefix src/,\
@@ -225,7 +225,7 @@ endif
 # Testing
 
 test-%: testsuite/%.ml all
-	cd testsuite && ocaml $(CURDIR)/$<
+	cd testsuite && ocaml -w @14@29 "../$<"
 
 test: test-internal test-findlibonly test-external
 

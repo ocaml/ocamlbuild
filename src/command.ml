@@ -289,11 +289,12 @@ let execute_many ?(quiet=false) ?(pretend=false) cmds =
                     begin try
                       List.iter begin fun action ->
                         let cmd = action () in
-                        let rc = sys_command cmd in
+                        (* Redirect stderr to stdout to match the
+                           behavior of My_unix.execute_many *)
+                        let rc = sys_command (cmd ^ " 2>&1") in
                         if rc <> 0 then begin
                           if not quiet then
-                            eprintf "Exit code %d while executing this \
-                                    command:@\n%s" rc cmd;
+                            eprintf "Command exited with code %d." rc;
                           raise (Exit_with_code rc)
                         end
                       end cmds;

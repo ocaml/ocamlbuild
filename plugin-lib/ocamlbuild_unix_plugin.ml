@@ -48,6 +48,14 @@ let at_exit_once callback =
   end
 
 let run_and_open s kont =
+  let s =
+    (* Be consistent! My_unix.run_and_open uses My_std.sys_command and
+       sys_command uses bash. *)
+    if Sys.win32 then
+      "bash --norc -c " ^ Filename.quote s
+    else
+      s
+  in
   let ic = Unix.open_process_in s in
   let close () =
     match Unix.close_process_in ic with

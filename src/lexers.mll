@@ -122,7 +122,7 @@ and conf_lines dir source = parse
       {
         let bexpr =
           try Glob.parse ?dir k
-          with exn -> error source lexbuf "Invalid globbing pattern %S" k (Printexc.to_string exn)
+          with exn -> error source lexbuf "Invalid globbing pattern %S" k
         in
         sublex (count_lines lexbuf) s1; sublex (count_lines lexbuf) s2;
         let v1 = conf_value empty source lexbuf in
