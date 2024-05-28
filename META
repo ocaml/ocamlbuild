@@ -2,6 +2,5 @@
 requires = "unix"
 version = "NEXT_RELEASE"
 description = "ocamlbuild support library"
-directory= "^ocamlbuild"
 archive(byte) = "ocamlbuildlib.cma"
 archive(native) = "ocamlbuildlib.cmxa"
