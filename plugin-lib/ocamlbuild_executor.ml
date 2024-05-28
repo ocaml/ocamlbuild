@@ -75,7 +75,8 @@ let output_lines prefix oc buffer =
         try String.index_from u i '\n'
         with Not_found -> m
       in
-      output_line i j;
+      (let j = if j > 0 && u.[j-1] = '\r' then j - 1 else j in
+      output_line i j);
       loop (j + 1)
     else
       ()
