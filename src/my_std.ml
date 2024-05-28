@@ -275,13 +275,107 @@ let sys_file_exists x =
       try Array.iter (fun x -> if x = basename then raise Exit) a; false
       with Exit -> true
 
+let command_plain = function
+| [| |] -> 0
+| margv ->
+  let rec waitpid a b =
+    match Unix.waitpid a b with
+    | exception (Unix.Unix_error(Unix.EINTR,_,_)) -> waitpid a b
+    | x -> x
+  in
+  let pid = Unix.(create_process margv.(0) margv stdin stdout stderr) in
+  let pid', process_status = waitpid [] pid in
+  assert (pid = pid');
+  match process_status with
+  | Unix.WEXITED n -> n
+  | Unix.WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
+  | Unix.WSTOPPED _ -> 127
+
+(* can't use Lexers because of circular dependency *)
+let split_path_win str =
+  let rec aux pos =
+    try
+      let i = String.index_from str pos ';' in
+      let len = i - pos in
+      if len = 0 then
+        aux (succ i)
+      else
+        String.sub str pos (i - pos) :: aux (succ i)
+    with Not_found | Invalid_argument _ ->
+      let len = String.length str - pos in
+      if len = 0 then [] else [String.sub str pos len]
+  in
+  aux 0
+
+let windows_shell = lazy begin
+  let rec iter = function
+  | [] -> [| "bash.exe" ; "--norc" ; "--noprofile" |]
+  | hd::tl ->
+    let dash = Filename.concat hd "dash.exe" in
+    if Sys.file_exists dash then [|dash|] else
+    let bash = Filename.concat hd "bash.exe" in
+    if Sys.file_exists bash = false then iter tl else
+    (* if sh.exe and bash.exe exist in the same dir, choose sh.exe *)
+    let sh = Filename.concat hd "sh.exe" in
+    if Sys.file_exists sh then [|sh|] else [|bash ; "--norc" ; "--noprofile"|]
+  in
+  split_path_win (try Sys.getenv "PATH" with Not_found -> "") |> iter
+end
+
+let prep_windows_cmd cmd =
+  (* workaround known ocaml bug, remove later *)
+  if String.contains cmd '\t' && String.contains cmd ' ' = false then
+    " " ^ cmd
+  else
+    cmd
+
+let run_with_shell = function
+| "" -> 0
+| cmd ->
+  let cmd = prep_windows_cmd cmd in
+  let shell = Lazy.force windows_shell in
+  let qlen = Filename.quote cmd |> String.length in
+  (* old versions of dash had problems with bs *)
+  try
+    if qlen < 7_900 then
+      command_plain (Array.append shell [| "-ec" ; cmd |])
+    else begin
+      (* it can still work, if the called command is a cygwin tool *)
+      let ch_closed = ref false in
+      let file_deleted = ref false in
+      let fln,ch =
+        Filename.open_temp_file
+          ~mode:[Open_binary]
+          "ocamlbuildtmp"
+          ".sh"
+      in
+      try
+        let f_slash = String.map ( fun x -> if x = '\\' then '/' else x ) fln in
+        output_string ch cmd;
+        ch_closed:= true;
+        close_out ch;
+        let ret = command_plain (Array.append shell [| "-e" ; f_slash |]) in
+        file_deleted:= true;
+        Sys.remove fln;
+        ret
+      with
+      | x ->
+        if !ch_closed = false then
+          close_out_noerr ch;
+        if !file_deleted = false then
+          (try Sys.remove fln with _ -> ());
+        raise x
+    end
+  with
+  | (Unix.Unix_error _) as x ->
+    (* Sys.command doesn't raise an exception, so run_with_shell also won't
+       raise *)
+    Printexc.to_string x ^ ":" ^ cmd |> prerr_endline;
+    1
+
 let sys_command =
-  match Sys.os_type with
-  | "Win32" -> fun cmd ->
-      if cmd = "" then 0 else
-      let cmd = "bash --norc -c " ^ Filename.quote cmd in
-      Sys.command cmd
-  | _ -> fun cmd -> if cmd = "" then 0 else Sys.command cmd
+  if Sys.win32 then run_with_shell
+  else fun cmd -> if cmd = "" then 0 else Sys.command cmd
 
 (* FIXME warning fix and use Filename.concat *)
 let filename_concat x y =

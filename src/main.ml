@@ -165,6 +165,9 @@ let proceed () =
               Tags.mem "traverse" tags
               || List.exists (Pathname.is_prefix path_name) !Options.include_dirs
               || List.exists (Pathname.is_prefix path_name) target_dirs)
+            && ((* beware: !Options.build_dir is an absolute directory *)
+              Pathname.normalize !Options.build_dir
+              <> Pathname.normalize (Pathname.pwd/path_name))
           end
         end
       end

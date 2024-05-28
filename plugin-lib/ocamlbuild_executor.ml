@@ -38,6 +38,8 @@ type job = {
   job_stdin   : out_channel;
   job_stderr  : in_channel;
   job_buffer  : Buffer.t;
+  job_pid     : int;
+  job_tmp_file: string option;
   mutable job_dying : bool;
 };;
 
@@ -80,6 +82,61 @@ let output_lines prefix oc buffer =
   in
   loop 0
 ;;
+
+let open_process_full_win cmd env =
+  let (in_read, in_write) = Unix.pipe () in
+  let (out_read, out_write) = Unix.pipe () in
+  let (err_read, err_write) = Unix.pipe () in
+  Unix.set_close_on_exec in_read;
+  Unix.set_close_on_exec out_write;
+  Unix.set_close_on_exec err_read;
+  let inchan = Unix.in_channel_of_descr in_read in
+  let outchan = Unix.out_channel_of_descr out_write in
+  let errchan = Unix.in_channel_of_descr err_read in
+  let shell = Lazy.force Ocamlbuild_pack.My_std.windows_shell in
+  let test_cmd =
+    String.concat " " (List.map Filename.quote (Array.to_list shell)) ^
+    "-ec " ^
+    Filename.quote (Ocamlbuild_pack.My_std.prep_windows_cmd cmd) in
+  let argv,tmp_file =
+    if String.length test_cmd < 7_900 then
+      Array.append
+        shell
+        [| "-ec" ; Ocamlbuild_pack.My_std.prep_windows_cmd cmd |],None
+    else
+    let fln,ch = Filename.open_temp_file ~mode:[Open_binary] "ocamlbuild" ".sh" in
+    output_string ch (Ocamlbuild_pack.My_std.prep_windows_cmd cmd);
+    close_out ch;
+    let fln' = String.map (function '\\' -> '/' | c -> c) fln in
+    Array.append
+      shell
+      [| "-c" ; fln' |], Some fln in
+  let pid =
+    Unix.create_process_env argv.(0) argv env out_read in_write err_write in
+  Unix.close out_read;
+  Unix.close in_write;
+  Unix.close err_write;
+  (pid, inchan, outchan, errchan,tmp_file)
+
+let close_process_full_win (pid,inchan, outchan, errchan, tmp_file) =
+  let delete tmp_file =
+    match tmp_file with
+    | None -> ()
+    | Some x -> try Sys.remove x with Sys_error _ -> () in
+  let tmp_file_deleted = ref false in
+  try
+    close_in inchan;
+    close_out outchan;
+    close_in errchan;
+    let res = snd(Unix.waitpid [] pid) in
+    tmp_file_deleted := true;
+    delete tmp_file;
+    res
+  with
+  | x when tmp_file <> None && !tmp_file_deleted = false ->
+    delete tmp_file;
+    raise x
+
 (* ***)
 (*** execute *)
 (* XXX: Add test for non reentrancy *)
@@ -134,10 +191,16 @@ let execute
   (*** add_job *)
   let add_job cmd rest result id =
     (*display begin fun oc -> fp oc "Job %a is %s\n%!" print_job_id id cmd; end;*)
-    let (stdout', stdin', stderr') = open_process_full cmd env in
+    let (pid,stdout', stdin', stderr', tmp_file) =
+      if Sys.win32 then open_process_full_win cmd env else
+      let a,b,c = open_process_full cmd env in
+      -1,a,b,c,None
+    in
     incr jobs_active;
-    set_nonblock (doi stdout');
-    set_nonblock (doi stderr');
+    if not Sys.win32 then (
+      set_nonblock (doi stdout');
+      set_nonblock (doi stderr');
+    );
     let job =
       { job_id          = id;
         job_command     = cmd;
@@ -147,7 +210,9 @@ let execute
         job_stdin       = stdin';
         job_stderr      = stderr';
         job_buffer      = Buffer.create 1024;
-        job_dying       = false }
+        job_dying       = false;
+        job_tmp_file    = tmp_file;
+        job_pid         = pid }
     in
     outputs := FDM.add (doi stdout') job (FDM.add (doi stderr') job !outputs);
     jobs := JS.add job !jobs;
@@ -203,6 +268,7 @@ let execute
               try
                 read fd u 0 (Bytes.length u)
               with
+              | Unix.Unix_error(Unix.EPIPE,_,_) when Sys.win32 -> 0
               | Unix.Unix_error(e,_,_)  ->
                 let msg = error_message e in
                 display (fun oc -> fp oc
@@ -245,14 +311,19 @@ let execute
       decr jobs_active;
 
       (* PR#5371: we would get EAGAIN below otherwise *)
-      clear_nonblock (doi job.job_stdout);
-      clear_nonblock (doi job.job_stderr);
-
+      if not Sys.win32 then (
+        clear_nonblock (doi job.job_stdout);
+        clear_nonblock (doi job.job_stderr);
+      );
       do_read ~loop:true (doi job.job_stdout) job;
       do_read ~loop:true (doi job.job_stderr) job;
       outputs := FDM.remove (doi job.job_stdout) (FDM.remove (doi job.job_stderr) !outputs);
       jobs := JS.remove job !jobs;
-      let status = close_process_full (job.job_stdout, job.job_stdin, job.job_stderr) in
+      let status =
+        if Sys.win32 then
+          close_process_full_win (job.job_pid, job.job_stdout, job.job_stdin, job.job_stderr, job.job_tmp_file)
+        else
+          close_process_full (job.job_stdout, job.job_stdin, job.job_stderr) in
 
       let shown = ref false in
 

@@ -174,11 +174,24 @@ let set_build_dir s =
     build_dir := filename_concat (Sys.getcwd ()) s
   else
     build_dir := s
+
+let slashify =
+  if Sys.win32 then fun p -> String.map (function '\\' -> '/' | x -> x) p
+  else fun p ->p
+
+let sb () =
+  match Sys.os_type with
+  | "Win32" ->
+    (try set_binary_mode_out stdout true with _ -> ());
+  | _ -> ()
+
+
 let spec = ref (
     let print_version () =
+      sb ();
       Printf.printf "ocamlbuild %s\n%!" Ocamlbuild_config.version; raise Exit_OK
     in
-    let print_vnum () = print_endline Ocamlbuild_config.version; raise Exit_OK in
+    let print_vnum () = sb (); print_endline Ocamlbuild_config.version; raise Exit_OK in
   Arg.align
   [
    "-version", Unit print_version , " Display the version";
@@ -257,8 +270,8 @@ let spec = ref (
    "-build-dir", String set_build_dir, "<path> Set build directory (implies no-links)";
    "-install-lib-dir", Set_string Ocamlbuild_where.libdir, "<path> Set the install library directory";
    "-install-bin-dir", Set_string Ocamlbuild_where.bindir, "<path> Set the install binary directory";
-   "-where", Unit (fun () -> print_endline !Ocamlbuild_where.libdir; raise Exit_OK), " Display the install library directory";
-   "-which", String (fun cmd -> print_endline (find_tool cmd); raise Exit_OK), "<command> Display path to the tool command";
+   "-where", Unit (fun () -> sb (); print_endline (slashify !Ocamlbuild_where.libdir); raise Exit_OK), " Display the install library directory";
+   "-which", String (fun cmd -> sb (); print_endline (slashify (find_tool cmd)); raise Exit_OK), "<command> Display path to the tool command";
    "-ocamlc", set_cmd ocamlc, "<command> Set the OCaml bytecode compiler";
    "-plugin-ocamlc", set_cmd plugin_ocamlc, "<command> Set the OCaml bytecode compiler \
      used when building myocamlbuild.ml (only)";

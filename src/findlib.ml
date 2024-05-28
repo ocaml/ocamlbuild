@@ -66,9 +66,6 @@ let run_and_parse lexer command =
     (fun command -> lexer & Lexing.from_string & run_and_read command)
     command
 
-let run_and_read command =
-  Printf.ksprintf run_and_read command
-
 let rec query name =
   try
     Hashtbl.find packages name
@@ -135,7 +132,8 @@ let before_space s =
   with Not_found -> s
 
 let list () =
-  List.map before_space (split_nl & run_and_read "%s list" ocamlfind)
+  let cmd = Shell.quote_filename_if_needed ocamlfind ^ " list" in
+  List.map before_space (split_nl & run_and_read cmd)
 
 (* The closure algorithm is easy because the dependencies are already closed
 and sorted for each package. We only have to make the union. We could also

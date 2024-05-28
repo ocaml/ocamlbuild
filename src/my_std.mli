@@ -69,3 +69,6 @@ val lexbuf_of_string : ?name:string -> string -> Lexing.lexbuf
 
 val split_ocaml_version : (int * int * int * string) option
 (** (major, minor, patchlevel, rest) *)
+
+val windows_shell : string array Lazy.t
+val prep_windows_cmd : string -> string

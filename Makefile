@@ -213,7 +213,7 @@ distclean::
 	rm -f man/ocamlbuild.1
 
 man/options_man.byte: src/ocamlbuild_pack.cmo
-	$(OCAMLC) $^ -I src man/options_man.ml -o man/options_man.byte
+	$(OCAMLC) -I +unix unix.cma $^ -I src man/options_man.ml -o man/options_man.byte
 
 clean::
 	rm -f man/options_man.cm*
