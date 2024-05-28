@@ -276,26 +276,26 @@ let sys_file_exists x =
       with Exit -> true
 
 let sys_command =
-  match Sys.os_type with
-  | "Win32" -> fun cmd ->
+  match Sys.win32 with
+  | true -> fun cmd ->
       if cmd = "" then 0 else
       let cmd = "bash --norc -c " ^ Filename.quote cmd in
       Sys.command cmd
-  | _ -> fun cmd -> if cmd = "" then 0 else Sys.command cmd
+  | false -> fun cmd -> if cmd = "" then 0 else Sys.command cmd
 
 (* FIXME warning fix and use Filename.concat *)
 let filename_concat x y =
   if x = Filename.current_dir_name || x = "" then y else
-  if Sys.os_type = "Win32" && (x.[String.length x - 1] = '\\') || x.[String.length x - 1] = '/' then
+  if Sys.win32 && (x.[String.length x - 1] = '\\') || x.[String.length x - 1] = '/' then
     if y = "" then x
     else x ^ y
   else
     x ^ "/" ^ y
 
 (* let reslash =
-  match Sys.os_type with
-  | "Win32" -> tr '\\' '/'
-  | _ -> (fun x -> x) *)
+  match Sys.win32 with
+  | true -> tr '\\' '/'
+  | false -> (fun x -> x) *)
 
 open Format
 

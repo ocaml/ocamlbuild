@@ -29,7 +29,7 @@ let quote_filename_if_needed s =
   (* We should probably be using [Filename.unix_quote] except that function
    * isn't exported. Users on Windows will have to live with not being able to
    * install OCaml into c:\o'caml. Too bad. *)
-  else if Sys.os_type = "Win32" then Printf.sprintf "'%s'" s
+  else if Sys.win32 then Printf.sprintf "'%s'" s
   else Filename.quote s
 let chdir dir =
   reset_filesys_cache ();
@@ -37,7 +37,7 @@ let chdir dir =
 let run args target =
   reset_readdir_cache ();
   let cmd = String.concat " " (List.map quote_filename_if_needed args) in
-  if !*My_unix.is_degraded || Sys.os_type = "Win32" then
+  if !*My_unix.is_degraded || Sys.win32 then
     begin
       Log.event cmd target Tags.empty;
       let st = sys_command cmd in
