@@ -23,6 +23,8 @@ plugin-lib/ocamlbuild_plugin.cmo : \
 plugin-lib/ocamlbuild_plugin.cmx : \
     plugin-lib/ocamlbuild_plugin.cmi
 plugin-lib/ocamlbuild_plugin.cmi :
+plugin-lib/ocamlbuild_unix_plugin.cmo :
+plugin-lib/ocamlbuild_unix_plugin.cmx :
 src/bool.cmo : \
     src/bool.cmi
 src/bool.cmx : \

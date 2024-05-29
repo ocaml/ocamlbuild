@@ -82,6 +82,7 @@ PACK_CMO= $(addprefix src/,\
 
 EXTRA_CMO=$(addprefix plugin-lib/,\
   ocamlbuild_plugin.cmo \
+  ocamlbuild_unix_plugin.cmo \
   )
 
 PACK_CMX=$(PACK_CMO:.cmo=.cmx)
