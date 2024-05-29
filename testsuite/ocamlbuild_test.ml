@@ -469,13 +469,7 @@ let run ~root =
       "src/ocamlbuild_pack.o";
       "plugin-lib/ocamlbuild_plugin.cmi";
       "plugin-lib/ocamlbuild_plugin.cmx";
-      "plugin-lib/ocamlbuild_plugin.o";
-      "plugin-lib/ocamlbuild_executor.cmi";
-      "plugin-lib/ocamlbuild_executor.cmx";
-      "plugin-lib/ocamlbuild_executor.o";
-      "plugin-lib/ocamlbuild_unix_plugin.cmi";
-      "plugin-lib/ocamlbuild_unix_plugin.cmx";
-      "plugin-lib/ocamlbuild_unix_plugin.o"]
+      "plugin-lib/ocamlbuild_plugin.o" ]
     install_lib_dir;
   copy
     [ "ocamlbuild.byte";

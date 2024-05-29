@@ -39,7 +39,7 @@ let rec filter predicate = function
   | Nothing -> Nothing
   | Error _ as e -> e
 
-let real_slurp path =
+let slurp path =
   let cwd = Sys.getcwd () in
   let abs x = if Filename.is_implicit x || Filename.is_relative x then cwd/x else x in
   let visited = Hashtbl.create 1024 in
@@ -129,25 +129,6 @@ let rec add root path entries =
       if xpath = fname then
         Dir(fpath, fname, fst, fattr, lazy (add (root/xpath) xspath [])) :: entries'
       else f :: add root path entries'
-
-let slurp_with_find path =
-  let find_cmd = try Sys.getenv "OCAMLBUILD_FIND" with _ -> "find" in
-  let lines =
-    My_unix.run_and_open (Printf.sprintf "%s %s" find_cmd (Filename.quote path)) begin fun ic ->
-      let acc = ref [] in
-      try while true do acc := input_line ic :: !acc done; []
-      with End_of_file -> !acc
-    end in
-  let res =
-    List.fold_right begin fun line acc ->
-      add path (split line) acc
-    end lines [] in
-  match res with
-  | [] -> Nothing
-  | [entry] -> entry
-  | entries -> Dir(path, Filename.basename path, lazy (My_unix.stat path), (), lazy entries)
-
-let slurp x = if !*My_unix.is_degraded then slurp_with_find x else real_slurp x
 
 let rec print print_attr f entry =
   match entry with

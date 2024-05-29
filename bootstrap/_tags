@@ -16,12 +16,10 @@ true: debug
 "src": include
 "bin": include
 "plugin-lib": include
-<**/*.ml> or <**/*.mli>: warn_L, warn_R, warn_Z, annot
+<**/*.ml> or <**/*.mli>: warn_L, warn_R, warn_Z, annot, use_unix
 "src/discard_printf.ml": rectypes
-"ocamlbuildlib.cma" or "ocamlbuildlightlib.cma": linkall
+"ocamlbuildlib.cma": linkall
 <**/*.byte> or <**/*.native> or <**/*.top>: use_unix
-<plugin-lib/*.ml>: use_unix
-"ocamlbuildlight.byte": -use_unix, nopervasives
 <src/*.cmx>: for-pack(Ocamlbuild_pack)
 
 # we have several build stages using different build directories,

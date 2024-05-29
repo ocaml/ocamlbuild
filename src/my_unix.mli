@@ -25,8 +25,6 @@ type stats =
     stat_key       : string
   }
 
-val is_degraded : bool Lazy.t
-
 val is_link : string -> bool
 val run_and_open : string -> (in_channel -> 'a) -> 'a
 val readlink : string -> string
@@ -50,26 +48,3 @@ val stdout_isatty : unit -> bool
 
 val stat : string -> stats
 val lstat : string -> stats
-
-(** internal usage only *)
-type implem =
-  {
-    mutable is_degraded   : bool;
-    mutable is_link       : string -> bool;
-    mutable run_and_open  : 'a . string -> (in_channel -> 'a) -> 'a;
-    mutable readlink      : string -> string;
-    mutable execute_many  : ?max_jobs:int ->
-                            ?ticker:(unit -> unit) ->
-                            ?period:float ->
-                            ?display:((out_channel -> unit) -> unit) ->
-                            ((unit -> string) list list) ->
-                            (bool list * exn) option;
-    mutable report_error  : Format.formatter -> exn -> unit;
-    mutable at_exit_once  : (unit -> unit) -> unit;
-    mutable gettimeofday  : unit -> float;
-    mutable stdout_isatty : unit -> bool;
-    mutable stat          : string -> stats;
-    mutable lstat         : string -> stats;
-  }
-
-val implem : implem

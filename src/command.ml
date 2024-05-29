@@ -260,7 +260,6 @@ let flatten_commands quiet pretend cmd =
 
 let execute_many ?(quiet=false) ?(pretend=false) cmds =
   add_parallel_stat (List.length cmds);
-  let degraded = !*My_unix.is_degraded || Sys.win32 in
   let jobs = !jobs in
   if jobs < 0 then invalid_arg "jobs < 0";
   let max_jobs = if jobs = 0 then None else Some jobs in
@@ -281,7 +280,7 @@ let execute_many ?(quiet=false) ?(pretend=false) cmds =
       else
         begin
           reset_filesys_cache ();
-          if degraded then
+          if Sys.win32 then
             let res, opt_exn =
               List.fold_left begin fun (acc_res, acc_exn) cmds ->
                 match acc_exn with

@@ -2,7 +2,9 @@ Const
 Loc
 Log
 My_unix
+Ocamlbuild_executor
 My_std
+Exit_codes
 Signatures
 Shell
 Display
@@ -37,7 +39,6 @@ Ocaml_utils
 Ocaml_tools
 Ocaml_compiler
 Ocaml_dependencies
-Exit_codes
 Digest_cache
 Findlib
 Param_tags
