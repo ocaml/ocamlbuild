@@ -73,7 +73,10 @@ let output_lines prefix oc buffer =
         try String.index_from u i '\n'
         with Not_found -> m
       in
-      output_line i j;
+      (* ignore trailing CR *)
+      let k = ref j in
+      while !k > i && u.[!k - 1] = '\r' do decr k done;
+      output_line i !k;
       loop (j + 1)
     else
       ()
