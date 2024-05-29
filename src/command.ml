@@ -94,7 +94,7 @@ let atomize_paths l = S(List.map (fun x -> P x) l)
 let env_path = lazy begin
   let path_var = Sys.getenv "PATH" in
   let parse_path =
-    if Sys.os_type = "Win32" then
+    if Sys.win32 then
       Lexers.parse_environment_path_w
     else
       Lexers.parse_environment_path
@@ -149,7 +149,7 @@ let rec string_of_command_spec_with_calls call_with_tags call_with_target resolv
   let b = Buffer.create 256 in
   (* The best way to prevent bash from switching to its windows-style
    * quote-handling is to prepend an empty string before the command name. *)
-  if Sys.os_type = "Win32" then
+  if Sys.win32 then
     Buffer.add_string b "''";
   let first = ref true in
   let put_space () =
@@ -260,7 +260,7 @@ let flatten_commands quiet pretend cmd =
 
 let execute_many ?(quiet=false) ?(pretend=false) cmds =
   add_parallel_stat (List.length cmds);
-  let degraded = !*My_unix.is_degraded || Sys.os_type = "Win32" in
+  let degraded = !*My_unix.is_degraded || Sys.win32 in
   let jobs = !jobs in
   if jobs < 0 then invalid_arg "jobs < 0";
   let max_jobs = if jobs = 0 then None else Some jobs in

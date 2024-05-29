@@ -34,7 +34,7 @@ let libdir = ref begin
          OCAMLLIB is already a strange thing to have done). *)
       try
         let normalise_slashes =
-          if Sys.os_type = "Win32" then
+          if Sys.win32 then
             String.map (function '/' -> '\\' | c -> c)
           else
             function s -> s
