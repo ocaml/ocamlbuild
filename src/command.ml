@@ -280,33 +280,7 @@ let execute_many ?(quiet=false) ?(pretend=false) cmds =
       else
         begin
           reset_filesys_cache ();
-          if Sys.win32 then
-            let res, opt_exn =
-              List.fold_left begin fun (acc_res, acc_exn) cmds ->
-                match acc_exn with
-                | None ->
-                    begin try
-                      List.iter begin fun action ->
-                        let cmd = action () in
-                        (* Redirect stderr to stdout to match the
-                           behavior of My_unix.execute_many *)
-                        let rc = sys_command (cmd ^ " 2>&1") in
-                        if rc <> 0 then begin
-                          if not quiet then
-                            eprintf "Command exited with code %d." rc;
-                          raise (Exit_with_code rc)
-                        end
-                      end cmds;
-                      true :: acc_res, None
-                    with e -> false :: acc_res, Some e
-                    end
-                | Some _ -> false :: acc_res, acc_exn
-              end ([], None) konts
-            in match opt_exn with
-            | Some(exn) -> Some(List.rev res, exn)
-            | None -> None
-          else
-            My_unix.execute_many ~ticker ?max_jobs ~display konts
+          My_unix.execute_many ~ticker ?max_jobs ~display konts
         end
     end
 ;;

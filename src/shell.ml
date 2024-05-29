@@ -34,23 +34,13 @@ let quote_filename_if_needed s =
 let chdir dir =
   reset_filesys_cache ();
   Sys.chdir dir
-let run args target =
+let run args =
   reset_readdir_cache ();
   let cmd = String.concat " " (List.map quote_filename_if_needed args) in
-  if Sys.win32 then
-    begin
-      Log.event cmd target Tags.empty;
-      let st = sys_command cmd in
-      if st <> 0 then
-        failwith (Printf.sprintf "Error during command `%s'.\nExit code %d.\n" cmd st)
-      else
-        ()
-    end
-  else
-    match My_unix.execute_many ~ticker:Log.update ~display:Log.display [[(fun () -> cmd)]] with
-    | None -> ()
-    | Some(_, x) ->
-      failwith (Printf.sprintf "Error during command %S: %s" cmd (Printexc.to_string x))
+  match My_unix.execute_many ~ticker:Log.update ~display:Log.display [[(fun () -> cmd)]] with
+  | None -> ()
+  | Some(_, x) ->
+    failwith (Printf.sprintf "Error during command %S: %s" cmd (Printexc.to_string x))
 let rm = sys_remove
 let rm_f x =
   if sys_file_exists x then ()
@@ -69,7 +59,7 @@ let rm_f x =
 let mkdir dir =
   reset_filesys_cache_for_file dir;
   (*Sys.mkdir dir (* MISSING in ocaml *) *)
-  run ["mkdir"; dir] dir
+  run ["mkdir"; dir]
 
 let try_mkdir dir =
   if not (sys_file_exists dir)
@@ -95,7 +85,7 @@ let rec mkdir_p dir =
 
 let cp_pf src dest =
   reset_filesys_cache_for_file dest;
-  run["cp";"-pf";src;dest] dest
+  run["cp";"-pf";src;dest]
 
 (* Archive files are handled specially during copy *)
 let cp src dst =
@@ -109,9 +99,9 @@ let readlink = My_unix.readlink
 let is_link = My_unix.is_link
 let rm_rf x =
   reset_filesys_cache ();
-  run["rm";"-Rf";x] x
+  run["rm";"-Rf";x]
 let mv src dest =
   reset_filesys_cache_for_file src;
   reset_filesys_cache_for_file dest;
-  run["mv"; src; dest] dest
+  run["mv"; src; dest]
   (*Sys.rename src dest*)
