@@ -133,11 +133,18 @@ let execute
   (* ***)
   (*** add_job *)
   let add_job cmd rest result id =
+    let cmd =
+      if Sys.win32
+      then "bash --norc -c " ^ Filename.quote cmd
+      else cmd
+    in
     (*display begin fun oc -> fp oc "Job %a is %s\n%!" print_job_id id cmd; end;*)
     let (stdout', stdin', stderr') = open_process_full cmd env in
     incr jobs_active;
-    set_nonblock (doi stdout');
-    set_nonblock (doi stderr');
+    if not Sys.win32 then begin
+      set_nonblock (doi stdout');
+      set_nonblock (doi stderr');
+    end;
     let job =
       { job_id          = id;
         job_command     = cmd;
@@ -245,8 +252,10 @@ let execute
       decr jobs_active;
 
       (* PR#5371: we would get EAGAIN below otherwise *)
-      clear_nonblock (doi job.job_stdout);
-      clear_nonblock (doi job.job_stderr);
+      if not Sys.win32 then begin
+        clear_nonblock (doi job.job_stdout);
+        clear_nonblock (doi job.job_stderr);
+      end;
 
       do_read ~loop:true (doi job.job_stdout) job;
       do_read ~loop:true (doi job.job_stderr) job;

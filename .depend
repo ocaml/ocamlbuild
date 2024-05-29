@@ -676,13 +676,11 @@ src/rule.cmi : \
     src/my_std.cmi \
     src/command.cmi
 src/shell.cmo : \
-    src/tags.cmi \
     src/my_unix.cmi \
     src/my_std.cmi \
     src/log.cmi \
     src/shell.cmi
 src/shell.cmx : \
-    src/tags.cmx \
     src/my_unix.cmx \
     src/my_std.cmx \
     src/log.cmx \
