@@ -24,13 +24,26 @@ let is_simple_filename s =
     | 'a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '-' | '/' | '_' | ':' | '@' | '+' | ',' -> loop (pos + 1)
     | _ -> false in
   loop 0
+
+(*** Copied from ocaml/stdlib/filename.ml *)
+let generic_quote quotequote s =
+  let l = String.length s in
+  let b = Buffer.create (l + 20) in
+  Buffer.add_char b '\'';
+  for i = 0 to l - 1 do
+    if s.[i] = '\''
+    then Buffer.add_string b quotequote
+    else Buffer.add_char b  s.[i]
+  done;
+  Buffer.add_char b '\'';
+  Buffer.contents b
+
+let unix_quote = generic_quote "'\\''"
+
 let quote_filename_if_needed s =
   if is_simple_filename s then s
-  (* We should probably be using [Filename.unix_quote] except that function
-   * isn't exported. Users on Windows will have to live with not being able to
-   * install OCaml into c:\o'caml. Too bad. *)
-  else if Sys.win32 then Printf.sprintf "'%s'" s
-  else Filename.quote s
+  else unix_quote s
+
 let chdir dir =
   reset_filesys_cache ();
   Sys.chdir dir
