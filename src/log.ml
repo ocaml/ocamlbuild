@@ -33,7 +33,7 @@ let ( !- ) r =
 
 let init log_file =
   let mode =
-    if !classic_display || !*My_unix.is_degraded || !level <= 0 || not (My_unix.stdout_isatty ()) then
+    if !classic_display || !level <= 0 || not (My_unix.stdout_isatty ()) then
       `Classic
     else
       `Sophisticated

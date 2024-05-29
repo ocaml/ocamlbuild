@@ -57,14 +57,10 @@ let source_dir_path_set_without_links_to_build =
   end
 
 let clean_links () =
-  if !*My_unix.is_degraded then
-    ()
-  else
-    ignore (clean_up_link_to_build ())
+  ignore (clean_up_link_to_build ())
 
 let exists_in_source_dir p =
-  if !*My_unix.is_degraded then sys_file_exists (in_source_dir p)
-  else StringSet.mem p !*source_dir_path_set_without_links_to_build
+  StringSet.mem p !*source_dir_path_set_without_links_to_build
 
 let clean p = Shell.rm_f p
 

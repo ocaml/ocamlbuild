@@ -93,8 +93,6 @@ module Make(U:sig end) =
 
         let (unix_spec, ocamlbuild_lib_spec, ocamlbuild_module_spec) =
 
-          let use_light_mode =
-            not !Options.native_plugin && !*My_unix.is_degraded in
           let use_ocamlfind_pkgs =
             !Options.plugin_use_ocamlfind && !Options.plugin_tags <> [] in
           (* The plugin has the following dependencies that must be
@@ -107,20 +105,9 @@ module Make(U:sig end) =
                modules of ocamlbuildlib.cmxa
 
              We pass all this stuff to the compilation command for the
-             plugin, with two independent important details to handle:
+             plugin, with an important detail to handle:
 
-             (1) ocamlbuild is designed to still work in environments
-             where Unix is not available for some reason; in this
-             case, we should not link unix, and use the
-             "ocamlbuildlight.cmo" initialization module, which runs
-             a "light" version of ocamlbuild without unix. There is
-             also an ocamlbuildlightlib.cma archive to be used in that
-             case.
-
-             The boolean variable [use_light_mode] tells us whether we
-             are in this unix-deprived scenario.
-
-             (2) there are risks of compilation error due to
+             There are risks of compilation error due to
              double-linking of native modules when the user passes its
              own tags to the plugin compilation process (as was added
              to support modular construction of
@@ -161,30 +148,18 @@ module Make(U:sig end) =
              is available), but allows the behavior in absence
              of -plugin-tags to be completely unchanged, to reassure us
              about potential regressions introduced by this option.
-
-             [1]: we may wonder whether to use "-package ocamlbuildlight"
-             in unix-deprived situations, but currently ocamlfind
-             doesn't know about the ocamlbuildlight library. As
-             a compromise we always use "-package ocamlbuild" when
-             use_ocamlfind_pkgs is set. An ocamlfind and -plugin-tags
-             user in unix-deprived environment may want to mutate the
-             META of ocamlbuild to point to ocamlbuildlightlib instead
-             of ocamlbuildlib.
           *)
 
           let unix_lib =
             if use_ocamlfind_pkgs then `Package "unix"
-            else if use_light_mode then `Nothing
             else `Lib ("+unix", "unix") in
 
           let ocamlbuild_lib =
             if use_ocamlfind_pkgs then `Package "ocamlbuild"
-            else if use_light_mode then `Local_lib "ocamlbuildlightlib"
             else `Local_lib "ocamlbuildlib" in
 
           let ocamlbuild_module =
-            if use_light_mode then `Local_mod "ocamlbuildlight"
-            else `Local_mod "ocamlbuild" in
+            `Local_mod "ocamlbuild" in
 
           let dir = !Ocamlbuild_where.libdir in
           let dir = if Pathname.is_implicit dir then Pathname.pwd/dir else dir in

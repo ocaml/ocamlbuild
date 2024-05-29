@@ -1,15 +1,8 @@
 bin/ocamlbuild.cmo : \
-    plugin-lib/ocamlbuild_unix_plugin.cmi \
     bin/ocamlbuild.cmi
 bin/ocamlbuild.cmx : \
-    plugin-lib/ocamlbuild_unix_plugin.cmx \
     bin/ocamlbuild.cmi
 bin/ocamlbuild.cmi :
-bin/ocamlbuildlight.cmo : \
-    bin/ocamlbuildlight.cmi
-bin/ocamlbuildlight.cmx : \
-    bin/ocamlbuildlight.cmi
-bin/ocamlbuildlight.cmi :
 bin/ppcache.cmo : \
     src/shell.cmi \
     src/pathname.cmi \
@@ -25,29 +18,11 @@ bin/ppcache.cmx : \
     src/command.cmx \
     bin/ppcache.cmi
 bin/ppcache.cmi :
-plugin-lib/ocamlbuild_executor.cmo : \
-    plugin-lib/ocamlbuild_executor.cmi
-plugin-lib/ocamlbuild_executor.cmx : \
-    plugin-lib/ocamlbuild_executor.cmi
-plugin-lib/ocamlbuild_executor.cmi :
 plugin-lib/ocamlbuild_plugin.cmo : \
     plugin-lib/ocamlbuild_plugin.cmi
 plugin-lib/ocamlbuild_plugin.cmx : \
     plugin-lib/ocamlbuild_plugin.cmi
 plugin-lib/ocamlbuild_plugin.cmi :
-plugin-lib/ocamlbuild_unix_plugin.cmo : \
-    plugin-lib/ocamlbuild_executor.cmi \
-    src/my_unix.cmi \
-    src/my_std.cmi \
-    src/exit_codes.cmi \
-    plugin-lib/ocamlbuild_unix_plugin.cmi
-plugin-lib/ocamlbuild_unix_plugin.cmx : \
-    plugin-lib/ocamlbuild_executor.cmx \
-    src/my_unix.cmx \
-    src/my_std.cmx \
-    src/exit_codes.cmx \
-    plugin-lib/ocamlbuild_unix_plugin.cmi
-plugin-lib/ocamlbuild_unix_plugin.cmi :
 src/bool.cmo : \
     src/bool.cmi
 src/bool.cmx : \
@@ -349,10 +324,14 @@ src/my_std.cmx : \
 src/my_std.cmi : \
     src/signatures.cmi
 src/my_unix.cmo : \
+    src/ocamlbuild_executor.cmi \
     src/my_std.cmi \
+    src/exit_codes.cmi \
     src/my_unix.cmi
 src/my_unix.cmx : \
+    src/ocamlbuild_executor.cmx \
     src/my_std.cmx \
+    src/exit_codes.cmx \
     src/my_unix.cmi
 src/my_unix.cmi :
 src/ocaml_arch.cmo : \
@@ -515,6 +494,11 @@ src/ocaml_utils.cmi : \
     src/command.cmi
 src/ocamlbuild_config.cmo :
 src/ocamlbuild_config.cmx :
+src/ocamlbuild_executor.cmo : \
+    src/ocamlbuild_executor.cmi
+src/ocamlbuild_executor.cmx : \
+    src/ocamlbuild_executor.cmi
+src/ocamlbuild_executor.cmi :
 src/ocamlbuild_where.cmo : \
     src/ocamlbuild_config.cmo \
     src/ocamlbuild_where.cmi
@@ -590,7 +574,6 @@ src/plugin.cmo : \
     src/param_tags.cmi \
     src/options.cmi \
     src/ocamlbuild_where.cmi \
-    src/my_unix.cmi \
     src/my_std.cmi \
     src/log.cmi \
     src/exit_codes.cmi \
@@ -606,7 +589,6 @@ src/plugin.cmx : \
     src/param_tags.cmx \
     src/options.cmx \
     src/ocamlbuild_where.cmx \
-    src/my_unix.cmx \
     src/my_std.cmx \
     src/log.cmx \
     src/exit_codes.cmx \
@@ -635,7 +617,6 @@ src/resource.cmo : \
     src/shell.cmi \
     src/pathname.cmi \
     src/options.cmi \
-    src/my_unix.cmi \
     src/my_std.cmi \
     src/log.cmi \
     src/lexers.cmi \
@@ -650,7 +631,6 @@ src/resource.cmx : \
     src/shell.cmx \
     src/pathname.cmx \
     src/options.cmx \
-    src/my_unix.cmx \
     src/my_std.cmx \
     src/log.cmx \
     src/lexers.cmx \

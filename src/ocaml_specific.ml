@@ -1005,7 +1005,6 @@ pflag ["ocaml"; "doc"; "man"] "man_section"
   (fun param -> S [A "-man-section"; A param]);;
 
 ocaml_lib "ocamlbuildlib";;
-ocaml_lib "ocamlbuildlightlib";;
 
 begin
   let ccflag ~lang ~phase ~flag =

@@ -13,5 +13,4 @@
 
 
 (* Original author: Nicolas Pouillard *)
-Ocamlbuild_unix_plugin.setup ();
 Ocamlbuild_pack.Main.main ()

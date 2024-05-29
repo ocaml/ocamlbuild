@@ -37,7 +37,7 @@ let chdir dir =
 let run args target =
   reset_readdir_cache ();
   let cmd = String.concat " " (List.map quote_filename_if_needed args) in
-  if !*My_unix.is_degraded || Sys.win32 then
+  if Sys.win32 then
     begin
       Log.event cmd target Tags.empty;
       let st = sys_command cmd in

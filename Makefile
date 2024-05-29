@@ -38,7 +38,9 @@ PACK_CMO= $(addprefix src/,\
   loc.cmo \
   discard_printf.cmo \
   signatures.cmi \
+  exit_codes.cmo \
   my_std.cmo \
+  ocamlbuild_executor.cmo \
   my_unix.cmo \
   tags.cmo \
   display.cmo \
@@ -73,7 +75,6 @@ PACK_CMO= $(addprefix src/,\
   ocaml_compiler.cmo \
   ocaml_tools.cmo \
   ocaml_specific.cmo \
-  exit_codes.cmo \
   plugin.cmo \
   hooks.cmo \
   main.cmo \
@@ -81,8 +82,6 @@ PACK_CMO= $(addprefix src/,\
 
 EXTRA_CMO=$(addprefix plugin-lib/,\
   ocamlbuild_plugin.cmo \
-  ocamlbuild_executor.cmo \
-  ocamlbuild_unix_plugin.cmo \
   )
 
 PACK_CMX=$(PACK_CMO:.cmo=.cmx)
@@ -117,7 +116,7 @@ all: byte man
 endif
 
 byte: ocamlbuild.byte plugin-lib/ocamlbuildlib.cma
-                 # ocamlbuildlight.byte ocamlbuildlightlib.cma
+
 native: ocamlbuild.native plugin-lib/ocamlbuildlib.cmxa
 
 allopt: all # compatibility alias
@@ -129,18 +128,12 @@ distclean:: clean
 ocamlbuild.byte: src/ocamlbuild_pack.cmo $(EXTRA_CMO) bin/ocamlbuild.cmo
 	$(OCAMLC) $(LINKFLAGS) -o $@ -I +unix unix.cma $^
 
-ocamlbuildlight.byte: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
-	$(OCAMLC) $(LINKFLAGS) -o $@ $^
-
 ocamlbuild.native: src/ocamlbuild_pack.cmx $(EXTRA_CMX) bin/ocamlbuild.cmx
 	$(OCAMLOPT) $(LINKFLAGS) -o $@ -I +unix unix.cmxa $^
 
 # The libraries
 
 plugin-lib/ocamlbuildlib.cma: src/ocamlbuild_pack.cmo $(EXTRA_CMO)
-	$(OCAMLC) -a -o $@ $^
-
-bin/ocamlbuildlightlib.cma: src/ocamlbuild_pack.cmo bin/ocamlbuildlight.cmo
 	$(OCAMLC) -a -o $@ $^
 
 plugin-lib/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
@@ -213,7 +206,7 @@ distclean::
 	rm -f man/ocamlbuild.1
 
 man/options_man.byte: src/ocamlbuild_pack.cmo
-	$(OCAMLC) $^ -I src man/options_man.ml -o man/options_man.byte
+	$(OCAMLC) -I +unix unix.cma $^ -I src man/options_man.ml -o man/options_man.byte
 
 clean::
 	rm -f man/options_man.cm*
