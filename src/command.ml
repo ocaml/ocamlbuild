@@ -129,7 +129,7 @@ let search_in_path cmd =
 
 (*** string_of_command_spec{,_with_calls *)
 let string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals spec =
-  let rec aux spec =
+  let rec aux encode spec =
     let b = Buffer.create 256 in
     let first = ref true in
     let put_space () =
@@ -139,7 +139,18 @@ let string_of_command_spec_with_calls call_with_tags call_with_target resolve_vi
         Buffer.add_char b ' '
     in
     let put_filename p =
-      Buffer.add_string b (Shell.quote_filename_if_needed p)
+      Buffer.add_string b (encode p)
+    in
+    let quote_filename_for_cmd_if_needed x =
+      (* external commands are unfortunately called with cmd.exe (via Sys.command).
+         Cmd.exe has strange quoting rules. The most notorious quirk is, that
+         you can't use forward slashes as path separators at the first position,
+         unless you quote the expression explicitly.
+         cmd.exe will interpret the slash and everything thereafter as first
+         parameter. Eg. 'bin/foo -x' is treated like 'bin /foo -x'. *)
+      if Shell.is_simple_filename x && not (String.contains x '/')
+      then x
+      else My_std.quote_cmd ("\"" ^ x ^ "\"")
     in
     let rec do_spec = function
       | N -> ()
@@ -148,15 +159,23 @@ let string_of_command_spec_with_calls call_with_tags call_with_target resolve_vi
       | P p -> put_space (); put_filename p
       | Px u -> put_space (); put_filename u; call_with_target u
       | V v -> if resolve_virtuals then do_spec (virtual_solver v)
-               else (put_space (); Printf.bprintf b "<virtual %s>" (Shell.quote_filename_if_needed v))
+               else (put_space (); Printf.bprintf b "<virtual %s>" (encode v))
       | S l -> List.iter do_spec l
       | T tags -> call_with_tags tags; do_spec (!tag_handler tags)
-      | Quote s -> put_space (); put_filename (aux s)
+      | Quote q ->
+        let c =
+          if Sys.win32 then
+            aux quote_filename_for_cmd_if_needed q
+          else
+            aux Shell.quote_filename_if_needed q
+        in
+        put_space ();
+        Buffer.add_string b (encode c)
     in
     do_spec spec;
     Buffer.contents b
   in
-  aux spec
+  aux (fun x -> Shell.quote_filename_if_needed x) spec
 
 let string_of_command_spec x = string_of_command_spec_with_calls ignore ignore false x
 

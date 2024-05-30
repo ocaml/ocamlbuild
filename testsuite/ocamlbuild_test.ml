@@ -40,6 +40,12 @@ let execute cmd =
     let ret_code = Unix.close_process_in ic
     in ret_code, List.rev !lst
 
+(* Simplified implementation of My_std.sys_command to avoid duplicating code. *)
+let sys_command cmd =
+  if Sys.win32
+  then Sys.command (Printf.sprintf "bash --norc --noprofile -c %S" cmd)
+  else Sys.command cmd
+
 let rm f =
   if exists f then
     ignore(Sys.command (Printf.sprintf "rm -r %s" f))
@@ -394,6 +400,7 @@ type test = { name     : string
             ; options  : Option.t list
             ; targets  : string * string list
             ; pre_cmd  : string option
+            ; post_cmd : string option
             ; failing_msg : string option
             ; run      : run list }
 
@@ -402,7 +409,7 @@ let tests = ref []
 let test name
     ~description
     ?requirements
-    ?(options=[]) ?(run=[]) ?pre_cmd ?failing_msg
+    ?(options=[]) ?(run=[]) ?pre_cmd ?post_cmd ?failing_msg
     ?(tree=[])
     ?(matching=[])
     ~targets ()
@@ -416,6 +423,7 @@ let test name
     options;
     targets;
     pre_cmd;
+    post_cmd;
     failing_msg;
     run;
   }]
@@ -508,6 +516,7 @@ let run ~root =
       ; targets
       ; failing_msg
       ; pre_cmd
+      ; post_cmd
       ; run } =
 
     let full_name = root ^ "/" ^ name in
@@ -525,7 +534,7 @@ let run ~root =
 
         (match pre_cmd with
           | None -> ()
-          | Some str -> ignore(Sys.command str));
+          | Some str -> ignore(sys_command str));
 
         let log_name = full_name ^ ".log" in
 
@@ -533,7 +542,11 @@ let run ~root =
         let allow_failure = failing_msg <> None in
 
         let open Unix in
-
+        let post_cmd () =
+          match post_cmd with
+          | None -> true
+          | Some str -> sys_command str = 0
+        in
         match execute cmd with
           | WEXITED n,lines
           | WSIGNALED n,lines
@@ -562,8 +575,13 @@ let run ~root =
                   (* filter out -classic-display output *)
                   List.filter (fun s -> not (starts_with_plus s)) lines in
                 let msg = String.concat "\n" lines in
-                if failing_msg = msg then
-                  print_colored `Green "PASSED" name `Cyan description
+                if failing_msg = msg  then
+                  if post_cmd ()
+                  then print_colored `Green "PASSED" name `Cyan description
+                  else begin
+                    print_colored `Red "FAILED" name `Yellow "post command failed";
+                    failed := true
+                  end
                 else begin
                   print_colored `Red "FAILED" name `Yellow
                     ((Printf.sprintf "Failure with not matching message:\n\
@@ -576,7 +594,13 @@ let run ~root =
               List.concat
                 (List.map (Match.match_with_fs ~root:full_name) matching) in
             begin if errors == [] then
-                print_colored `Green "PASSED" name `Cyan description
+                if post_cmd ()
+                then
+                  print_colored `Green "PASSED" name `Cyan description
+                else begin
+                    print_colored `Red "FAILED" name `Yellow "post command failed";
+                    failed := true
+                  end
               else begin
                 if verbose then begin
                   print_colored `Red "FAILED" name `Yellow

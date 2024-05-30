@@ -195,9 +195,9 @@ module type COMMAND = sig
                          instance). *)
     | V of string    (** A virtual command, that will be resolved at
                          execution using [resolve_virtuals] *)
-    | Quote of spec  (** A string that should be quoted like a
-                           filename but isn't really one. *)
-
+    | Quote of spec  (** Used for commands or part of commands,
+                        meant to be passed to [Sys.command] at some
+                        point. *)
   (*type v = [ `Seq of v list | `Cmd of vspec | `Nop ]
     and vspec =
     [ `N
