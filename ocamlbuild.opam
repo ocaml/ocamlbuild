@@ -31,7 +31,7 @@ conflicts: [
 ]
 
 depends: [
-  "ocaml" {>= "4.03"}
+  "ocaml" {>= "4.08"}
   "ocamlfind" {with-test}
   "menhirLib" {with-test}
 ]
