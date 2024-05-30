@@ -1,5 +1,62 @@
 #use "internal_test_header.ml";;
 
+
+let () = test "Preprocess"
+    ~description:"Check that preprocessor works"
+    ~requirements:ocamlopt_available
+    ~options:[]
+    ~tree:[
+      T.f "main.ml" ~content:{|let () = Printf.printf "line %d\n" __LINE__|};
+      T.f "preprocessor.ml" ~content:{|
+let () =
+  let all = Array.to_list Sys.argv |> List.tl in
+  let input = Sys.argv.(3) in
+  let txt = Sys.argv.(1) in
+  let shift = int_of_string (Sys.argv.(2)) in
+  let ic = open_in input in
+  for i = 1 to shift do
+    print_endline (Printf.sprintf "(* shift lines by one, %s *)" txt);
+  done;
+  (try
+  while true do
+    let l = input_line ic in
+    print_endline l;
+  done;
+  with End_of_file -> ());
+  print_endline {txt|let () = if __LINE__ <> 4 then failwith "unexpected shift" |txt};
+  print_endline (Printf.sprintf {txt|
+let () =
+  match [%s] with
+  | ["with space"; "2"; _file] -> ()
+  | l -> failwith (Printf.sprintf "Preprocessor received unexpected args: %%s" (String.concat " - " l))
+|txt} (String.concat "; " (List.map (Printf.sprintf "%S") all)))
+
+|};
+      T.f "myocamlbuild.ml" ~content:{|
+open Ocamlbuild_plugin
+let () =
+  dispatch begin function
+  | After_rules ->
+    dep ["mypreprocessor"] ["preprocessor.exe"];
+    flag ["ocaml"; "pp"; "mypreprocessor"] (S [P "./preprocessor.exe";
+                                               A "with space";
+                                               A "2"]);
+    rule "native to exe"
+    ~prods:["%.exe"]
+    ~dep:"%.native"
+    (fun env _build ->
+      let nat = env "%.native" and exe = env "%.exe" in
+      Cmd(S[A "cp"; A nat; A exe]))
+  | _ -> ()
+  end
+|};
+      T.f "_tags" ~content:{|
+<main.ml>: mypreprocessor
+|}]
+    ~targets:("main.native", [])
+    ~post_cmd:("./main.native")
+    ();;
+
 let () = test "BasicNativeTree"
   ~options:[`no_ocamlfind]
   ~description:"Output tree for native compilation"

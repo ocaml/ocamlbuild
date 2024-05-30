@@ -373,6 +373,19 @@ let sys_command cmd =
   if cmd = "" then 0 else
   sys_command cmd
 
+(* See https://learn.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way *)
+let quote_cmd s =
+  let b = Buffer.create (String.length s + 20) in
+  String.iter
+    (fun c ->
+       match c with
+       | '(' | ')' | '!' | '^' | '%' | '\"' | '<' | '>' | '&' | '|' ->
+         Buffer.add_char b '^'; Buffer.add_char b c
+       | _ ->
+         Buffer.add_char b c)
+    s;
+  Buffer.contents b
+
 (* FIXME warning fix and use Filename.concat *)
 let filename_concat x y =
   if x = Filename.current_dir_name || x = "" then y else
