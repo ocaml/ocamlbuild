@@ -201,8 +201,10 @@ src/glob_lexer.cmx : \
 src/glob_lexer.cmi : \
     src/glob_ast.cmi
 src/hooks.cmo : \
+    src/log.cmi \
     src/hooks.cmi
 src/hooks.cmx : \
+    src/log.cmx \
     src/hooks.cmi
 src/hooks.cmi :
 src/hygiene.cmo : \
