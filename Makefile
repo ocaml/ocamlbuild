@@ -446,11 +446,15 @@ distclean::
 # The dependencies
 
 depend: beforedepend
-	$(OCAMLDEP) -I src -I plugin-lib src/*.mli src/*.ml plugin-lib/*.mli plugin-lib/*.ml bin/*.mli bin/*.ml > .depend
+	$(OCAMLDEP) -I src -I plugin-lib -I bin src/*.mli src/*.ml plugin-lib/*.mli plugin-lib/*.ml bin/*.mli bin/*.ml > .depend
 
 $(EXTRA_CMI): src/ocamlbuild_pack.cmi
 $(EXTRA_CMO): src/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmi
 $(EXTRA_CMX): src/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmi
+
+bin/ocamlbuild.cmi: src/ocamlbuild_pack.cmi
+bin/ocamlbuild.cmo: src/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmi
+bin/ocamlbuild.cmx: src/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmi
 
 include .depend
 
