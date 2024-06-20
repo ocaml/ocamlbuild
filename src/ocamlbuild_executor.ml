@@ -75,7 +75,7 @@ let output_lines prefix oc buffer =
       in
       (* ignore trailing CR *)
       let k = ref j in
-      while !k > i && u.[!k - 1] = '\r' do decr k done;
+      while !k > (i : int) && u.[!k - 1] = '\r' do decr k done;
       output_line i !k;
       loop (j + 1)
     else
