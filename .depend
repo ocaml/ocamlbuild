@@ -499,8 +499,10 @@ src/ocaml_utils.cmi : \
 src/ocamlbuild_config.cmo :
 src/ocamlbuild_config.cmx :
 src/ocamlbuild_executor.cmo : \
+    src/my_std.cmi \
     src/ocamlbuild_executor.cmi
 src/ocamlbuild_executor.cmx : \
+    src/my_std.cmx \
     src/ocamlbuild_executor.cmi
 src/ocamlbuild_executor.cmi :
 src/ocamlbuild_where.cmo : \
