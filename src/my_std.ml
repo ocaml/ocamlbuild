@@ -291,6 +291,9 @@ let split_path_win str =
   in
   aux 0
 
+(* Here to break the circular dep *)
+let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
+
 let windows_shell = lazy begin
   let rec iter = function
   | [] -> [| "bash.exe" ; "--norc" ; "--noprofile" |]
@@ -305,7 +308,7 @@ let windows_shell = lazy begin
   in
   let paths = split_path_win (try Sys.getenv "PATH" with Not_found -> "") in
   let res = iter paths in
-  if false then Printf.eprintf "Using shell %s\n%!" (Array.to_list res |> String.concat " ");
+  !log3 (Printf.sprintf "Using shell %s" (Array.to_list res |> String.concat " "));
   res
 end
 

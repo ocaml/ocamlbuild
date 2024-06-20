@@ -79,3 +79,5 @@ let finish ?how () =
   | Some d -> Display.finish ?how d
 
 (*let () = My_unix.at_exit_once finish*)
+
+let () = My_std.log3 := (fun s -> dprintf 3 "%s\n%!" s)
