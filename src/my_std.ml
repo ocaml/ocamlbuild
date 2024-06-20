@@ -275,21 +275,26 @@ let sys_file_exists x =
       try Array.iter (fun x -> if x = basename then raise Exit) a; false
       with Exit -> true
 
-  (* can't use Lexers because of circular dependency *)
-let split_path_win str =
-  let rec aux pos =
-    try
-      let i = String.index_from str pos ';' in
-      let len = i - pos in
-      if len = 0 then
-        aux (succ i)
+(* https://github.com/ocaml/opam/blame/master/src/core/opamStd.ml *)
+let split_quoted path sep =
+    let length = String.length path in
+    let rec f acc index current last normal =
+      if (index : int) = length then
+        let current = current ^ String.sub path last (index - last) in
+        List.rev (if current <> "" then current::acc else acc)
       else
-        String.sub str pos (i - pos) :: aux (succ i)
-    with Not_found | Invalid_argument _ ->
-      let len = String.length str - pos in
-      if len = 0 then [] else [String.sub str pos len]
-  in
-  aux 0
+      let c = path.[index]
+      and next = succ index in
+      if (c : char) = sep && normal || c = '"' then
+        let current = current ^ String.sub path last (index - last) in
+        if c = '"' then
+          f acc next current next (not normal)
+        else
+        let acc = if current = "" then acc else current::acc in
+        f acc next "" next true
+      else
+        f acc next current last normal in
+    f [] 0 "" 0 true
 
 (* Here to break the circular dep *)
 let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
@@ -306,7 +311,7 @@ let windows_shell = lazy begin
     let sh = Filename.concat hd "sh.exe" in
     if Sys.file_exists sh then [|sh|] else [|bash ; "--norc" ; "--noprofile"|]
   in
-  let paths = split_path_win (try Sys.getenv "PATH" with Not_found -> "") in
+  let paths = split_quoted (try Sys.getenv "PATH" with Not_found -> "") ';' in
   let res = iter paths in
   !log3 (Printf.sprintf "Using shell %s" (Array.to_list res |> String.concat " "));
   res
