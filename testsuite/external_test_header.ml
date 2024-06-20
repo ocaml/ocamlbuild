@@ -2,7 +2,10 @@
    Findlib was loaded in findlibonly_test_header.ml *)
 let package_exists package =
   let open Findlib in
-  try ignore (package_directory package); Fullfilled
+  try
+    let dir = package_directory package in
+    Printf.eprintf "%s found in %s\n%!" package dir;
+    Fullfilled
   with No_such_package _ ->
     Missing (Printf.sprintf "the ocamlfind package %s" package)
 

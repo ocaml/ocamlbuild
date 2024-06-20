@@ -63,6 +63,11 @@ jobs:
       - run: opam exec -- make distclean
       - run: opam exec -- opam pin add -n ocamlbuild .
       - run: opam exec -- opam install -v ocamlbuild
+      - run: opam exec -- opam install -v menhir
+      - run: opam exec -- opam install -v camlp4
+        if: (! startsWith(matrix.ocaml-compiler, '5.2'))
+      - run: opam exec -- make test-external
+        if: (! startsWith(matrix.ocaml-compiler, '5.2'))
       - run: opam exec -- opam install -v mtime.1.0.0 # this tests topkg, with stub libraries
       - run: opam exec -- opam install -v inotify.2.3 # this tests oasis, with stub libraries
         if: (! startsWith(matrix.ocaml-compiler, '5')) && runner.os != 'Windows'
