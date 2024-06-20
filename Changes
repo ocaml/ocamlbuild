@@ -13,7 +13,21 @@ of the usual "- ".
 
 NEXT_RELEASE:
 -------------
-
+- Misc: restore CI (unix and windows)
+  (#328, #329, #336 by Hugo Heuzard)
+* Remove degraded mode for windows
+  (#333 by Hugo Heuzard)
+- Remove light mode (#332 by Hugo Heuzard)
+- Make the codebase work on windows native
+  (#329, #333, #334, #338, #339, #342, #343, #344 by Hugo Heuzard)
+* No longer treat empty path in PATH env variable as the current working directory
+  (#339 by Hugo Heuzard)
+- Emit a warning if several calls are made to
+   `Ocamlbuild_plugin.dispatch` -- all calls before the last one are
+   ignored, which may not be what users expect.
+  (#30 by Gabriel Scherer, review by whitequark)
+- Rename user-rebindable {LINK,COMP}FLAGS into OCB_{LINK,COMP}FLAGS
+  (#303 by Gabriel Scherer)
 
 0.14.3 (20 Dec 2023):
 ---------------------
@@ -135,11 +149,6 @@ same semantics as `.cmxa` and `.mllib` file -- in particular, it
 should not be necessary anymore to have identical
 `foo.{mllib,mldylib}` files, only `foo.mllib` should suffice. See the
 detailed changelog below for details.
-
-- #30: emit a warning if several calls are made to
-   `Ocamlbuild_plugin.dispatch` -- all calls before the last one are
-   ignored, which may not be what users expect.
-  (Gabriel Scherer, review by whitequark)
 
 - #111: added "nostdlib" flag for corresponding ocaml{c,opt} options
   (Thomas Wood)
