@@ -312,17 +312,23 @@ end
 let prepare_command_for_windows cmd =
   Array.append (Lazy.force windows_shell) [|"-c"; cmd|]
 
+let sys_command_win32 cmd =
+  let args = prepare_command_for_windows cmd in
+  let oc = Unix.open_process_args_out args.(0) args in
+  match Unix.close_process_out oc with
+  | WEXITED x -> x
+  | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
+  | WSTOPPED _ -> 127
+
+let sys_command =
+  if Sys.win32 then
+    sys_command_win32
+  else
+    Sys.command
+
 let sys_command cmd =
   if cmd = "" then 0 else
-  if Sys.win32
-  then
-    let args = prepare_command_for_windows cmd in
-    let oc = Unix.open_process_args_out args.(0) args in
-    match Unix.close_process_out oc with
-    | WEXITED x -> x
-    | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
-    | WSTOPPED _ -> 127
-  else Sys.command cmd
+  sys_command cmd
 
 (* FIXME warning fix and use Filename.concat *)
 let filename_concat x y =
