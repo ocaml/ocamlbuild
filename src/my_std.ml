@@ -301,7 +301,7 @@ let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
 
 let windows_shell = lazy begin
   let rec iter = function
-  | [] -> [| "bash.exe" ; "--norc" ; "--noprofile" |]
+  | [] -> raise Not_found
   | hd::tl ->
     let dash = Filename.concat hd "dash.exe" in
     if Sys.file_exists dash then [|dash|] else
@@ -312,9 +312,18 @@ let windows_shell = lazy begin
     if Sys.file_exists sh then [|sh|] else [|bash ; "--norc" ; "--noprofile"|]
   in
   let paths = split_quoted (try Sys.getenv "PATH" with Not_found -> "") ';' in
-  let res = iter paths in
-  !log3 (Printf.sprintf "Using shell %s" (Array.to_list res |> String.concat " "));
-  res
+  let shell =
+    try
+      let path =
+        List.find (fun path ->
+            Sys.file_exists (Filename.concat path "cygcheck.exe")) paths
+      in
+      iter [path]
+    with Not_found ->
+      (try iter paths with Not_found -> failwith "no posix shell found in PATH")
+  in
+  !log3 (Printf.sprintf "Using shell %s" (Array.to_list shell |> String.concat " "));
+  shell
 end
 
 let prepare_command_for_windows cmd =
