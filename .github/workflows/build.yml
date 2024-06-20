@@ -54,9 +54,6 @@ jobs:
           allow-prerelease-opam: true
           dune-cache: true
 
-      - run: opam pin add mingw-w64-shims git+https://github.com/dra27/mingw-w64-shims.git#internals
-        if: runner.os == 'Windows'
-
       - run: opam install . --with-test --deps-only
 
       - run: opam exec -- make test
