@@ -145,7 +145,8 @@ let search_in_path cmd =
 
 (*** string_of_command_spec{,_with_calls *)
 let string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals spec =
-  let rec aux b spec =
+  let rec aux spec =
+    let b = Buffer.create 256 in
     let first = ref true in
     let put_space () =
       if !first then
@@ -166,21 +167,12 @@ let string_of_command_spec_with_calls call_with_tags call_with_target resolve_vi
                else (put_space (); Printf.bprintf b "<virtual %s>" (Shell.quote_filename_if_needed v))
       | S l -> List.iter do_spec l
       | T tags -> call_with_tags tags; do_spec (!tag_handler tags)
-      | Quote s ->
-        put_space ();
-        let buf = Buffer.create 256 in
-        aux buf s;
-        put_filename (Buffer.contents buf)
+      | Quote s -> put_space (); put_filename (aux s)
     in
-    do_spec spec
+    do_spec spec;
+    Buffer.contents b
   in
-  let b = Buffer.create 256 in
-  (* The best way to prevent bash from switching to its windows-style
-   * quote-handling is to prepend an empty string before the command name. *)
-  if Sys.win32 then
-    Buffer.add_string b "''";
-  aux b spec;
-  Buffer.contents b
+  aux spec
 
 let string_of_command_spec x = string_of_command_spec_with_calls ignore ignore false x
 
