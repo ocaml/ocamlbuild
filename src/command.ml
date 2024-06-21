@@ -144,36 +144,42 @@ let search_in_path cmd =
     cmd
 
 (*** string_of_command_spec{,_with_calls *)
-let rec string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals spec =
-  let self = string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals in
+let string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals spec =
+  let rec aux b spec =
+    let first = ref true in
+    let put_space () =
+      if !first then
+        first := false
+      else
+        Buffer.add_char b ' '
+    in
+    let put_filename p =
+      Buffer.add_string b (Shell.quote_filename_if_needed p)
+    in
+    let rec do_spec = function
+      | N -> ()
+      | A u -> put_space (); put_filename u
+      | Sh u -> put_space (); Buffer.add_string b u
+      | P p -> put_space (); put_filename p
+      | Px u -> put_space (); put_filename u; call_with_target u
+      | V v -> if resolve_virtuals then do_spec (virtual_solver v)
+               else (put_space (); Printf.bprintf b "<virtual %s>" (Shell.quote_filename_if_needed v))
+      | S l -> List.iter do_spec l
+      | T tags -> call_with_tags tags; do_spec (!tag_handler tags)
+      | Quote s ->
+        put_space ();
+        let buf = Buffer.create 256 in
+        aux buf s;
+        put_filename (Buffer.contents buf)
+    in
+    do_spec spec
+  in
   let b = Buffer.create 256 in
   (* The best way to prevent bash from switching to its windows-style
    * quote-handling is to prepend an empty string before the command name. *)
   if Sys.win32 then
     Buffer.add_string b "''";
-  let first = ref true in
-  let put_space () =
-    if !first then
-      first := false
-    else
-      Buffer.add_char b ' '
-  in
-  let put_filename p =
-    Buffer.add_string b (Shell.quote_filename_if_needed p)
-  in
-  let rec do_spec = function
-    | N -> ()
-    | A u -> put_space (); put_filename u
-    | Sh u -> put_space (); Buffer.add_string b u
-    | P p -> put_space (); put_filename p
-    | Px u -> put_space (); put_filename u; call_with_target u
-    | V v -> if resolve_virtuals then do_spec (virtual_solver v)
-             else (put_space (); Printf.bprintf b "<virtual %s>" (Shell.quote_filename_if_needed v))
-    | S l -> List.iter do_spec l
-    | T tags -> call_with_tags tags; do_spec (!tag_handler tags)
-    | Quote s -> put_space (); put_filename (self s)
-  in
-  do_spec spec;
+  aux b spec;
   Buffer.contents b
 
 let string_of_command_spec x = string_of_command_spec_with_calls ignore ignore false x
