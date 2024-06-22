@@ -95,24 +95,6 @@ and comma_or_blank_sep_strings_aux source = parse
   | space* eof { [] }
   | _ { error source lexbuf "Expecting (comma|blank)-separated strings (2)" }
 
-and parse_environment_path_w source = parse
-  | ([^ ';']* as word) { word :: parse_environment_path_aux_w source lexbuf }
-  | ';' ([^ ';']* as word) { "" :: word :: parse_environment_path_aux_w source lexbuf }
-  | eof { [] }
-and parse_environment_path_aux_w source = parse
-  | ';' ([^ ';']* as word) { word :: parse_environment_path_aux_w source lexbuf }
-  | eof { [] }
-  | _ { error source lexbuf "Impossible: expecting colon-separated strings" }
-
-and parse_environment_path source = parse
-  | ([^ ':']* as word) { word :: parse_environment_path_aux source lexbuf }
-  | ':' ([^ ':']* as word) { "" :: word :: parse_environment_path_aux source lexbuf }
-  | eof { [] }
-and parse_environment_path_aux source = parse
-  | ':' ([^ ':']* as word) { word :: parse_environment_path_aux source lexbuf }
-  | eof { [] }
-  | _ { error source lexbuf "Impossible: expecting colon-separated strings" }
-
 and conf_lines dir source = parse
   | space* '#' not_newline* newline { Lexing.new_line lexbuf; conf_lines dir source lexbuf }
   | space* '#' not_newline* eof { [] }

@@ -72,5 +72,7 @@ val split_ocaml_version : (int * int * int * string) option
 
 val prepare_command_for_windows : string -> string array
 
+val env_path : string list Lazy.t
+
 (*/*)
 val log3 : (string -> unit) ref

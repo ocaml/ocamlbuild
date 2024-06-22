@@ -296,6 +296,18 @@ let split_quoted path sep =
         f acc next current last normal in
     f [] 0 "" 0 true
 
+let env_path = lazy begin
+  let path_var = (try Sys.getenv "PATH" with Not_found -> "") in
+  (* OPAM doesn't support empty path to mean working directory, let's
+     do the same here *)
+  if Sys.win32 then
+    split_quoted path_var ';'
+  else
+    String.split_on_char ':' path_var
+    |> List.filter ((<>) "")
+end
+
+
 (* Here to break the circular dep *)
 let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
 
@@ -311,7 +323,7 @@ let windows_shell = lazy begin
     let sh = Filename.concat hd "sh.exe" in
     if Sys.file_exists sh then [|sh|] else [|bash ; "--norc" ; "--noprofile"|]
   in
-  let paths = split_quoted (try Sys.getenv "PATH" with Not_found -> "") ';' in
+  let paths = Lazy.force env_path in
   let shell =
     try
       let path =
