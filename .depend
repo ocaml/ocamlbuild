@@ -37,8 +37,6 @@ src/command.cmo : \
     src/my_unix.cmi \
     src/my_std.cmi \
     src/log.cmi \
-    src/lexers.cmi \
-    src/const.cmo \
     src/command.cmi
 src/command.cmx : \
     src/tags.cmx \
@@ -47,8 +45,6 @@ src/command.cmx : \
     src/my_unix.cmx \
     src/my_std.cmx \
     src/log.cmx \
-    src/lexers.cmx \
-    src/const.cmx \
     src/command.cmi
 src/command.cmi : \
     src/tags.cmi \
