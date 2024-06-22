@@ -275,7 +275,8 @@ let sys_file_exists x =
       try Array.iter (fun x -> if x = basename then raise Exit) a; false
       with Exit -> true
 
-(* https://github.com/ocaml/opam/blame/master/src/core/opamStd.ml *)
+(* Copied from opam
+   https://github.com/ocaml/opam/blob/ca32ab3b976aa7abc00c7605548f78a30980d35b/src/core/opamStd.ml *)
 let split_quoted path sep =
     let length = String.length path in
     let rec f acc index current last normal =
@@ -298,7 +299,7 @@ let split_quoted path sep =
 
 let env_path = lazy begin
   let path_var = (try Sys.getenv "PATH" with Not_found -> "") in
-  (* OPAM doesn't support empty path to mean working directory, let's
+  (* opam doesn't support empty path to mean working directory, let's
      do the same here *)
   if Sys.win32 then
     split_quoted path_var ';'
