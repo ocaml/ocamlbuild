@@ -347,11 +347,17 @@ let prepare_command_for_windows cmd =
 
 let sys_command_win32 cmd =
   let args = prepare_command_for_windows cmd in
-  let oc = Unix.open_process_args_out args.(0) args in
-  match Unix.close_process_out oc with
-  | WEXITED x -> x
-  | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
-  | WSTOPPED _ -> 127
+  try
+    let oc = Unix.open_process_args_out args.(0) args in
+    match Unix.close_process_out oc with
+    | WEXITED x -> x
+    | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
+    | WSTOPPED _ -> 127
+  with (Unix.Unix_error _) as x ->
+    (* Sys.command doesn't raise an exception, so sys_command_win32 also won't
+       raise *)
+    Printexc.to_string x ^ ":" ^ cmd |> prerr_endline;
+    1
 
 let sys_command =
   if Sys.win32 then
