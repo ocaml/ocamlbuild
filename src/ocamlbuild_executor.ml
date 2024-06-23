@@ -136,13 +136,13 @@ let execute
   (* ***)
   (*** add_job *)
   let add_job cmd rest result id =
-    let cmd =
-      if Sys.win32
-      then "bash --norc -c " ^ Filename.quote cmd
-      else cmd
-    in
     (*display begin fun oc -> fp oc "Job %a is %s\n%!" print_job_id id cmd; end;*)
-    let (stdout', stdin', stderr') = open_process_full cmd env in
+    let (stdout', stdin', stderr') =
+      if Sys.win32
+      then
+        let args = My_std.prepare_command_for_windows cmd in
+        open_process_args_full args.(0) args env
+      else open_process_full cmd env in
     incr jobs_active;
     if not Sys.win32 then begin
       set_nonblock (doi stdout');

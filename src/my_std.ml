@@ -275,13 +275,93 @@ let sys_file_exists x =
       try Array.iter (fun x -> if x = basename then raise Exit) a; false
       with Exit -> true
 
+(* Copied from opam
+   https://github.com/ocaml/opam/blob/ca32ab3b976aa7abc00c7605548f78a30980d35b/src/core/opamStd.ml *)
+let split_quoted path sep =
+    let length = String.length path in
+    let rec f acc index current last normal =
+      if (index : int) = length then
+        let current = current ^ String.sub path last (index - last) in
+        List.rev (if current <> "" then current::acc else acc)
+      else
+      let c = path.[index]
+      and next = succ index in
+      if (c : char) = sep && normal || c = '"' then
+        let current = current ^ String.sub path last (index - last) in
+        if c = '"' then
+          f acc next current next (not normal)
+        else
+        let acc = if current = "" then acc else current::acc in
+        f acc next "" next true
+      else
+        f acc next current last normal in
+    f [] 0 "" 0 true
+
+let env_path = lazy begin
+  let path_var = (try Sys.getenv "PATH" with Not_found -> "") in
+  (* opam doesn't support empty path to mean working directory, let's
+     do the same here *)
+  if Sys.win32 then
+    split_quoted path_var ';'
+  else
+    String.split_on_char ':' path_var
+    |> List.filter ((<>) "")
+end
+
+
+(* Here to break the circular dep *)
+let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
+
+let windows_shell = lazy begin
+  let rec iter = function
+  | [] -> raise Not_found
+  | hd::tl ->
+    let dash = Filename.concat hd "dash.exe" in
+    if Sys.file_exists dash then [|dash|] else
+    let bash = Filename.concat hd "bash.exe" in
+    if not (Sys.file_exists bash) then iter tl else
+    (* if sh.exe and bash.exe exist in the same dir, choose sh.exe *)
+    let sh = Filename.concat hd "sh.exe" in
+    if Sys.file_exists sh then [|sh|] else [|bash ; "--norc" ; "--noprofile"|]
+  in
+  let paths = Lazy.force env_path in
+  let shell =
+    try
+      let path =
+        List.find (fun path ->
+            Sys.file_exists (Filename.concat path "cygcheck.exe")) paths
+      in
+      iter [path]
+    with Not_found ->
+      (try iter paths with Not_found -> failwith "no posix shell found in PATH")
+  in
+  !log3 (Printf.sprintf "Using shell %s" (Array.to_list shell |> String.concat " "));
+  shell
+end
+
+let prepare_command_for_windows cmd =
+  (* The best way to prevent bash from switching to its windows-style
+   * quote-handling is to prepend an empty string before the command name. *)
+  let cmd = "''" ^ cmd in
+  Array.append (Lazy.force windows_shell) [|"-c"; cmd|]
+
+let sys_command_win32 cmd =
+  let args = prepare_command_for_windows cmd in
+  let oc = Unix.open_process_args_out args.(0) args in
+  match Unix.close_process_out oc with
+  | WEXITED x -> x
+  | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
+  | WSTOPPED _ -> 127
+
 let sys_command =
-  match Sys.win32 with
-  | true -> fun cmd ->
-      if cmd = "" then 0 else
-      let cmd = "bash --norc -c " ^ Filename.quote cmd in
-      Sys.command cmd
-  | false -> fun cmd -> if cmd = "" then 0 else Sys.command cmd
+  if Sys.win32 then
+    sys_command_win32
+  else
+    Sys.command
+
+let sys_command cmd =
+  if cmd = "" then 0 else
+  sys_command cmd
 
 (* FIXME warning fix and use Filename.concat *)
 let filename_concat x y =

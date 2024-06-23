@@ -28,15 +28,6 @@ val comma_sep_strings : Loc.source -> Lexing.lexbuf -> string list
 val comma_or_blank_sep_strings : Loc.source -> Lexing.lexbuf -> string list
 val trim_blanks : Loc.source -> Lexing.lexbuf -> string
 
-(* Parse an environment path (i.e. $PATH).
-   This is a colon separated string.
-   Note: successive colons means an empty string.
-   Example:
-      ":aaa:bbb:::ccc:" -> [""; "aaa"; "bbb"; ""; ""; "ccc"; ""] *)
-val parse_environment_path : Loc.source -> Lexing.lexbuf -> string list
-(* Same one, for Windows (PATH is ;-separated) *)
-val parse_environment_path_w : Loc.source -> Lexing.lexbuf -> string list
-
 val conf_lines : string option -> Loc.source -> Lexing.lexbuf -> conf
 val path_scheme : bool -> Loc.source -> Lexing.lexbuf ->
   [ `Word of string

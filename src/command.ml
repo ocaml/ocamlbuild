@@ -91,22 +91,6 @@ let atomize l = S(List.map (fun x -> A x) l)
 let atomize_paths l = S(List.map (fun x -> P x) l)
 (* ***)
 
-let env_path = lazy begin
-  let path_var = Sys.getenv "PATH" in
-  let parse_path =
-    if Sys.win32 then
-      Lexers.parse_environment_path_w
-    else
-      Lexers.parse_environment_path
-  in
-  let paths =
-    parse_path Const.Source.path (Lexing.from_string path_var) in
-  let norm_current_dir_name path =
-    if path = "" then Filename.current_dir_name else path
-  in
-  List.map norm_current_dir_name paths
-end
-
 let virtual_solvers = Hashtbl.create 32
 let setup_virtual_command_solver virtual_command solver =
   Hashtbl.replace virtual_solvers virtual_command solver
@@ -136,7 +120,7 @@ let search_in_path cmd =
     else file_or_exe_exists (filename_concat path cmd)
   in
   if Filename.is_implicit cmd then
-    let path = List.find try_path !*env_path in
+    let path = List.find try_path !*My_std.env_path in
     (* We're not trying to append ".exe" here because all windows shells are
      * capable of understanding the command without the ".exe" suffix. *)
     filename_concat path cmd
@@ -145,7 +129,8 @@ let search_in_path cmd =
 
 (*** string_of_command_spec{,_with_calls *)
 let string_of_command_spec_with_calls call_with_tags call_with_target resolve_virtuals spec =
-  let rec aux b spec =
+  let rec aux spec =
+    let b = Buffer.create 256 in
     let first = ref true in
     let put_space () =
       if !first then
@@ -166,21 +151,12 @@ let string_of_command_spec_with_calls call_with_tags call_with_target resolve_vi
                else (put_space (); Printf.bprintf b "<virtual %s>" (Shell.quote_filename_if_needed v))
       | S l -> List.iter do_spec l
       | T tags -> call_with_tags tags; do_spec (!tag_handler tags)
-      | Quote s ->
-        put_space ();
-        let buf = Buffer.create 256 in
-        aux buf s;
-        put_filename (Buffer.contents buf)
+      | Quote s -> put_space (); put_filename (aux s)
     in
-    do_spec spec
+    do_spec spec;
+    Buffer.contents b
   in
-  let b = Buffer.create 256 in
-  (* The best way to prevent bash from switching to its windows-style
-   * quote-handling is to prepend an empty string before the command name. *)
-  if Sys.win32 then
-    Buffer.add_string b "''";
-  aux b spec;
-  Buffer.contents b
+  aux spec
 
 let string_of_command_spec x = string_of_command_spec_with_calls ignore ignore false x
 
