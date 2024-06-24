@@ -80,4 +80,4 @@ let finish ?how () =
 
 (*let () = My_unix.at_exit_once finish*)
 
-let () = My_std.log3 := (fun s -> dprintf 3 "%s\n%!" s)
+let () = My_std.log.dprintf <-dprintf
