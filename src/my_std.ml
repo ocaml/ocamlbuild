@@ -27,8 +27,9 @@ exception Exit_silently_with_code of int
 
 type log = { mutable dprintf : 'a. int -> ('a, Format.formatter, unit) format -> 'a }
 (* Here to break the circular dep *)
-let dprintf _lvl _fmt = failwith "My_std.log not initialized"
-let log = { dprintf = dprintf }
+let log =
+  let dprintf _lvl _fmt = failwith "My_std.log not initialized" in
+  { dprintf = dprintf }
 
 
 module Outcome = struct
