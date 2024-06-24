@@ -58,17 +58,18 @@ let at_exit_once callback =
   end
 
 let run_and_open s kont =
-  let ic =
+  let ic, cleanup =
     if Sys.win32
     then
-      let args = My_std.prepare_command_for_windows s in
-      Unix.open_process_args_in args.(0) args
-    else Unix.open_process_in s in
+      let args, cleanup = My_std.prepare_command_for_windows s in
+      Unix.open_process_args_in args.(0) args, cleanup
+    else Unix.open_process_in s, None in
   let close () =
     match Unix.close_process_in ic with
-    | Unix.WEXITED 0 -> ()
+    | Unix.WEXITED 0 -> Option.iter (fun f -> f ()) cleanup
     | Unix.WEXITED _ | Unix.WSIGNALED _ | Unix.WSTOPPED _ ->
-        failwith (Printf.sprintf "Error while running: %s" s) in
+      Option.iter (fun f -> f ()) cleanup;
+      failwith (Printf.sprintf "Error while running: %s" s) in
   let res = try
       kont ic
     with e -> (close (); raise e)

@@ -1,5 +1,24 @@
 #use "internal_test_header.ml";;
 
+let () =
+  let long_file i = Printf.sprintf "f%0100d" i in
+  let last1 = ref "0" in
+  let last2 = ref "1" in
+  let files = List.init 200 (fun i ->
+      let name = long_file i in
+      let prev1 = !last1 in
+      let prev2 = !last2 in
+      last1 := !last2;
+      last2 := (String.capitalize_ascii name) ^".x";
+      T.f (name ^ ".ml") ~content:(Printf.sprintf "let x = %s + %s" prev1 prev2)
+    )
+  in
+  let files = T.f "fib.ml" ~content:(Printf.sprintf "print_int %s" !last2) :: files in
+  test "LongCommand"
+  ~options:[]
+  ~description:"Check that ocamlbuild can handle long commands"
+  ~tree:files
+  ~targets:("fib.byte",[]) ();;
 
 let () = test "Preprocess"
     ~description:"Check that preprocessor works"

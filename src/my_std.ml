@@ -342,15 +342,65 @@ let windows_shell = lazy begin
   shell
 end
 
+let string_exists p s =
+  let n = String.length s in
+  let rec loop i =
+    if i = n then false
+    else if p (String.get s i) then true
+    else loop (succ i) in
+  loop 0
+
 let prepare_command_for_windows cmd =
   (* The best way to prevent bash from switching to its windows-style
      quote-handling is to prepend an empty string before the command name.
      Space seems to work, too - and the ouput is nicer *)
   let cmd = " " ^ cmd in
-  Array.append (Lazy.force windows_shell) [|"-c"; cmd|]
+  let shell = Lazy.force windows_shell in
+  let all = Array.append shell [|"-c"; cmd|] in
+  (* Over approximate the size the command as computed by "unix_win32.ml" in [make_cmdline] *)
+  let size = Array.fold_left (fun acc x ->
+      acc
+      + 1 (* space separate *)
+      + (String.length (Filename.quote x))) 0 all
+  in
+  (* cygwin seems to truncate command line at 8k (sometimes).
+     See https://cygwin.com/pipermail/cygwin/2014-May/215364.html.
+     While the limit might be 8192, some experiment show that it might be a bit less.
+     Such logic exists in the fdopen repo with a limit of 7900. Let's reuse that as it
+     has been tested for a while.
+  *)
+  if size <= 7900
+  then all, None
+  else
+    let oc_closed = ref false in
+    let file_deleted = ref false in
+    let fname,oc =
+      Filename.open_temp_file
+        ~mode:[Open_binary]
+        "ocamlbuildtmp"
+        ".sh"
+    in
+    let cleanup () =
+      if not !file_deleted then begin
+        file_deleted:= true;
+        try Sys.remove fname with _ -> ()
+      end
+    in
+    try
+      output_string oc cmd;
+      oc_closed:= true;
+      close_out oc;
+      Array.append shell [| "-e" ; fname |], Some cleanup
+    with
+    | x ->
+      if not !oc_closed then
+        close_out_noerr oc;
+      cleanup ();
+      raise x
 
 let sys_command_win32 cmd =
-  let args = prepare_command_for_windows cmd in
+  let args, cleanup = prepare_command_for_windows cmd in
+  let res =
   try
     let oc = Unix.open_process_args_out args.(0) args in
     match Unix.close_process_out oc with
@@ -362,6 +412,9 @@ let sys_command_win32 cmd =
        raise *)
     log.dprintf (-1) "%s: %s" cmd (Printexc.to_string x);
     1
+  in
+  Option.iter (fun f -> f ()) cleanup;
+  res
 
 let sys_command =
   if Sys.win32 then
