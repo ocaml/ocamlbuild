@@ -357,20 +357,11 @@ let prepare_command_for_windows cmd =
   let cmd = " " ^ cmd in
   let shell = Lazy.force windows_shell in
   let all = Array.append shell [|"-c"; cmd|] in
-  (* [maybe_quote] was copied from ocaml/otherlibs/unix/unix_win32.ml *)
-  let maybe_quote f =
-    if f = ""
-    || string_exists (function ' ' | '\"'| '\t' -> true | _ -> false) f
-    then Filename.quote f
-    else f
-  in
-  (* Compute the size of the command as computed by "unix_win32.ml" in [make_cmdline]
-     ( + 1 because we count an extra space at the beginning, but it's ok because we
-     just want an over approximation) *)
+  (* Over approximate the size the command as computed by "unix_win32.ml" in [make_cmdline] *)
   let size = Array.fold_left (fun acc x ->
       acc
       + 1 (* space separate *)
-      + (String.length (maybe_quote x))) 0 all
+      + (String.length (Filename.quote x))) 0 all
   in
   (* cygwin seems to truncate command line at 8k (sometimes).
      See https://cygwin.com/pipermail/cygwin/2014-May/215364.html.
