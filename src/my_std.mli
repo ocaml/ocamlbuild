@@ -75,4 +75,5 @@ val prepare_command_for_windows : string -> string array
 val env_path : string list Lazy.t
 
 (*/*)
-val log3 : (string -> unit) ref
+type log = { mutable dprintf : 'a. int -> ('a, Format.formatter, unit) format -> 'a }
+val log : log

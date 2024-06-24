@@ -25,6 +25,13 @@ exception Exit_system_error of string
 exception Exit_with_code of int
 exception Exit_silently_with_code of int
 
+type log = { mutable dprintf : 'a. int -> ('a, Format.formatter, unit) format -> 'a }
+(* Here to break the circular dep *)
+let log =
+  let dprintf _lvl _fmt = failwith "My_std.log not initialized" in
+  { dprintf = dprintf }
+
+
 module Outcome = struct
   type ('a,'b) t =
     | Good of 'a
@@ -308,10 +315,6 @@ let env_path = lazy begin
     |> List.filter ((<>) "")
 end
 
-
-(* Here to break the circular dep *)
-let log3 = ref (fun _ -> failwith "My_std.log3 not initialized")
-
 let windows_shell = lazy begin
   let rec iter = function
   | [] -> raise Not_found
@@ -335,7 +338,7 @@ let windows_shell = lazy begin
     with Not_found ->
       (try iter paths with Not_found -> failwith "no posix shell found in PATH")
   in
-  !log3 (Printf.sprintf "Using shell %s" (Array.to_list shell |> String.concat " "));
+  log.dprintf 3 "Using shell %s" (Array.to_list shell |> String.concat " ");
   shell
 end
 
@@ -347,11 +350,17 @@ let prepare_command_for_windows cmd =
 
 let sys_command_win32 cmd =
   let args = prepare_command_for_windows cmd in
-  let oc = Unix.open_process_args_out args.(0) args in
-  match Unix.close_process_out oc with
-  | WEXITED x -> x
-  | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
-  | WSTOPPED _ -> 127
+  try
+    let oc = Unix.open_process_args_out args.(0) args in
+    match Unix.close_process_out oc with
+    | WEXITED x -> x
+    | WSIGNALED _ -> 2 (* like OCaml's uncaught exceptions *)
+    | WSTOPPED _ -> 127
+  with (Unix.Unix_error _) as x ->
+    (* Sys.command doesn't raise an exception, so sys_command_win32 also won't
+       raise *)
+    log.dprintf (-1) "%s: %s" cmd (Printexc.to_string x);
+    1
 
 let sys_command =
   if Sys.win32 then
