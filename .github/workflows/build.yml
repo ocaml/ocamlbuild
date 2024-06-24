@@ -52,7 +52,6 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           allow-prerelease-opam: true
-          dune-cache: true
 
       - run: opam install . --with-test --deps-only
 
