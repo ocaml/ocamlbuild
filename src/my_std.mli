@@ -70,7 +70,7 @@ val lexbuf_of_string : ?name:string -> string -> Lexing.lexbuf
 val split_ocaml_version : (int * int * int * string) option
 (** (major, minor, patchlevel, rest) *)
 
-val prepare_command_for_windows : string -> string array
+val prepare_command_for_windows : string -> string array * (unit -> unit) option
 
 val env_path : string list Lazy.t
 

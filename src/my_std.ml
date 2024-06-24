@@ -347,10 +347,61 @@ let prepare_command_for_windows cmd =
      quote-handling is to prepend an empty string before the command name.
      Space seems to work, too - and the ouput is nicer *)
   let cmd = " " ^ cmd in
-  Array.append (Lazy.force windows_shell) [|"-c"; cmd|]
+  let shell = Lazy.force windows_shell in
+  let all = Array.append shell [|"-c"; cmd|] in
+  (* [maybe_quote] was copied from ocaml/otherlibs/unix/unix_win32.ml *)
+  let maybe_quote f =
+    if f = ""
+    || String.exists (function ' ' | '\"'| '\t' -> true | _ -> false) f
+    then Filename.quote f
+    else f
+  in
+  (* Compute the size of the command as computed by "unix_win32.ml" in [make_cmdline]
+     ( + 1 because we count an extra space at the beginning, but it's ok because we
+     just want an over approximation) *)
+  let size = Array.fold_left (fun acc x ->
+      acc
+      + 1 (* space separate *)
+      + (String.length (maybe_quote x))) 0 all
+  in
+  (* cygwin seems to truncate command line at 8k (sometimes).
+     See https://cygwin.com/pipermail/cygwin/2014-May/215364.html.
+     While the limit might be 8192, some experiment show that it might be a bit less.
+     Such logic exists in the fdopen repo with a limit of 7900. Let's reuse that as it
+     has been tested for a while.
+  *)
+  if size <= 7900
+  then all, None
+  else
+    let oc_closed = ref false in
+    let file_deleted = ref false in
+    let fname,oc =
+      Filename.open_temp_file
+        ~mode:[Open_binary]
+        "ocamlbuildtmp"
+        ".sh"
+    in
+    let cleanup () =
+      if not !file_deleted then begin
+        file_deleted:= true;
+        try Sys.remove fname with _ -> ()
+      end
+    in
+    try
+      output_string oc cmd;
+      oc_closed:= true;
+      close_out oc;
+      Array.append shell [| "-e" ; fname |], Some cleanup
+    with
+    | x ->
+      if not !oc_closed then
+        close_out_noerr oc;
+      cleanup ();
+      raise x
 
 let sys_command_win32 cmd =
-  let args = prepare_command_for_windows cmd in
+  let args, cleanup = prepare_command_for_windows cmd in
+  let res =
   try
     let oc = Unix.open_process_args_out args.(0) args in
     match Unix.close_process_out oc with
@@ -362,6 +413,9 @@ let sys_command_win32 cmd =
        raise *)
     log.dprintf (-1) "%s: %s" cmd (Printexc.to_string x);
     1
+  in
+  Option.iter (fun f -> f ()) cleanup;
+  res
 
 let sys_command =
   if Sys.win32 then

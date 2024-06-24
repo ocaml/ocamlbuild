@@ -38,6 +38,7 @@ type job = {
   job_stdin   : out_channel;
   job_stderr  : in_channel;
   job_buffer  : Buffer.t;
+  job_cleanup : (unit -> unit) option;
   mutable job_dying : bool;
 };;
 
@@ -137,12 +138,12 @@ let execute
   (*** add_job *)
   let add_job cmd rest result id =
     (*display begin fun oc -> fp oc "Job %a is %s\n%!" print_job_id id cmd; end;*)
-    let (stdout', stdin', stderr') =
+    let (stdout', stdin', stderr'), cleanup =
       if Sys.win32
       then
-        let args = My_std.prepare_command_for_windows cmd in
-        open_process_args_full args.(0) args env
-      else open_process_full cmd env in
+        let args, cleanup = My_std.prepare_command_for_windows cmd in
+        open_process_args_full args.(0) args env, cleanup
+      else open_process_full cmd env, None in
     incr jobs_active;
     if not Sys.win32 then begin
       set_nonblock (doi stdout');
@@ -157,7 +158,8 @@ let execute
         job_stdin       = stdin';
         job_stderr      = stderr';
         job_buffer      = Buffer.create 1024;
-        job_dying       = false }
+        job_dying       = false;
+        job_cleanup     = cleanup }
     in
     outputs := FDM.add (doi stdout') job (FDM.add (doi stderr') job !outputs);
     jobs := JS.add job !jobs;
@@ -265,6 +267,7 @@ let execute
       outputs := FDM.remove (doi job.job_stdout) (FDM.remove (doi job.job_stderr) !outputs);
       jobs := JS.remove job !jobs;
       let status = close_process_full (job.job_stdout, job.job_stdin, job.job_stderr) in
+      Option.iter (fun f -> f ()) job.job_cleanup;
 
       let shown = ref false in
 
