@@ -344,8 +344,9 @@ end
 
 let prepare_command_for_windows cmd =
   (* The best way to prevent bash from switching to its windows-style
-   * quote-handling is to prepend an empty string before the command name. *)
-  let cmd = "''" ^ cmd in
+     quote-handling is to prepend an empty string before the command name.
+     Space seems to work, too - and the ouput is nicer *)
+  let cmd = " " ^ cmd in
   Array.append (Lazy.force windows_shell) [|"-c"; cmd|]
 
 let sys_command_win32 cmd =
