@@ -342,6 +342,14 @@ let windows_shell = lazy begin
   shell
 end
 
+let string_exists p s =
+  let n = String.length s in
+  let rec loop i =
+    if i = n then false
+    else if p (String.get s i) then true
+    else loop (succ i) in
+  loop 0
+
 let prepare_command_for_windows cmd =
   (* The best way to prevent bash from switching to its windows-style
      quote-handling is to prepend an empty string before the command name.
@@ -352,7 +360,7 @@ let prepare_command_for_windows cmd =
   (* [maybe_quote] was copied from ocaml/otherlibs/unix/unix_win32.ml *)
   let maybe_quote f =
     if f = ""
-    || String.exists (function ' ' | '\"'| '\t' -> true | _ -> false) f
+    || string_exists (function ' ' | '\"'| '\t' -> true | _ -> false) f
     then Filename.quote f
     else f
   in
