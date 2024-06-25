@@ -34,6 +34,10 @@ jobs:
             ocaml-compiler: "4.11"
           - os: ubuntu-latest
             ocaml-compiler: "4.12"
+          - os: windows-latest
+            ocaml-compiler: "ocaml-base-compiler.4.14.2,system-msvc"
+          - os: windows-latest
+            ocaml-compiler: "ocaml-variants.5.2.0+msvc"
 
     runs-on: ${{ matrix.os }}
 
