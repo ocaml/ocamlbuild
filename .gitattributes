@@ -1,0 +1,5 @@
+# Default behaviour, for if core.autocrlf isn't set
+* text=auto
+
+# Quoted strings with newlines
+testsuite/internal.ml text eol=lf
