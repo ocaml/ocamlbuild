@@ -262,12 +262,12 @@ endif
 
 install-bin-opam:
 	echo 'bin: [' >> ocamlbuild.install
-	echo '  "ocamlbuild.byte" {"ocamlbuild.byte"}' >> ocamlbuild.install
+	echo '  "ocamlbuild.byte" {"ocamlbuild.byte$(EXE)"}' >> ocamlbuild.install
 ifeq ($(OCAML_NATIVE), true)
-	echo '  "ocamlbuild.native" {"ocamlbuild.native"}' >> ocamlbuild.install
-	echo '  "ocamlbuild.native" {"ocamlbuild"}' >> ocamlbuild.install
+	echo '  "ocamlbuild.native" {"ocamlbuild.native$(EXE)"}' >> ocamlbuild.install
+	echo '  "ocamlbuild.native" {"ocamlbuild$(EXE)"}' >> ocamlbuild.install
 else
-	echo '  "ocamlbuild.byte" {"ocamlbuild"}' >> ocamlbuild.install
+	echo '  "ocamlbuild.byte" {"ocamlbuild$(EXE)"}' >> ocamlbuild.install
 endif
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
