@@ -3,3 +3,4 @@
 
 # Quoted strings with newlines
 testsuite/internal.ml text eol=lf
+install-rev-deps.sh text eol=lf
