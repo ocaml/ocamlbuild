@@ -11,7 +11,16 @@
 (*                                                                     *)
 (***********************************************************************)
 
+#directory "../plugin-lib/";;
+#directory "../src/";;
+
+#load "../src/ocamlbuild_config.cmo"
+#load "../plugin-lib/ocamlbuildlib.cma";;
+
 open Format
+
+module My_std = Ocamlbuild_pack.My_std
+open Ocamlbuild_pack.Pathname.Operators
 
 external (|>) :  'a -> ('a -> 'b) -> 'b = "%revapply"
 
@@ -30,7 +39,7 @@ let print_string_list = print_list_com pp_print_string
 let print_string_list_com = print_list_com pp_print_string
 let print_string_list_blank = print_list_blank pp_print_string
 
-let exists filename = Sys.file_exists filename
+let exists filename = My_std.sys_file_exists filename
 
 let execute cmd =
   let ic = Unix.open_process_in cmd and lst = ref [] in
@@ -40,11 +49,7 @@ let execute cmd =
     let ret_code = Unix.close_process_in ic
     in ret_code, List.rev !lst
 
-(* Simplified implementation of My_std.sys_command to avoid duplicating code. *)
-let sys_command cmd =
-  if Sys.win32
-  then Sys.command (Printf.sprintf "bash --norc --noprofile -c %S" cmd)
-  else Sys.command cmd
+let sys_command cmd = My_std.sys_command cmd
 
 let rm f =
   if exists f then
@@ -113,6 +118,7 @@ module Match = struct
   let x ?(atts=()) name ~output = X ((atts,name), (0,output))
 
   let match_with_fs ~root m =
+    My_std.reset_readdir_cache ();
     let rec visit ~exact ~successes ~errors path m =
       let string_of_path path = "./" ^ String.concat "/" (List.rev path) in
       let file name = string_of_path (name :: path) in
@@ -386,6 +392,10 @@ module Tree = struct
 
 end
 
+let a = Ocamlbuild_config.a
+let o = Ocamlbuild_config.o
+let so = Ocamlbuild_config.so
+
 type content = string
 type filename = string
 type run = filename * content
@@ -468,16 +478,16 @@ let run ~root =
   copy
     [ "plugin-lib/ocamlbuildlib.cma";
       "plugin-lib/ocamlbuildlib.cmxa";
-      "plugin-lib/ocamlbuildlib.a";
+      "plugin-lib/ocamlbuildlib" -.- a;
       "bin/ocamlbuild.cmo";
       "bin/ocamlbuild.cmx";
-      "bin/ocamlbuild.o";
+      "bin/ocamlbuild" -.- o;
       "src/ocamlbuild_pack.cmi";
       "src/ocamlbuild_pack.cmx";
-      "src/ocamlbuild_pack.o";
+      "src/ocamlbuild_pack" -.- o;
       "plugin-lib/ocamlbuild_plugin.cmi";
       "plugin-lib/ocamlbuild_plugin.cmx";
-      "plugin-lib/ocamlbuild_plugin.o" ]
+      "plugin-lib/ocamlbuild_plugin" -.- o ]
     install_lib_dir;
   copy
     [ "ocamlbuild.byte";

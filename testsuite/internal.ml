@@ -91,7 +91,7 @@ let () = test "BasicNativeTree"
                        "dummy.ml";
                        "dummy.ml.depends";
                        "dummy.native";
-                       "dummy.o";
+                       "dummy" -.- o;
                        "_log"]))]
   ~targets:("dummy.native",[]) ();;
 
@@ -250,9 +250,7 @@ let () = test "OutputObj"
   ~description:"output_obj targets for native and bytecode (PR #6049)"
   ~requirements:ocamlopt_available
   ~tree:[T.f "hello.ml" ~content:{|print_endline "Hello, World!"|}]
-  ~targets:("hello.byte.o",["hello.byte.c";"hello.native.o"]) ();;
-
-let so = if Sys.win32 then "dll" else "so"
+  ~targets:("hello.byte" -.- o,["hello.byte.c";"hello.native" -.- o]) ();;
 
 let () = test "OutputShared"
   ~options:[`no_ocamlfind]
@@ -260,7 +258,7 @@ let () = test "OutputShared"
   ~requirements:ocamlopt_available
   ~tree:[T.f "hello.ml" ~content:{|print_endline "Hello, World!"|};
          T.f "_tags" ~content:"<*.so>: runtime_variant(_pic)"]
-  ~targets:("hello.byte."^so,["hello.native."^so]) ();;
+  ~targets:("hello.byte" -.- so,["hello.native" -.- so]) ();;
 
 let () = test "CmxsStubLink"
   ~options:[`no_ocamlfind]
@@ -268,7 +266,7 @@ let () = test "CmxsStubLink"
   ~requirements:ocamlopt_available
   ~tree:[T.d "src" [
            T.f "foo_stubs.c" ~content:"";
-           T.f "libfoo_stubs.clib" ~content:"foo_stubs.o";
+           T.f "libfoo_stubs.clib" ~content:("foo_stubs" -.- o) ;
            T.f "foo.ml" ~content:"";
          ];
          T.f "_tags" ~content:{|
@@ -280,9 +278,9 @@ open Ocamlbuild_plugin
 let () =
   dispatch begin function
   | After_rules ->
-      dep ["record_foo_stubs"] ["src/libfoo_stubs.a"];
+      dep ["record_foo_stubs"] ["src/libfoo_stubs" -.- !Options.ext_lib];
       flag_and_dep
-        ["link"; "ocaml"; "link_foo_stubs"] (P "src/libfoo_stubs.a");
+        ["link"; "ocaml"; "link_foo_stubs"] (P ("src/libfoo_stubs" -.- !Options.ext_lib));
       flag ["library"; "ocaml"; "record_foo_stubs"]
         (S ([A "-cclib"; A "-lfoo_stubs"]));
   | _ -> ()
@@ -414,14 +412,12 @@ pflag ["link"] "toto" (fun arg -> A arg);;
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
 
-let exe_suf = if Sys.win32 then ".exe" else ""
-
 let () = test "PluginCompilation1"
   ~description:"check that the plugin is not compiled when -no-plugin is passed"
   ~options:[`no_ocamlfind; `no_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:{|prerr_endline "foo";;|}]
-  ~matching:[_build [M.Not (M.f ("myocamlbuild" ^ exe_suf))]]
+  ~matching:[_build [M.Not (M.f ("myocamlbuild" ^ Ocamlbuild_config.exe))]]
   ~targets:("main.byte",[]) ();;
 
 let () = test "PluginCompilation2"
@@ -429,7 +425,7 @@ let () = test "PluginCompilation2"
   ~options:[`no_ocamlfind; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:{|print_endline "foo";;|}]
-  ~matching:[_build [M.f ("myocamlbuild" ^ exe_suf)]]
+  ~matching:[_build [M.f ("myocamlbuild" ^ Ocamlbuild_config.exe)]]
   ~targets:("", []) ();;
 
 let () = test "PluginCompilation3"
@@ -516,7 +512,7 @@ let () = test "TargetsStartingWithUnderscore"
 *)
   ~options:[`no_ocamlfind]
   ~tree:[ T.f "_a.c" ~content:"" ]
-  ~targets:("_a.o", []) ();;
+  ~targets:("_a" -.- o, []) ();;
 
 let () = test "OpaqueEverything"
   ~description:"Check that tagging everything opaque does not break build"
@@ -563,7 +559,7 @@ CAMLprim value hello_world(value unit)
 }
 |};
   ]
-  ~targets:("libtest.a", []) ();;
+  ~targets:("libtest" -.- a, []) ();;
 
 let () = test "JustNoPlugin"
     ~description:"(ocamlbuild -just-plugin) should do nothing when no plugin is there"
