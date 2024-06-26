@@ -1,4 +1,5 @@
 # OCamlbuild #
+[![build](https://github.com/ocaml/ocamlbuild/actions/workflows/build.yml/badge.svg)](https://github.com/ocaml/ocamlbuild/actions/workflows/build.yml)
 
 OCamlbuild is a generic build tool, that has built-in rules for
 building OCaml library and programs.
