@@ -150,9 +150,14 @@ module Make(U:sig end) =
              about potential regressions introduced by this option.
           *)
 
+          let unix_dir =
+            match Sys.ocaml_version.[0] with
+            | '0' .. '4' -> None
+            | _ -> Some "+unix" in
+
           let unix_lib =
             if use_ocamlfind_pkgs then `Package "unix"
-            else `Lib ("+unix", "unix") in
+            else `Lib (unix_dir, "unix") in
 
           let ocamlbuild_lib =
             if use_ocamlfind_pkgs then `Package "ocamlbuild"
@@ -173,7 +178,8 @@ module Make(U:sig end) =
           let spec = function
             | `Nothing -> N
             | `Package pkg -> S[A "-package"; A pkg]
-            | `Lib (inc, lib) -> S[A "-I"; A inc; P (lib -.- cma)]
+            | `Lib (Some inc, lib) -> S[A "-I"; A inc; P (lib -.- cma)]
+            | `Lib (None, lib) -> P (lib -.- cma)
             | `Local_lib llib -> S [A "-I"; A dir; P (in_dir (llib -.- cma))]
             | `Local_mod lmod -> P (in_dir (lmod -.- cmo)) in
 

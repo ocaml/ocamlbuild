@@ -13,8 +13,8 @@ of the usual "- ".
 
 NEXT_RELEASE:
 -------------
-- Misc: restore CI (unix and windows)
-  (#328, #329, #336 by Hugo Heuzard)
+- Misc: restore CI (unix, macos, windows)
+  (#328, #329, #336, #349 by Hugo Heuzard)
 * Remove degraded mode for windows
   (#333 by Hugo Heuzard)
 - Remove light mode (#332 by Hugo Heuzard)
