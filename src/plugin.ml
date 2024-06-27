@@ -151,8 +151,8 @@ module Make(U:sig end) =
           *)
 
           let unix_dir =
-            match Sys.ocaml_version.[0] with
-            | '0' .. '4' -> None
+            match My_std.split_ocaml_version with
+            | Some (major, _, _, _) when major < 5 -> None
             | _ -> Some "+unix" in
 
           let unix_lib =
