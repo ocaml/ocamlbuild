@@ -62,7 +62,7 @@ jobs:
       - run: opam exec -- make test
 
       - run: OCAMLBUILD=$(pwd)/ocamlbuild.native opam exec -- make -C bootstrap
-        if: runner.os != 'Windows'
+        shell: bash
 
       - run: opam exec -- make distclean
       - run: opam exec -- opam pin add -n ocamlbuild .

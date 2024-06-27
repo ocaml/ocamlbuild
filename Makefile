@@ -432,10 +432,10 @@ clean::
 	rm -f src/*.cm* *.cm* bin/*.cm* plugin-lib/*.cm*
 	rm -f src/*.o *.o bin/*.o plugin-lib/*.o plugin-lib/*.a
 ifdef EXT_OBJ
-	rm -f src/*$(EXT_OBJ) *$(EXT_OBJ)
+	rm -f src/*$(EXT_OBJ) bin/*$(EXT_OBJ) plugin-lib/*$(EXT_OBJ) *$(EXT_OBJ)
 endif
 ifdef EXT_LIB
-	rm -f src/*$(EXT_LIB) *$(EXT_LIB)
+	rm -f src/*$(EXT_LIB) bin/*$(EXT_LIB) plugin-lib/*$(EXT_LIB) *$(EXT_LIB)
 endif
 	rm -f test/test2/vivi.ml
 
