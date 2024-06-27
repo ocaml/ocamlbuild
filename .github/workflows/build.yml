@@ -17,6 +17,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-latest
         ocaml-compiler:
           - "4.13"
           - "4.14"
@@ -73,8 +74,8 @@ jobs:
         if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
       - run: opam exec -- opam install -v mtime.1.4.0 # this tests topkg, with stub libraries
       - run: opam exec -- opam install -v inotify.2.3 # this tests oasis, with stub libraries
-        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' }}
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' && runner.os != 'macOS' }}
       - run: opam exec -- opam install -v cpuid.0.1.1 # this tests the ocb-stubblr plugin
         if: runner.os != 'Windows'
       - run: opam exec -- opam install -v shcaml.0.2.1 # this tests the cppo plugin
-        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' }}
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' && runner.os != 'macOS'}}
