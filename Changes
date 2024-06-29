@@ -11,8 +11,12 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.15.0 (29 Jun 2024):
+----------------------
+OCamlbuild 0.15.0 comes with first class support for native Windows ports of OCaml
+(MinGW64-w64 and MSVC). This support was historically provided by
+[opam-repository-mingw](https://fdopen.github.io/opam-repository-mingw/).
+
 - Misc: restore CI (unix, macos, windows)
   (#328, #329, #336, #349 by Hugo Heuzard)
 * Remove degraded mode for windows
@@ -330,7 +334,6 @@ not include ocamlbuild.
 - #10, #35: Use extension-independent tags for ocamldoc rules.
   (Armaël Guéneau)
 
-
 
 OCamlbuild was included in the OCaml compiler distribution between
 OCaml 3.10.0 (May 2007) and OCaml 4.02.3 (July 2015). The changes
@@ -563,7 +566,6 @@ New tools:
 - ocamlbuild: compilation manager for OCaml applications and libraries.
   See draft documentation at http://gallium.inria.fr/~pouillar/
 
-
 
 The content below corresponds to the old Changelog, before ocamlbuild was
 included in the OCaml distribution. The version control history of those changes
