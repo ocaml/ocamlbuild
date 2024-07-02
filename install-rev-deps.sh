@@ -1,0 +1,1 @@
+opam exec -- opam list --depends-on ocamlbuild -a --no-depexts --coinstallable-with=ocaml-variants.$(ocamlc -version | sed 's/\r$//') --column name,version,all-versions --color=never | head -n-2 | sed 's/  */ /'g | awk -F' ' '{print $2==$NF?$1"."$2:""}' | grep -v "^$" | xargs -n 1 opam install -y
