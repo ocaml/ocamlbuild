@@ -47,13 +47,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
-        uses: ocaml/setup-ocaml@v3.0.0-beta
+        uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-          allow-prerelease-opam: true
 
       - name: set ocamlversion
-        run: echo "ocamlversion=$(opam exec -- ocamlc -version)" >> $GITHUB_OUTPUT
+        run: echo "ocamlversion=$(opam exec -- ocamlc -version)" >>"$GITHUB_OUTPUT"
         id: conf
         shell: bash
 
