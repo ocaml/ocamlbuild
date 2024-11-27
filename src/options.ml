@@ -415,13 +415,21 @@ let init () =
          | [ k; v ] -> Some (k, String.trim v)
          | _ -> None)
       ocamlc_config_lines in
-  let get_ext x =
-    let s = List.assoc x ocamlc_configs in
-    if String.length s > 0 then String.after s 1 else s in
-  ext_lib := get_ext "ext_lib";
-  ext_obj := get_ext "ext_obj";
-  ext_dll := get_ext "ext_dll";
-  exe := List.assoc "ext_exe" ocamlc_configs;
+  let get_field k =
+    match List.assoc_opt (k : string) ocamlc_configs with
+    | Some s -> s
+    | None -> failwith (k^" could not be found in ocamlc -config")
+  in
+  let extract_ext s =
+    if String.length s > 0 && s.[0] = '.' then
+      String.after s 1
+    else
+      s
+  in
+  ext_lib := extract_ext (get_field "ext_lib");
+  ext_obj := extract_ext (get_field "ext_obj");
+  ext_dll := extract_ext (get_field "ext_dll");
+  exe := get_field "ext_exe";
 ;;
 
 (* The current heuristic: we know we are in an ocamlbuild project if
