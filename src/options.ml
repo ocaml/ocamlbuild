@@ -398,7 +398,38 @@ let init () =
   dir_reorder my_include_dirs include_dirs;
   dir_reorder my_exclude_dirs exclude_dirs;
 
-  ignore_list := List.map String.capitalize_ascii !ignore_list
+  ignore_list := List.map String.capitalize_ascii !ignore_list;
+
+  let raw_ocamlc_config =
+    try Command.run_and_read (S [!ocamlc; A "-config"])
+    with Failure _ -> Command.run_and_read (S [!ocamlopt; A "-config"])
+  in
+  let ocamlc_config_lines = String.split_on_char '\n' raw_ocamlc_config in
+  let ocamlc_configs =
+    List.filter_map
+      (fun config ->
+         (* As [raw_ocamlc_config] ends by a ['\n'], [split_on_char]
+            puts an empty string at the end of the list, that's the
+            only line expected to not follow the pattern. *)
+         match String.split_on_char ':' config with
+         | [ k; v ] -> Some (k, String.trim v)
+         | _ -> None)
+      ocamlc_config_lines in
+  let get_field k =
+    match List.assoc_opt (k : string) ocamlc_configs with
+    | Some s -> s
+    | None -> failwith (k^" could not be found in ocamlc -config")
+  in
+  let extract_ext s =
+    if String.length s > 0 && s.[0] = '.' then
+      String.after s 1
+    else
+      s
+  in
+  ext_lib := extract_ext (get_field "ext_lib");
+  ext_obj := extract_ext (get_field "ext_obj");
+  ext_dll := extract_ext (get_field "ext_dll");
+  exe := get_field "ext_exe";
 ;;
 
 (* The current heuristic: we know we are in an ocamlbuild project if
