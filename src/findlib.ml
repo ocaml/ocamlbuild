@@ -15,7 +15,6 @@
 (* Original author: Romain Bardou *)
 
 open My_std
-open My_unix
 open Command
 
 type command_spec = Command.spec
@@ -63,11 +62,11 @@ let packages = Hashtbl.create 42
 
 let run_and_parse lexer command =
   Printf.ksprintf
-    (fun command -> lexer & Lexing.from_string & run_and_read command)
+    (fun command -> lexer & Lexing.from_string & My_unix.run_and_read command)
     command
 
 let run_and_read command =
-  Printf.ksprintf run_and_read command
+  Printf.ksprintf My_unix.run_and_read command
 
 let rec query name =
   try

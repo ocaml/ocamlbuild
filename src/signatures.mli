@@ -219,6 +219,9 @@ module type COMMAND = sig
   (** Will convert a string list to a list of paths by adding [P] constructors. *)
   val atomize_paths : string list -> spec
 
+  (** Run the command specification and returns its output *)
+  val run_and_read : ?quiet:bool -> spec -> string
+
   (** Run the command. *)
   val execute : ?quiet:bool -> ?pretend:bool -> t -> unit
 
