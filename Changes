@@ -14,6 +14,11 @@ of the usual "- ".
 NEXT_RELEASE:
 -------------
 
+- Set default values of `Options.ext_*` and `Options.exe` from the output of
+  `Options.ocamlc "-config"` (Useful when `Options.ocamlc` is a cross compiler)
+  (#353 by Pierre Boutillier, reviewed by Kate Deplaix and Hugo Heuzard,
+   requested by whitequark in #181)
+
 0.15.0 (29 Jun 2024):
 ----------------------
 OCamlbuild 0.15.0 comes with first class support for native Windows ports of OCaml
