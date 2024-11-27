@@ -400,7 +400,10 @@ let init () =
 
   ignore_list := List.map String.capitalize_ascii !ignore_list;
 
-  let raw_ocamlc_config = Command.run_and_read (S [!ocamlc ; A "-config" ]) in
+  let raw_ocamlc_config =
+    try Command.run_and_read (S [!ocamlc; A "-config"])
+    with Failure _ -> Command.run_and_read (S [!ocamlopt; A "-config"])
+  in
   let ocamlc_config_lines = String.split_on_char '\n' raw_ocamlc_config in
   let ocamlc_configs =
     List.filter_map
