@@ -18,6 +18,13 @@
 *.out
 *.out.dSYM
 /tmp/
+/tmp-nat/
+/tmp-byte/
+
+# backup files
+*~
+*#
+.#*
 
 ocamlbuild.install
 Makefile.config
