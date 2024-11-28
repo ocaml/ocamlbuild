@@ -68,9 +68,11 @@ jobs:
       - run: opam exec -- opam install -v ocamlbuild
       - run: opam exec -- opam install -v menhir
       - run: opam exec -- opam install -v camlp4
-        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
+        if: matrix.ocaml-compiler != 'ocaml-variants.5.2.0+msvc'
+      - run: opam exec -- env OCB=ocamlbuild ./test/runtest.sh
+        shell: bash
       - run: opam exec -- make test-external
-        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
+        if: matrix.ocaml-compiler != 'ocaml-variants.5.2.0+msvc'
       - run: opam exec -- opam install -v mtime.1.4.0 # this tests topkg, with stub libraries
       - run: opam exec -- opam install -v inotify.2.3 # this tests oasis, with stub libraries
         if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' && runner.os != 'macOS' }}

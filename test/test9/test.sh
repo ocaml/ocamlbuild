@@ -14,6 +14,11 @@
 set -e
 set -x
 cd `dirname $0`/../..
-ocamlc -I src ocamlbuild_pack.cmo test/test9/testglob.ml -o ./testglob.native
+if [ "$OCB" = "ocamlbuild" ]; then
+    IDIR="-I $($OCB -where | tr -d '\r')";
+else
+    IDIR="-I src -I plugin-lib"
+fi
+ocamlc $IDIR -I +unix unix.cma ocamlbuildlib.cma test/test9/testglob.ml -o ./testglob.native
 ./testglob.native
 rm testglob.native

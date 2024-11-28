@@ -11,5 +11,6 @@
 #########################################################################
 
 "vivi.ml": camlp4o
+true: package(camlp-streams)
 
 # , some_useless_tag, \ more_useless_tags
