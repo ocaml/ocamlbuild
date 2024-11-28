@@ -15,7 +15,7 @@ cd `dirname $0`
 set -x
 rm -rf _build
 CMDOPTS="" # -- command args
-BUILD="$OCB -no-skip main.byte -classic-display $@"
+BUILD="$OCB main.byte -classic-display $@"
 BUILD1="$BUILD $CMDOPTS"
 BUILD2="$BUILD -verbose 0 -nothing-should-be-rebuilt $CMDOPTS"
 cp b.mli.v1 b.mli
@@ -36,4 +36,4 @@ else
   echo FAIL
 fi
 $OCB -clean
-rm {b,d}.mli
+rm b.mli d.mli

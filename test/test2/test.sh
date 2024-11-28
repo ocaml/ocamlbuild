@@ -14,8 +14,15 @@
 cd `dirname $0`
 set -e
 set -x
+if ocamlfind query camlp4 camlp-streams -qo; then
+    echo "camlp4 and camlp-streams are installed";
+else
+    echo "Missing dependencies: make sure camlp4 and camlp-streams are installed";
+    echo "SKIP";
+    exit 0;
+fi
 CMDOPTS="-- -help"
-BUILD="$OCB toto.byte toto.native -no-skip -classic-display $@"
+BUILD="$OCB toto.byte toto.native -use-ocamlfind -classic-display $@"
 BUILD1="$BUILD $CMDOPTS"
 BUILD2="$BUILD -verbose 0 -nothing-should-be-rebuilt $CMDOPTS"
 rm -rf _build

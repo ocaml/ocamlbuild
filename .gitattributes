@@ -3,3 +3,4 @@
 
 # Quoted strings with newlines
 testsuite/internal.ml text eol=lf
+*.sh text eol=lf
