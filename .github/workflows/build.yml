@@ -67,6 +67,7 @@ jobs:
       - run: opam exec -- opam pin add -n ocamlbuild .
       - run: opam exec -- opam install -v ocamlbuild
       - run: opam exec -- opam install -v menhir
+      - run: opam exec -- make build_examples
       - run: opam exec -- opam install -v camlp4
         if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.2.') }}
       - run: opam exec -- make test-external

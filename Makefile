@@ -226,6 +226,14 @@ test: test-internal test-findlibonly test-external
 clean::
 	rm -rf testsuite/_test_*
 
+# Examples
+
+build_examples:
+	$(MAKE) -C examples
+
+clean::
+	$(MAKE) -C examples clean
+
 # Installation
 
 # The binaries go in BINDIR. We copy ocamlbuild.byte and
