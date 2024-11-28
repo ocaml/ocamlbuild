@@ -15,7 +15,7 @@ set -e
 set -x
 cd `dirname $0`/../..
 if [ "$OCB" = "ocamlbuild" ]; then
-    IDIR="-I $($OCB -where | tr -d '\r')";
+    IDIR="-I '$($OCB -where | tr -d '\r')'";
 else
     IDIR="-I src -I plugin-lib"
 fi
