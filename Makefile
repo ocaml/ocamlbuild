@@ -142,22 +142,22 @@ plugin-lib/ocamlbuildlib.cmxa: src/ocamlbuild_pack.cmx $(EXTRA_CMX)
 
 # The packs
 
-# Build artifacts are first placed into tmp/ to avoid a race condition
+# Build artifacts are first placed into tmp-byte and tmp-nat to avoid a race condition
 # described in https://caml.inria.fr/mantis/view.php?id=4991.
 
 src/ocamlbuild_pack.cmo: $(PACK_CMO)
-	mkdir -p tmp
-	$(OCAMLC) -pack $^ -o tmp/ocamlbuild_pack.cmo
-	mv tmp/ocamlbuild_pack.cmi src/ocamlbuild_pack.cmi
-	mv tmp/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmo
+	mkdir -p tmp-byte
+	$(OCAMLC) -pack $^ -o tmp-byte/ocamlbuild_pack.cmo
+	mv tmp-byte/ocamlbuild_pack.cmi src/ocamlbuild_pack.cmi
+	mv tmp-byte/ocamlbuild_pack.cmo src/ocamlbuild_pack.cmo
 
 src/ocamlbuild_pack.cmi: src/ocamlbuild_pack.cmo
 
 src/ocamlbuild_pack.cmx: $(PACK_CMX)
-	mkdir -p tmp
-	$(OCAMLOPT) -pack $^ -o tmp/ocamlbuild_pack.cmx
-	mv tmp/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmx
-	mv tmp/ocamlbuild_pack$(EXT_OBJ) src/ocamlbuild_pack$(EXT_OBJ)
+	mkdir -p tmp-nat
+	$(OCAMLOPT) -pack $^ -o tmp-nat/ocamlbuild_pack.cmx
+	mv tmp-nat/ocamlbuild_pack.cmx src/ocamlbuild_pack.cmx
+	mv tmp-nat/ocamlbuild_pack$(EXT_OBJ) src/ocamlbuild_pack$(EXT_OBJ)
 
 # The lexers
 
@@ -428,7 +428,7 @@ plugin-lib/%.cmx: plugin-lib/%.ml
 	$(OCAMLOPT) $(OCB_COMPFLAGS) -c $<
 
 clean::
-	rm -rf tmp/
+	rm -rf tmp-byte/ tmp-nat/
 	rm -f src/*.cm* *.cm* bin/*.cm* plugin-lib/*.cm*
 	rm -f src/*.o *.o bin/*.o plugin-lib/*.o plugin-lib/*.a
 ifdef EXT_OBJ
