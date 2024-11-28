@@ -231,9 +231,6 @@ clean::
 build_examples:
 	$(MAKE) -C examples
 
-clean::
-	$(MAKE) -C examples clean
-
 # Installation
 
 # The binaries go in BINDIR. We copy ocamlbuild.byte and
