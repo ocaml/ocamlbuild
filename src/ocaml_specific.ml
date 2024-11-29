@@ -828,7 +828,7 @@ ocaml_lib ~extern:true "dbm";;
 ocaml_lib ~extern:true "graphics";;
 ocaml_lib ~extern:true ~tag_name:"use_toplevel" "toplevellib";;
 ocaml_lib ~extern:true ~dir:"+ocamldoc" "ocamldoc";;
-ocaml_lib ~extern:true ~dir:"+ocamlbuild" ~tag_name:"use_ocamlbuild" "ocamlbuildlib";;
+ocaml_lib ~extern:true ~tag_name:"use_ocamlbuild" "ocamlbuildlib";;
 
 let camlp4dir =
   let where cmd =
