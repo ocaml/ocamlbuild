@@ -15,7 +15,7 @@ cd `dirname $0`
 set -e
 set -x
 CMDOPTS="" # -- command args
-BUILD="$OCB d.byte d.native -no-skip -classic-display $@"
+BUILD="$OCB d.byte d.native -classic-display $@"
 BUILD1="$BUILD $CMDOPTS"
 BUILD2="$BUILD -verbose 0 -nothing-should-be-rebuilt $CMDOPTS"
 rm -rf _build

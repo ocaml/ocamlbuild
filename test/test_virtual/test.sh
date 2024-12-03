@@ -15,7 +15,7 @@ cd `dirname $0`
 set -e
 set -x
 CMDOPTS="" # -- command args
-BUILD="$OCB bar -no-skip -no-links -classic-display $@"
+BUILD="$OCB bar -no-links -classic-display $@"
 BUILD1="$BUILD $CMDOPTS"
 BUILD2="$BUILD -verbose 0 -nothing-should-be-rebuilt $CMDOPTS"
 rm -rf _build

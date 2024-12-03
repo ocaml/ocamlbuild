@@ -14,19 +14,11 @@
 set -e
 cd `dirname $0`
 
-export OCB=$PWD/../ocamlbuild.native
+OCB=${OCB:-$PWD/../ocamlbuild.native}
 
-myfiglet() {
-  figlet $@ | sed 's/  *$//'
-}
+export OCB
 
-if figlet ""; then
-  BANNER=myfiglet
-else
-  echo "Install figlet to have a better output, press enter to continue with echo"
-  read
-  BANNER=echo
-fi
+BANNER=echo
 
 HERE=`pwd`
 
