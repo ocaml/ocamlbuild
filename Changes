@@ -11,13 +11,18 @@ We also use PR#$N for pull requests.
 Changes breaking compatibility are marked with a "* " bullet instead
 of the usual "- ".
 
-NEXT_RELEASE:
--------------
+0.16.0 (13 Feb 2025):
+---------------------
+
+OCamlbuild 0.16.0 improves ocamlbuild's behavior
+when cross-compiling for Windows.
 
 - Set default values of `Options.ext_*` and `Options.exe` from the output of
   `Options.ocamlc "-config"` (Useful when `Options.ocamlc` is a cross compiler)
   (#353 by Pierre Boutillier, reviewed by Kate Deplaix and Hugo Heuzard,
    requested by whitequark in #181)
+- Misc: continue improving the CI
+  (#355 by Hugo Heuzard)
 
 0.15.0 (29 Jun 2024):
 ----------------------
