@@ -220,7 +220,7 @@ module type COMMAND = sig
   val atomize_paths : string list -> spec
 
   (** Run the command specification and returns its output *)
-  val run_and_read : ?quiet:bool -> spec -> string
+  val run_spec_and_read : ?quiet:bool -> spec -> string
 
   (** Run the command. *)
   val execute : ?quiet:bool -> ?pretend:bool -> t -> unit

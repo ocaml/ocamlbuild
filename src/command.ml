@@ -291,7 +291,7 @@ let execute ?quiet ?pretend cmd =
   | Some(_, exn) -> raise exn
   | _ -> ()
 
-let run_and_read ?(quiet=false) cmd =
+let run_spec_and_read ?(quiet=false) cmd =
   let kont = string_print_of_command_spec cmd quiet false in
   My_unix.run_and_read (kont ())
 
