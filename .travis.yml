@@ -30,3 +30,4 @@ script:
   - opam install -v inotify.2.3 # this tests oasis, with stub libraries
   - opam install -v cpuid.0.1.1 # this tests the ocb-stubblr plugin
   - opam install -v shcaml.0.2.1 # this tests the cppo plugin
+  - opam install -v tgls.0.8.6  # this caught an ocamlbuild regression in https://github.com/ocaml/opam-repository/pull/27442
