@@ -81,3 +81,7 @@ jobs:
         if: runner.os != 'Windows'
       - run: opam exec -- opam install -v shcaml.0.2.1 # this tests the cppo plugin
         if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows' && runner.os != 'macOS'}}
+      - run: opam exec -- opam install -v tgls.0.8.6
+        # this caught an ocamlbuild regression in https://github.com/ocaml/opam-repository/pull/27442
+        # (incompatible with OCaml >=5.2 and with Windows)
+        if: ${{ ! startsWith(steps.conf.outputs.ocamlversion, '5.') && runner.os != 'Windows'}}
