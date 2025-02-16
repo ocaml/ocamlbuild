@@ -26,9 +26,9 @@ open Command;;
 module S = Set.Make(String)
 
 let stdlib_dir = lazy begin
-  let ocamlc_where = !Options.build_dir / (Pathname.mk "ocamlc.where") in
-  let () = Command.execute ~quiet:true (Cmd(S[!Options.ocamlc; A"-where"; Sh">"; P ocamlc_where])) in
-  String.chomp (read_file ocamlc_where)
+  String.chomp
+    (Command.run_spec_and_read ~quiet:true
+       (S[!Options.ocamlc; A"-where"]))
 end
 
 let flag_and_dep = Flags.flag_and_dep
