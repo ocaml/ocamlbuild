@@ -4,3 +4,10 @@
 # Quoted strings with newlines
 testsuite/internal.ml text eol=lf
 *.sh text eol=lf
+
+# The use of symbolic links in some examples/ directories
+# is problematic on Windows, see
+#   https://github.com/ocaml/ocamlbuild/pull/362
+# Exclude these files from release archives.
+examples export-ignore
+samples export-ignore
