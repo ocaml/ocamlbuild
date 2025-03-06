@@ -16,11 +16,15 @@ all: native byte
 
 clean:
 	$(OCB) -clean
+	rm -f libdemo
 
-native:
+libdemo:
+	ln -sf ../04-library/libdemo libdemo
+
+native: libdemo
 	$(OCB) main.native
 
-byte:
+byte: libdemo
 	$(OCB) main.byte
 
 profile:
