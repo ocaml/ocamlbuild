@@ -293,10 +293,9 @@ let () = test "StrictSequenceFlag"
   ~description:"strict_sequence tag"
   ~tree:[T.f "hello.ml" ~content:"let () = 1; ()";
          T.f "_tags" ~content:{|
-true: warn(-10)
 true: strict_sequence
 |}]
-  ~output:Non_empty
+  ~output:Error_code
   ~targets:("hello.byte",[]) ();;
 
 let () = test "StrictFormatsFlag"
@@ -306,7 +305,7 @@ let () = test "StrictFormatsFlag"
          T.f "_tags" ~content:{|
 true: strict_formats
 |}]
-  ~output:Non_empty
+  ~output:Error_code
   ~targets:("hello.byte",[]) ();;
 
 let () = test "PrincipalFlag"
@@ -320,7 +319,7 @@ let f x = (x.bar; x.foo)
          T.f "_tags" ~content:{|
 true: principal
 |}]
-  ~output:Non_empty
+  ~output:Non_empty (* -principal warns, there is no error *)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "ModularPlugin1"

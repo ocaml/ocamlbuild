@@ -415,6 +415,7 @@ type test = { name     : string
             ; run      : run list }
 and output_pattern =
   | Empty_success
+  | Error_code
   | One_of of string list
   | Non_empty
 
@@ -556,7 +557,7 @@ let run ~root =
         let cmd = command options (fst targets :: snd targets) in
         let check_output = match output with
             | Empty_success -> false
-            | Non_empty | One_of _ -> true
+            | Error_code | Non_empty | One_of _ -> true
         in
 
         let open Unix in
@@ -565,6 +566,12 @@ let run ~root =
           | None -> true
           | Some str -> sys_command str = 0
         in
+        let print_success () =
+          print_colored `Green "PASSED" name `Cyan description
+        in
+        let print_failure explanation =
+          print_colored `Red "FAILED" name `Yellow explanation
+        in
         match execute cmd with
           | WEXITED n,lines
           | WSIGNALED n,lines
@@ -572,7 +579,7 @@ let run ~root =
             begin match output with
               | Empty_success ->
                 if verbose then begin
-                  print_colored `Red "FAILED" name `Yellow
+                  print_failure
                     (Printf.sprintf "Command '%s' with error code %n, \
                                      output below" cmd n);
                   List.iter print_endline lines;
@@ -582,11 +589,18 @@ let run ~root =
                     (fun l -> output_string ch l; output_string ch "\n")
                     lines;
                   close_out ch;
-                  print_colored `Red "FAILED" name `Yellow
+                  print_failure
                     (Printf.sprintf "Command '%s' with error code %n, \
                                      output written to %s" cmd n log_name);
                 end;
                 failed := true;
+              | Error_code ->
+                if n <> 0 then
+                  print_success ()
+                else
+                  print_failure
+                    (Printf.sprintf "Command '%s' succeeded (returned 0), \
+                                     but we expected a non-zero error code" cmd)
               | output_pat ->
                 let msg =
                   let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
@@ -598,7 +612,9 @@ let run ~root =
                 let output_pat_matches =
                   match output_pat with
                     | Empty_success ->
-                      msg = ""
+                      msg = "" && n = 0
+                    | Error_code ->
+                      n <> 0
                     | Non_empty ->
                       msg <> ""
                     | One_of allowed_msgs ->
@@ -612,12 +628,9 @@ let run ~root =
                     failed := true
                   end
                 else begin
-                  let print_failure explanation =
-                    print_colored `Red "FAILED" name `Yellow explanation
-                  in
                   begin match output_pat with
-                  | Empty_success ->
-                    (* case handled above *)
+                  | Empty_success | Error_code ->
+                    (* cases handled above *)
                     assert false
                   | Non_empty ->
                     print_failure
