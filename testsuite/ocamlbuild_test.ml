@@ -411,15 +411,20 @@ type test = { name     : string
             ; targets  : string * string list
             ; pre_cmd  : string option
             ; post_cmd : string option
-            ; failing_msg : string option
+            ; output   : output_pattern
             ; run      : run list }
+and output_pattern =
+  | Empty_success
+  | One_of of string list
+  | Non_empty
 
 let tests = ref []
 
 let test name
     ~description
     ?requirements
-    ?(options=[]) ?(run=[]) ?pre_cmd ?post_cmd ?failing_msg
+    ?(options=[]) ?(run=[]) ?pre_cmd ?post_cmd
+    ?(output = Empty_success)
     ?(tree=[])
     ?(matching=[])
     ~targets ()
@@ -434,7 +439,7 @@ let test name
     targets;
     pre_cmd;
     post_cmd;
-    failing_msg;
+    output;
     run;
   }]
 
@@ -524,7 +529,7 @@ let run ~root =
       ; matching
       ; options
       ; targets
-      ; failing_msg
+      ; output
       ; pre_cmd
       ; post_cmd
       ; run } =
@@ -549,7 +554,10 @@ let run ~root =
         let log_name = full_name ^ ".log" in
 
         let cmd = command options (fst targets :: snd targets) in
-        let allow_failure = failing_msg <> None in
+        let check_output = match output with
+            | Empty_success -> false
+            | Non_empty | One_of _ -> true
+        in
 
         let open Unix in
         let post_cmd () =
@@ -560,9 +568,9 @@ let run ~root =
         match execute cmd with
           | WEXITED n,lines
           | WSIGNALED n,lines
-          | WSTOPPED n,lines when allow_failure || n <> 0 ->
-            begin match failing_msg with
-              | None ->
+          | WSTOPPED n,lines when check_output || n <> 0 ->
+            begin match output with
+              | Empty_success ->
                 if verbose then begin
                   print_colored `Red "FAILED" name `Yellow
                     (Printf.sprintf "Command '%s' with error code %n, \
@@ -579,13 +587,24 @@ let run ~root =
                                      output written to %s" cmd n log_name);
                 end;
                 failed := true;
-              | Some failing_msg ->
-                let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
-                let lines =
-                  (* filter out -classic-display output *)
-                  List.filter (fun s -> not (starts_with_plus s)) lines in
-                let msg = String.concat "\n" lines in
-                if failing_msg = msg  then
+              | output_pat ->
+                let msg =
+                  let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
+                  let lines =
+                    (* filter out -classic-display output *)
+                    List.filter (fun s -> not (starts_with_plus s)) lines in
+                  String.concat "\n" lines
+                in
+                let output_pat_matches =
+                  match output_pat with
+                    | Empty_success ->
+                      msg = ""
+                    | Non_empty ->
+                      msg <> ""
+                    | One_of allowed_msgs ->
+                      List.mem msg allowed_msgs
+                in
+                if output_pat_matches then
                   if post_cmd ()
                   then print_colored `Green "PASSED" name `Cyan description
                   else begin
@@ -593,9 +612,27 @@ let run ~root =
                     failed := true
                   end
                 else begin
-                  print_colored `Red "FAILED" name `Yellow
-                    ((Printf.sprintf "Failure with not matching message:\n\
-                                      %s\n!=\n%s\n") msg failing_msg);
+                  let print_failure explanation =
+                    print_colored `Red "FAILED" name `Yellow explanation
+                  in
+                  begin match output_pat with
+                  | Empty_success ->
+                    (* case handled above *)
+                    assert false
+                  | Non_empty ->
+                    print_failure
+                      (Printf.sprintf "Expected some non-empty output message")
+                  | One_of [expected] ->
+                     print_failure
+                       (Printf.sprintf "Failure with unexpected message:\n\
+                                         %s\n!=\n%s\n"
+                        msg expected)
+                  | One_of _ ->
+                     print_failure
+                       (Printf.sprintf "Failure with unexpected message:\n\
+                                         %s\n(several outputs accepted, see test)"
+                        msg)
+                  end;
                   failed := true
                 end
             end;
