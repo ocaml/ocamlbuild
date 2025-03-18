@@ -314,11 +314,19 @@ Error: This expression has type int but an expression was expected of type
          unit
        because it is in the left-hand side of a sequence
 Command exited with code 2.|}
-else
+else if Sys.ocaml_version < "5.3.0" then
 {|File "hello.ml", line 1, characters 9-10:
 1 | let () = 1; ()
              ^
 Error: This expression has type "int" but an expression was expected of type
+         "unit"
+       because it is in the left-hand side of a sequence
+Command exited with code 2.|}
+else
+{|File "hello.ml", line 1, characters 9-10:
+1 | let () = 1; ()
+             ^
+Error: The constant "1" has type "int" but an expression was expected of type
          "unit"
        because it is in the left-hand side of a sequence
 Command exited with code 2.|}
