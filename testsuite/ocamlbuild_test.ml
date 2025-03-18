@@ -580,10 +580,6 @@ let run ~root =
                 end;
                 failed := true;
               | Some failing_msg ->
-                let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
-                let lines =
-                  (* filter out -classic-display output *)
-                  List.filter (fun s -> not (starts_with_plus s)) lines in
                 let msg = String.concat "\n" lines in
                 if failing_msg = msg  then
                   if post_cmd ()
