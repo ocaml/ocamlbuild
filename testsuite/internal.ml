@@ -145,7 +145,7 @@ List.iteri (fun i (content,failing_msg) ->
   let () = test (Printf.sprintf "TagsErrorMessage_%d" (i+1))
     ~options:[`no_ocamlfind]
     ~description:"Confirm relevance of an error message due to erronous _tags"
-    ~failing_msg
+    ~output:(failure failing_msg)
     ~tree:[T.f "_tags" ~content; T.f "dummy.ml"]
     ~targets:("dummy.native",[]) ()
   in ()) tag_pat_msgs;;
@@ -295,31 +295,13 @@ let () = test "StrictSequenceFlag"
          T.f "_tags" ~content:{|
 true: strict_sequence
 |}]
-  ~failing_msg:(if Sys.ocaml_version < "5.2.0" then
-{|File "hello.ml", line 1, characters 9-10:
-1 | let () = 1; ()
-             ^
-Error: This expression has type int but an expression was expected of type
-         unit
-       because it is in the left-hand side of a sequence
-Command exited with code 2.|}
-else if Sys.ocaml_version < "5.3.0" then
-{|File "hello.ml", line 1, characters 9-10:
-1 | let () = 1; ()
-             ^
-Error: This expression has type "int" but an expression was expected of type
-         "unit"
-       because it is in the left-hand side of a sequence
-Command exited with code 2.|}
-else
-{|File "hello.ml", line 1, characters 9-10:
-1 | let () = 1; ()
-             ^
-Error: The constant "1" has type "int" but an expression was expected of type
-         "unit"
-       because it is in the left-hand side of a sequence
-Command exited with code 2.|}
-)
+  ~output:(failure
+             ~filter:(
+               List.filter (function
+                   | "Command exited with code 2." -> true
+                   | x -> starts_with_plus x))
+             "+ ocamlc.opt -c -strict-sequence -o hello.cmo hello.ml\n\
+              Command exited with code 2.")
   ~targets:("hello.byte",[]) ();;
 
 let () = test "StrictFormatsFlag"
@@ -329,12 +311,13 @@ let () = test "StrictFormatsFlag"
          T.f "_tags" ~content:{|
 true: strict_formats
 |}]
-  ~failing_msg:({|File "hello.ml", line 1, characters 22-29:
-1 | let _ = Printf.printf "%.10s"
-                          ^^^^^^^
-Error: invalid format "%.10s": at character number 0, `precision' is incompatible with 's' in sub-format "%.10s"
-Command exited with code 2.|}
-)
+  ~output:(failure
+             ~filter:(
+               List.filter (function
+                   | "Command exited with code 2." -> true
+                   | x -> starts_with_plus x))
+             "+ ocamlc.opt -c -strict-formats -o hello.cmo hello.ml\n\
+              Command exited with code 2.")
   ~targets:("hello.byte",[]) ();;
 
 let () = test "PrincipalFlag"
@@ -348,17 +331,12 @@ let f x = (x.bar; x.foo)
          T.f "_tags" ~content:{|
 true: principal
 |}]
-  ~failing_msg:(if Sys.ocaml_version < "4.12.0" then
-{|File "hello.ml", line 2, characters 20-23:
-2 | let f x = (x.bar; x.foo)
-                        ^^^
-Warning 18: this type-based field disambiguation is not principal.|}
-else
-{|File "hello.ml", line 2, characters 20-23:
-2 | let f x = (x.bar; x.foo)
-                        ^^^
-Warning 18 [not-principal]: this type-based field disambiguation is not principal.|}
-)
+  ~output:(success
+             ~filter:(
+               List.filter (fun x ->
+                   starts_with_plus x || starts_with ~prefix:"Warning" x))
+             "+ ocamlc.opt -c -principal -o hello.cmo hello.ml\n\
+              Warning 18 [not-principal]: this type-based field disambiguation is not principal.") (* -principal warns, there is no error *)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "ModularPlugin1"
@@ -381,7 +359,7 @@ let () = test "ModularPlugin2"
 open Ocamlbuild_plugin;;
 pflag ["link"] "toto" (fun arg -> A arg);;
 |}]
-  ~failing_msg:""
+  ~output:(success "")
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
 
@@ -396,8 +374,8 @@ let () = test "ModularPlugin3"
 open Ocamlbuild_plugin;;
 pflag ["link"] "toto" (fun arg -> A arg);;
 |} ]
-  ~failing_msg:
-{|Warning: tag "toto" does not expect a parameter, but is used with parameter "-g"|}
+  ~output:(success
+    {|Warning: tag "toto" does not expect a parameter, but is used with parameter "-g"|})
   ~matching:[M.f "main.byte"]
   ~targets:("main.byte",[]) ();;
 
@@ -424,8 +402,8 @@ let () = test "PluginCompilation3"
   ~options:[`no_ocamlfind; `quiet; `just_plugin]
   ~tree:[T.f "main.ml" ~content:"let x = 1";
          T.f "myocamlbuild.ml" ~content:{|print_endline "foo";;|}]
-  (* if the plugin were executed we'd get "foo" in failing_msg *)
-  ~failing_msg:""
+  (* if the plugin were executed we'd get "foo" in the output *)
+  ~output:(success "")
   ~targets:("main.byte", []) ();;
 
 let () = test "PluginTagsWarning"
@@ -434,7 +412,8 @@ let () = test "PluginTagsWarning"
   ~options:[`no_ocamlfind; `plugin_tag "use_str"]
   ~tree:[T.f "main.ml" ~content:""]
   ~matching:[_build [M.f "main.cmo"]]
-  ~failing_msg:{|Warning: option -plugin-tag(s) has no effect in absence of plugin file "myocamlbuild.ml"|}
+  ~output:(success
+    {|Warning: option -plugin-tag(s) has no effect in absence of plugin file "myocamlbuild.ml"|})
   ~targets:("main.ml", []) ();;
 
 let () = test "TagsInNonHygienic"
@@ -644,5 +623,12 @@ Bar
 |};
   ]
   ~targets:("foo.cmx", ["foo.cmxs"]) ();;
+
+let () = test "cleanIsQuiet"
+  ~description:"clean is quiet"
+  ~options:[]
+  ~output:(success ~filter:(fun x -> x) "")
+  ~targets:("-clean",[]) ()
+;;
 
 run ~root:"_test_internal";;

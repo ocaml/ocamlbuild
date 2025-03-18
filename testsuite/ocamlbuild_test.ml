@@ -39,6 +39,15 @@ let print_string_list = print_list_com pp_print_string
 let print_string_list_com = print_list_com pp_print_string
 let print_string_list_blank = print_list_blank pp_print_string
 
+let starts_with ~prefix s =
+  let len_s = String.length s
+  and len_pre = String.length prefix in
+  let rec aux i =
+    if i = len_pre then true
+    else if String.unsafe_get s i <> String.unsafe_get prefix i then false
+    else aux (i + 1)
+  in len_s >= len_pre && aux 0
+
 let exists filename = My_std.sys_file_exists filename
 
 let execute cmd =
@@ -392,6 +401,52 @@ module Tree = struct
 
 end
 
+module Output_pattern : sig
+  type t
+
+  val create : filter:(string list -> string list) -> expected:string list -> t
+
+  val match_ : t -> string list -> bool
+
+  val expected : t -> string
+
+  val filter : t -> string list -> string
+
+end = struct
+  type t =
+    { filter : string list -> string list
+    ; expected : string list }
+
+  let create ~filter ~expected = { filter; expected}
+
+  let s = String.concat "\n"
+
+  let match_ {filter; expected} lines =
+     s expected = s (filter lines)
+
+  let expected {filter; expected} = s expected
+
+  let filter {filter; _} lines = s (filter lines)
+end
+
+let starts_with_plus s = starts_with ~prefix:"+" s
+
+let ignore_classic_display lines =
+  (* filter out -classic-display output *)
+  List.filter (fun s -> not (starts_with_plus s)) lines
+
+let failure ?(filter = ignore_classic_display) expected =
+  `Failure (
+      Output_pattern.create
+        ~filter
+        ~expected:(String.split_on_char '\n' expected))
+
+let success ?(filter = ignore_classic_display) expected =
+  `Success (
+      Output_pattern.create
+        ~filter
+        ~expected:(String.split_on_char '\n' expected))
+
 let a = Ocamlbuild_config.a
 let o = Ocamlbuild_config.o
 let so = Ocamlbuild_config.so
@@ -411,7 +466,7 @@ type test = { name     : string
             ; targets  : string * string list
             ; pre_cmd  : string option
             ; post_cmd : string option
-            ; failing_msg : string option
+            ; output   : [ `Success of Output_pattern.t | `Failure of Output_pattern.t ]
             ; run      : run list }
 
 let tests = ref []
@@ -419,7 +474,8 @@ let tests = ref []
 let test name
     ~description
     ?requirements
-    ?(options=[]) ?(run=[]) ?pre_cmd ?post_cmd ?failing_msg
+    ?(options=[]) ?(run=[]) ?pre_cmd ?post_cmd
+    ?(output = success "")
     ?(tree=[])
     ?(matching=[])
     ~targets ()
@@ -434,7 +490,7 @@ let test name
     targets;
     pre_cmd;
     post_cmd;
-    failing_msg;
+    output;
     run;
   }]
 
@@ -524,7 +580,7 @@ let run ~root =
       ; matching
       ; options
       ; targets
-      ; failing_msg
+      ; output
       ; pre_cmd
       ; post_cmd
       ; run } =
@@ -549,7 +605,6 @@ let run ~root =
         let log_name = full_name ^ ".log" in
 
         let cmd = command options (fst targets :: snd targets) in
-        let allow_failure = failing_msg <> None in
 
         let open Unix in
         let post_cmd () =
@@ -557,84 +612,98 @@ let run ~root =
           | None -> true
           | Some str -> sys_command str = 0
         in
-        match execute cmd with
-          | WEXITED n,lines
-          | WSIGNALED n,lines
-          | WSTOPPED n,lines when allow_failure || n <> 0 ->
-            begin match failing_msg with
-              | None ->
-                if verbose then begin
-                  print_colored `Red "FAILED" name `Yellow
-                    (Printf.sprintf "Command '%s' with error code %n, \
-                                     output below" cmd n);
-                  List.iter print_endline lines;
-                end else begin
-                  let ch = open_out log_name in
-                  List.iter
-                    (fun l -> output_string ch l; output_string ch "\n")
-                    lines;
-                  close_out ch;
-                  print_colored `Red "FAILED" name `Yellow
-                    (Printf.sprintf "Command '%s' with error code %n, \
-                                     output written to %s" cmd n log_name);
-                end;
-                failed := true;
-              | Some failing_msg ->
-                let starts_with_plus s = String.length s > 0 && s.[0] = '+' in
-                let lines =
-                  (* filter out -classic-display output *)
-                  List.filter (fun s -> not (starts_with_plus s)) lines in
-                let msg = String.concat "\n" lines in
-                if failing_msg = msg  then
-                  if post_cmd ()
-                  then print_colored `Green "PASSED" name `Cyan description
-                  else begin
-                    print_colored `Red "FAILED" name `Yellow "post command failed";
-                    failed := true
-                  end
-                else begin
-                  print_colored `Red "FAILED" name `Yellow
-                    ((Printf.sprintf "Failure with not matching message:\n\
-                                      %s\n!=\n%s\n") msg failing_msg);
-                  failed := true
-                end
-            end;
-          | _ ->
-            let errors =
+        let print_success () =
+          print_colored `Green "PASSED" name `Cyan description
+        in
+        let print_failure explanation =
+          print_colored `Red "FAILED" name `Yellow explanation
+        in
+        let status, lines = execute cmd in
+        let exit0 = status = WEXITED 0 in
+        let status_match, output_pat =
+          match status, output with
+          | WEXITED n, `Success pat -> n = 0, pat
+          | _, `Success pat -> false, pat
+          | WEXITED 0, `Failure pat -> false, pat
+          | (WEXITED _ | WSIGNALED _ | WSTOPPED _), `Failure pat -> true, pat
+        in
+        if status_match
+        then
+          let errors =
+            if exit0
+            then
               List.concat
-                (List.map (Match.match_with_fs ~root:full_name) matching) in
-            begin if errors == [] then
-                if post_cmd ()
-                then
-                  print_colored `Green "PASSED" name `Cyan description
-                else begin
-                    print_colored `Red "FAILED" name `Yellow "post command failed";
-                    failed := true
-                  end
-              else begin
-                if verbose then begin
-                  print_colored `Red "FAILED" name `Yellow
-                    "Some system checks failed, output below";
-                  List.iter
-                    (fun e -> Printf.printf "%s.\n%!" (Match.string_of_error e))
-                    errors;
-                end else begin
-                  let ch = open_out log_name in
-                  output_string ch ("Run '" ^ cmd ^ "'\n");
-                  List.iter
-                    (fun e ->
-                      output_string ch (Match.string_of_error e);
-                      output_string ch ".\n")
-                    errors;
-                  close_out ch;
-                  print_colored `Red "FAILED" name `Yellow
-                    (Printf.sprintf "Some system checks failed, \
-                                     output written to %s"
-                       log_name);
-                end;
-                failed := true
-              end
-            end
+                (List.map (Match.match_with_fs ~root:full_name) matching)
+            else []
+          in
+          match errors with
+          | [] ->
+             (* no fs expectation failure *)
+             if Output_pattern.match_ output_pat lines
+             then
+               if post_cmd ()
+               then print_success ()
+               else begin
+                   (* post_cmd failure *)
+                   failed := true;
+                   print_failure "post command failed"
+                 end
+             else begin
+                 (* output mismatch *)
+                 failed := true;
+                 print_failure
+                   (Printf.sprintf "%s with unexpected message:\n\
+                                    %s\n!=\n%s\n"
+                      (match status with WEXITED 0 -> "Success" | _ ->  "Failure")
+                      (Output_pattern.filter output_pat lines) (Output_pattern.expected output_pat))
+               end
+          | errors ->
+             (* fs expectation failure *)
+             failed := true;
+             if verbose then begin
+                 print_failure "Some system checks failed, output below";
+                 List.iter
+                   (fun e -> Printf.printf "%s.\n%!" (Match.string_of_error e))
+                   errors;
+               end else begin
+                 let ch = open_out log_name in
+                 output_string ch ("Run '" ^ cmd ^ "'\n");
+                 List.iter
+                   (fun e ->
+                     output_string ch (Match.string_of_error e);
+                     output_string ch ".\n")
+                   errors;
+                 close_out ch;
+                 print_failure
+                   (Printf.sprintf "Some system checks failed, \
+                                    output written to %s"
+                      log_name);
+               end;
+        else begin
+            (* status doesn't match *)
+            failed := true;
+            match status with
+            | WEXITED 0 ->
+               print_failure
+                 (Printf.sprintf "Command '%s' succeeded (returned 0), \
+                                  but we expected an error" cmd)
+            | (WEXITED n | WSIGNALED n | WSTOPPED n) ->
+               if verbose then begin
+                   print_failure
+                     (Printf.sprintf "Command '%s' with error code %n, \
+                                      output below" cmd n);
+                   List.iter print_endline lines;
+                 end else begin
+                   let ch = open_out log_name in
+                   List.iter
+                     (fun l -> output_string ch l; output_string ch "\n")
+                     lines;
+                   close_out ch;
+                   print_failure
+                     (Printf.sprintf "Command '%s' with error code %n, \
+                                      output written to %s" cmd n log_name);
+                 end
+          end
       end
   in
 
