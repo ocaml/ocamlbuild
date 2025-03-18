@@ -295,18 +295,7 @@ let () = test "StrictSequenceFlag"
          T.f "_tags" ~content:{|
 true: strict_sequence
 |}]
-  ~failing_msg:(if Sys.ocaml_version < "4.07.0" then
-{|File "hello.ml", line 1, characters 9-10:
-Error: This expression has type int but an expression was expected of type
-         unit
-Command exited with code 2.|}
-else if Sys.ocaml_version < "4.08.0" then
-{|File "hello.ml", line 1, characters 9-10:
-Error: This expression has type int but an expression was expected of type
-         unit
-       because it is in the left-hand side of a sequence
-Command exited with code 2.|}
-else if Sys.ocaml_version < "5.2.0" then
+  ~failing_msg:(if Sys.ocaml_version < "5.2.0" then
 {|File "hello.ml", line 1, characters 9-10:
 1 | let () = 1; ()
              ^
@@ -340,12 +329,7 @@ let () = test "StrictFormatsFlag"
          T.f "_tags" ~content:{|
 true: strict_formats
 |}]
-  ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-{|File "hello.ml", line 1, characters 22-29:
-Error: invalid format "%.10s": at character number 0, `precision' is incompatible with 's' in sub-format "%.10s"
-Command exited with code 2.|}
-else
-{|File "hello.ml", line 1, characters 22-29:
+  ~failing_msg:({|File "hello.ml", line 1, characters 22-29:
 1 | let _ = Printf.printf "%.10s"
                           ^^^^^^^
 Error: invalid format "%.10s": at character number 0, `precision' is incompatible with 's' in sub-format "%.10s"
@@ -364,10 +348,7 @@ let f x = (x.bar; x.foo)
          T.f "_tags" ~content:{|
 true: principal
 |}]
-  ~failing_msg:(if Sys.ocaml_version < "4.08.0" then
-{|File "hello.ml", line 2, characters 20-23:
-Warning 18: this type-based field disambiguation is not principal.|}
-else if Sys.ocaml_version < "4.12.0" then
+  ~failing_msg:(if Sys.ocaml_version < "4.12.0" then
 {|File "hello.ml", line 2, characters 20-23:
 2 | let f x = (x.bar; x.foo)
                         ^^^
