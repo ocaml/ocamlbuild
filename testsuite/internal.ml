@@ -265,7 +265,17 @@ let () = test "CmxsStubLink"
   ~description:".cmxs link rules pass correct -I flags"
   ~requirements:ocamlopt_available
   ~tree:[T.d "src" [
-           T.f "foo_stubs.c" ~content:"";
+           T.f "foo_stubs.c" ~content:{|
+#include <stdio.h>
+#include <caml/mlvalues.h>
+#include <caml/memory.h>
+CAMLprim value hello_world(value unit)
+{
+  CAMLparam1 (unit);
+  printf("Hello World!\n");
+  CAMLreturn (Val_unit);
+}
+|};
            T.f "libfoo_stubs.clib" ~content:("foo_stubs" -.- o) ;
            T.f "foo.ml" ~content:"";
          ];
