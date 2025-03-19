@@ -414,7 +414,7 @@ let () = test "PluginTagsWarning"
   ~matching:[_build [M.f "main.cmo"]]
   ~output:(success
     {|Warning: option -plugin-tag(s) has no effect in absence of plugin file "myocamlbuild.ml"|})
-  ~targets:("main.ml", []) ();;
+  ~targets:("main.cmo", []) ();;
 
 let () = test "TagsInNonHygienic"
   ~description:"Regression test for PR#6482, where a _tags \
@@ -506,7 +506,7 @@ let () = test "ForPackEverything"
   under both native and bytecode compilation, instead of just native.
   Check that this does not break bytecode compilation.
 *)
-  ~options:[`no_ocamlfind; `tag "for_pack(Foo)"]
+  ~options:[`no_ocamlfind; `tag "for-pack(Foo)"]
   ~tree:[ T.f "test.mli" ~content:"val x : int";
           T.f "test.ml"  ~content:"let x = 123"; ]
   ~targets:("test.cmo", []) ();;
