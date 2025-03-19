@@ -333,10 +333,14 @@ true: principal
 |}]
   ~output:(success
              ~filter:(
-               List.filter (fun x ->
-                   starts_with_plus x || starts_with ~prefix:"Warning" x))
+               List.filter_map (fun x ->
+                   if starts_with_plus x
+                   then Some x
+                   else if starts_with ~prefix:"Warning" x
+                   then Some (normalize_warning x)
+                   else None))
              "+ ocamlc.opt -c -principal -o hello.cmo hello.ml\n\
-              Warning 18 [not-principal]: this type-based field disambiguation is not principal.") (* -principal warns, there is no error *)
+              Warning 18: this type-based field disambiguation is not principal.") (* -principal warns, there is no error *)
   ~targets:("hello.byte",[]) ();;
 
 let () = test "ModularPlugin1"

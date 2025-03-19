@@ -10,9 +10,11 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
 #directory "../plugin-lib/";;
 #directory "../src/";;
+
+#directory "+str";;
+#load "str.cma"
 
 #load "../src/ocamlbuild_config.cmo"
 #load "../plugin-lib/ocamlbuildlib.cma";;
@@ -47,6 +49,10 @@ let starts_with ~prefix s =
     else if String.unsafe_get s i <> String.unsafe_get prefix i then false
     else aux (i + 1)
   in len_s >= len_pre && aux 0
+
+let normalize_warning =
+  let r = Str.regexp {|^\(Warning [0-9]+\)[^:]*:|} in
+  Str.replace_first r {|\1:|}
 
 let exists filename = My_std.sys_file_exists filename
 
@@ -417,7 +423,14 @@ end = struct
     { filter : string list -> string list
     ; expected : string list }
 
-  let create ~filter ~expected = { filter; expected}
+  let create ~filter ~expected =
+    let filter l =
+      filter l
+      |> List.filter (function
+             | "ld: warning: -undefined suppress is deprecated" -> false
+             | _ -> true)
+    in
+    { filter; expected}
 
   let s = String.concat "\n"
 
