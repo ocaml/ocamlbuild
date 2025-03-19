@@ -14,6 +14,19 @@
 module O = Ocamlbuild_config;;
 
 let bindir = ref O.bindir;;
+
+(* Check if a directory contains a file that libdir is expected to contain. *)
+let libdir_contains_ocamlbuild_library libdir =
+  Sys.file_exists (Filename.concat libdir "ocamlbuild.cma") ||
+    Sys.file_exists (Filename.concat libdir "ocamlbuild.cmx")
+
+(* Try to guess the libdir from the current exe's location. *)
+let guess_libdir_from_executable_name () =
+  let guessed_bin_dir = Filename.dirname Sys.executable_name in
+  Filename.concat
+    (Filename.concat (Filename.dirname guessed_bin_dir) "lib")
+    "ocamlbuild"
+
 let libdir = ref begin
   let root, suffix =
     let ocaml_lib_len = String.length O.ocaml_libdir + 1 in
@@ -46,5 +59,29 @@ let libdir = ref begin
         Sys.getenv "OCAMLLIB", Filename.concat subroot "ocamlbuild"
       with Not_found -> O.libdir, "ocamlbuild"
   in
-  Filename.concat root suffix
+  let libdir = Filename.concat root suffix in
+  if libdir_contains_ocamlbuild_library libdir then
+    libdir
+  else
+    (* The libdir doesn't contain the ocamlbuild library. Maybe the ocamlbuild
+       installation has been moved to a new location after installation. Try to
+       guess the libdir from the current exe's path. *)
+    let guessed_libdir = guess_libdir_from_executable_name () in
+    if libdir_contains_ocamlbuild_library guessed_libdir then (
+      Printf.eprintf "Warning: The library directory where ocamlbuild was \
+        originally installed (%s) either no longer exists, or does not contain \
+        a copy of the ocamlbuild library. Guessing that the correct library \
+        directory is %s because a copy of the ocamlbuild library exists at that \
+        location, and because it is located at the expected path relative to \
+        the current ocamlbuild executable. This can happen if ocamlbuild's \
+        files are moved from the location where they were originally \
+        installed."
+        libdir
+        guessed_libdir;
+      guessed_libdir)
+    else
+      (* The guessed path also doesn't contain the ocamlbuild library, so just
+         return the original libdir to help the user debug the error which will
+         likely result. *)
+      libdir
 end;;
