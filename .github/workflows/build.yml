@@ -40,6 +40,14 @@ jobs:
             ocaml-compiler: "ocaml-base-compiler.4.14.2,system-msvc"
           - os: windows-latest
             ocaml-compiler: "ocaml-variants.5.2.0+msvc"
+        exclude:
+          # The linker emits warnings with old ocaml version on macos
+          # We could try to fix the warnings by passing addition flags
+          # but the value would be limited compared to the effort.
+          - os: macos-latest
+            ocaml-compiler: "4.13"
+          - os: macos-latest
+            ocaml-compiler: "5.0"
 
     runs-on: ${{ matrix.os }}
 
