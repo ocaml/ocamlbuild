@@ -197,8 +197,8 @@ man: man/ocamlbuild.1
 man/ocamlbuild.1: man/ocamlbuild.header.1 man/ocamlbuild.options.1 man/ocamlbuild.footer.1
 	cat $^ > man/ocamlbuild.1
 
-man/ocamlbuild.options.1: man/options_man.byte
-	./man/options_man.byte > man/ocamlbuild.options.1
+man/ocamlbuild.options.1: man/options_man.exe
+	./man/options_man.exe > man/ocamlbuild.options.1
 
 clean::
 	rm -f man/ocamlbuild.options.1
@@ -206,12 +206,17 @@ clean::
 distclean::
 	rm -f man/ocamlbuild.1
 
-man/options_man.byte: src/ocamlbuild_pack.cmo
-	$(OCAMLC) -I +unix unix.cma $^ -I src man/options_man.ml -o man/options_man.byte
+ifeq ($(OCAML_NATIVE), true)
+man/options_man.exe: src/ocamlbuild_pack.cmx
+	$(OCAMLOPT) -I +unix unix.cmxa $^ -I src man/options_man.ml -o $@
+else
+man/options_man.exe: src/ocamlbuild_pack.cmo
+	$(OCAMLC) -custom -I +unix unix.cma $^ -I src man/options_man.ml -o $@
+endif
 
 clean::
 	rm -f man/options_man.cm*
-	rm -f man/options_man.byte
+	rm -f man/options_man.exe
 ifdef EXT_OBJ
 	rm -f man/options_man$(EXT_OBJ)
 endif
