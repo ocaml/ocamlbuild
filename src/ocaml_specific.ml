@@ -1024,6 +1024,11 @@ begin
     ccflag ~lang ~phase ~flag)))
 end;;
 
+List.iter
+  (fun flag -> pflag ["ocaml"; "byte"; flag] "dllib"
+    (fun param -> S [A "-dllib"; A param]))
+  ["compile"; "link"];;
+
 begin
   let ocamlmklib_pflag ?doc_param flag =
     pflag ["ocamlmklib"] flag ?doc_param
