@@ -299,7 +299,7 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
         with the file paths listed (one per line) in libfoo.clib. \
         To build a static library from libfoo.clib, you should \
         request libfoo.a (or libfoo.lib on Windows), and to build \
-        a dynamic library you should request libfoo.so (or libfoo.dll \
+        a dynamic library you should request dllfoo.so (or dllfoo.dll \
         on Windows). Finally, any file listed in the .clib \
         with name 'bar/baz.o' will link 'bar/baz.obj' instead on Windows. \
         This means that using the .o extension will give portable clib files, \
