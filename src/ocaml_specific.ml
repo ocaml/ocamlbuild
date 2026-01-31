@@ -93,8 +93,8 @@ rule "target files"
     else Seq (List.map link_command results)
   end;;
 
-rule "ocaml: mli -> cmi"
-  ~prod:"%.cmi"
+rule "ocaml: mli -> cmi & cmt"
+  ~prods:["%.cmi"; "%.cmt"]
   ~deps:["%.mli"; "%.mli.depends"]
   (Ocaml_compiler.compile_ocaml_interf "%.mli" "%.cmi");;
 
