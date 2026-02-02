@@ -1029,6 +1029,10 @@ List.iter
     (fun param -> S [A "-dllib"; A param]))
   ["compile"; "link"];;
 
+pflag ["ocaml"; "byte"; "link"] "dllpath"
+  (fun param -> S [A "-dllpath"; A param])
+;;
+
 begin
   let ocamlmklib_pflag ?doc_param flag =
     pflag ["ocamlmklib"] flag ?doc_param
@@ -1036,6 +1040,7 @@ begin
   ocamlmklib_pflag "cclib";
   ocamlmklib_pflag "ccopt";
   ocamlmklib_pflag "rpath";
+  ocamlmklib_pflag "dllpath";
   ocamlmklib_pflag "ldopt";
 end;;
 
