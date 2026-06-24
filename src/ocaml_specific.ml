@@ -93,8 +93,8 @@ rule "target files"
     else Seq (List.map link_command results)
   end;;
 
-rule "ocaml: mli -> cmi"
-  ~prod:"%.cmi"
+rule "ocaml: mli -> cmi & cmt"
+  ~prods:["%.cmi"; "%.cmt"]
   ~deps:["%.mli"; "%.mli.depends"]
   (Ocaml_compiler.compile_ocaml_interf "%.mli" "%.cmi");;
 
@@ -299,7 +299,7 @@ rule "ocaml C stubs: clib & (o|obj)* -> (a|lib) & (so|dll)"
         with the file paths listed (one per line) in libfoo.clib. \
         To build a static library from libfoo.clib, you should \
         request libfoo.a (or libfoo.lib on Windows), and to build \
-        a dynamic library you should request libfoo.so (or libfoo.dll \
+        a dynamic library you should request dllfoo.so (or dllfoo.dll \
         on Windows). Finally, any file listed in the .clib \
         with name 'bar/baz.o' will link 'bar/baz.obj' instead on Windows. \
         This means that using the .o extension will give portable clib files, \
@@ -1024,6 +1024,15 @@ begin
     ccflag ~lang ~phase ~flag)))
 end;;
 
+List.iter
+  (fun flag -> pflag ["ocaml"; "byte"; flag] "dllib"
+    (fun param -> S [A "-dllib"; A param]))
+  ["compile"; "link"];;
+
+pflag ["ocaml"; "byte"; "link"] "dllpath"
+  (fun param -> S [A "-dllpath"; A param])
+;;
+
 begin
   let ocamlmklib_pflag ?doc_param flag =
     pflag ["ocamlmklib"] flag ?doc_param
@@ -1031,6 +1040,7 @@ begin
   ocamlmklib_pflag "cclib";
   ocamlmklib_pflag "ccopt";
   ocamlmklib_pflag "rpath";
+  ocamlmklib_pflag "dllpath";
   ocamlmklib_pflag "ldopt";
 end;;
 
