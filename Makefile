@@ -31,7 +31,7 @@ endif
 
 CP        ?= cp
 OCB_COMPFLAGS ?= -w @14@29 -w +L -w +R -w +Z -I src -I plugin-lib -I bin -I +unix -safe-string -bin-annot -strict-sequence
-OCB_LINKFLAGS ?= -I +unix -I src
+OCB_LINKFLAGS ?= -I +unix -I src $(OCB_EXTRA_LINKFLAGS)
 
 PACK_CMO= $(addprefix src/,\
   const.cmo \
@@ -179,7 +179,7 @@ configure:
 	$(MAKE) -f configure.make all
 
 # proxy rule for rebuilding configuration files directly from the main Makefile
-Makefile.config src/ocamlbuild_config.ml:
+Makefile.config src/ocamlbuild_config.ml: src/ocamlbuild_config.ml.in
 	$(MAKE) -f configure.make $@
 
 clean::

@@ -1,0 +1,35 @@
+#2 "ocamlbuild_config.ml.in"
+(***********************************************************************)
+(*                                                                     *)
+(*                             ocamlbuild                              *)
+(*                                                                     *)
+(*                       David Allsopp, Tarides                        *)
+(*                                                                     *)
+(*  Copyright 2025 David Allsopp Ltd.  All rights reserved.  This      *)
+(*  file is distributed under the terms of the GNU Library General     *)
+(*  Public License, with the special exception on linking described    *)
+(*  in file ../LICENSE.                                                *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Compute the effective default for the Standard Library *)
+let ocaml_libdir, bindir =
+  let module Defs = struct
+    external default : unit -> string = "%standard_library_default"
+    external get : string -> string * string option = "caml_sys_get_stdlib_dirs"
+  end in
+  match Defs.get (Defs.default ()) with
+  | ocaml_libdir, Some bindir ->
+      ocaml_libdir, bindir
+  | ocaml_libdir, None ->
+      (* This code should in theory only be being executed on a relocatable
+         runtime *)
+      ocaml_libdir, Filename.dirname Sys.executable_name
+
+let libdir =
+  if libdir = ".." then
+    (* Cheeky special case, as it happens to match opam *)
+    Filename.dirname ocaml_libdir
+  else
+    (* General case *)
+    Filename.concat ocaml_libdir libdir
